@@ -32,7 +32,7 @@ const SaleBanner = () => {
   const formatNumber = (num) => String(num).padStart(2, '0');
 
   return (
-    <div className="bg-[#8B0000] text-white">
+    <div className="bg-gradient-to-r from-sky-600 to-sky-500 text-white">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-center gap-6 flex-wrap">
           <div className="text-center">

@@ -8,17 +8,18 @@ const CategoryTabs = ({ activeCategory, setActiveCategory }) => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-center gap-2 md:gap-6 flex-wrap">
           {categories.map((category) => (
-            <button
+            <Link
               key={category.id}
-              onClick={() => setActiveCategory(category.slug)}
+              to={`/collections/${category.slug}`}
+              onClick={() => setActiveCategory && setActiveCategory(category.slug)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 activeCategory === category.slug
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-sky-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-sky-100 hover:text-sky-600'
               }`}
             >
               {category.name}
-            </button>
+            </Link>
           ))}
         </div>
       </div>

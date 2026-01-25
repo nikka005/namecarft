@@ -7,7 +7,7 @@ const ProductCard = ({ product, onAddToCart }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
-  const savings = product.originalPrice - product.price;
+  const savings = (product.originalPrice || product.original_price) - product.price;
 
   return (
     <div
@@ -19,7 +19,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       <div className="relative aspect-square overflow-hidden bg-gray-100">
         <Link to={`/products/${product.slug}`}>
           <img
-            src={isHovered && product.hoverImage ? product.hoverImage : product.image}
+            src={isHovered && (product.hoverImage || product.hover_image) ? (product.hoverImage || product.hover_image) : product.image}
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -27,7 +27,7 @@ const ProductCard = ({ product, onAddToCart }) => {
 
         {/* Discount Badge */}
         {product.discount > 0 && (
-          <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+          <div className="absolute top-3 left-3 bg-sky-500 text-white text-xs font-bold px-2 py-1 rounded">
             {product.discount}% off
           </div>
         )}
@@ -38,7 +38,7 @@ const ProductCard = ({ product, onAddToCart }) => {
             onClick={() => setIsWishlisted(!isWishlisted)}
             className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
               isWishlisted
-                ? 'bg-red-600 text-white'
+                ? 'bg-sky-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100'
             } shadow-md`}
           >
@@ -56,7 +56,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         <div className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-300 ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
           <button
             onClick={() => onAddToCart && onAddToCart(product)}
-            className="w-full py-3 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors"
+            className="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors"
           >
             <ShoppingBag className="w-4 h-4" />
             Add to Cart
@@ -67,7 +67,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       {/* Product Info */}
       <div className="p-4">
         <Link to={`/products/${product.slug}`}>
-          <h3 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2 hover:text-red-600 transition-colors">
+          <h3 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2 hover:text-sky-600 transition-colors">
             {product.name}
           </h3>
         </Link>
@@ -76,10 +76,10 @@ const ProductCard = ({ product, onAddToCart }) => {
           <span className="text-lg font-bold text-gray-900">
             {siteConfig.currencySymbol}{product.price.toLocaleString()}
           </span>
-          {product.originalPrice > product.price && (
+          {(product.originalPrice || product.original_price) > product.price && (
             <>
               <span className="text-sm text-gray-400 line-through">
-                {siteConfig.currencySymbol}{product.originalPrice.toLocaleString()}
+                {siteConfig.currencySymbol}{(product.originalPrice || product.original_price).toLocaleString()}
               </span>
               <span className="text-xs text-green-600 font-medium">
                 SAVE {siteConfig.currencySymbol}{savings.toLocaleString()}
