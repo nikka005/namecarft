@@ -41,10 +41,10 @@ html {
   overflow: hidden;
 }
 
-/* Custom selection color */
+/* Custom selection color - Light Blue Theme */
 ::selection {
-  background-color: rgba(139, 0, 0, 0.2);
-  color: #8B0000;
+  background-color: rgba(14, 165, 233, 0.2);
+  color: #0284c7;
 }
 
 /* Animations */
@@ -116,9 +116,9 @@ html {
   }
 }
 
-/* Custom focus ring */
+/* Custom focus ring - Light Blue Theme */
 *:focus-visible {
-  outline: 2px solid #8B0000;
+  outline: 2px solid #0ea5e9;
   outline-offset: 2px;
 }
 
@@ -127,17 +127,17 @@ button:active:not(:disabled) {
   transform: scale(0.98);
 }
 
-/* Spin wheel border gradient */
+/* Spin wheel border gradient - Light Blue Theme */
 .spin-wheel-border {
   background: conic-gradient(
     from 0deg,
-    #8B0000 0deg 45deg,
+    #0ea5e9 0deg 45deg,
     #2D2D2D 45deg 90deg,
-    #8B0000 90deg 135deg,
+    #0ea5e9 90deg 135deg,
     #2D2D2D 135deg 180deg,
-    #8B0000 180deg 225deg,
+    #0ea5e9 180deg 225deg,
     #2D2D2D 225deg 270deg,
-    #8B0000 270deg 315deg,
+    #0ea5e9 270deg 315deg,
     #2D2D2D 315deg 360deg
   );
 }
