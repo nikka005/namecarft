@@ -246,6 +246,16 @@ class APITester:
     
     def test_validate_coupon(self):
         """Test POST /coupons/validate endpoint"""
+        # First create a coupon if we have admin access
+        if self.auth_token:
+            coupon_payload = {
+                "code": "SAVE10",
+                "discount_type": "percentage",
+                "discount_value": 10,
+                "min_order_amount": 1000
+            }
+            self.make_request('POST', '/admin/coupons', json=coupon_payload)
+        
         payload = {
             "code": "SAVE10",
             "subtotal": 1499
