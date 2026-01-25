@@ -7,13 +7,13 @@ const SpinWheel = ({ onClose }) => {
   const [rotation, setRotation] = useState(0);
 
   const prizes = [
-    { text: '₹400 OFF', color: '#8B0000' },
+    { text: '₹400 OFF', color: '#0ea5e9' },
     { text: 'No luck today', color: '#2D2D2D' },
-    { text: '₹300 OFF', color: '#8B0000' },
+    { text: '₹300 OFF', color: '#0ea5e9' },
     { text: 'Almost', color: '#2D2D2D' },
-    { text: 'FREE SHIPPING', color: '#8B0000' },
+    { text: 'FREE SHIPPING', color: '#0ea5e9' },
     { text: 'Nothing', color: '#2D2D2D' },
-    { text: '₹500 OFF', color: '#8B0000' },
+    { text: '₹500 OFF', color: '#0ea5e9' },
     { text: 'Sorry!', color: '#2D2D2D' }
   ];
 
@@ -82,7 +82,7 @@ const SpinWheel = ({ onClose }) => {
             <button
               onClick={spin}
               disabled={spinning}
-              className="w-full py-4 bg-[#8B0000] hover:bg-red-800 text-white font-bold text-lg rounded-lg transition-colors disabled:opacity-50"
+              className="w-full py-4 bg-sky-500 hover:bg-sky-600 text-white font-bold text-lg rounded-lg transition-colors disabled:opacity-50"
             >
               {spinning ? 'Spinning...' : 'Try your luck'}
             </button>
