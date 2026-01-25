@@ -114,7 +114,7 @@ const AdminLogin = ({ onLogin }) => {
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
-          <Button type="submit" className="w-full bg-[#8B0000] hover:bg-red-800" disabled={loading}>
+          <Button type="submit" className="w-full bg-sky-500 hover:bg-sky-600" disabled={loading}>
             {loading ? 'Please wait...' : isSetup ? 'Create Admin' : 'Login'}
           </Button>
         </form>
@@ -154,7 +154,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
             <button
               key={item.id}
               onClick={() => { setActiveTab(item.id); setIsOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === item.id ? 'bg-[#8B0000] text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === item.id ? 'bg-sky-500 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
             >
               <item.icon className="w-5 h-5" />
               {item.label}
@@ -448,7 +448,7 @@ const ProductsTab = ({ token }) => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
           </div>
-          <Button onClick={() => { setEditingProduct(null); setShowForm(true); }} className="bg-[#8B0000] hover:bg-red-800">
+          <Button onClick={() => { setEditingProduct(null); setShowForm(true); }} className="bg-sky-500 hover:bg-sky-600">
             <Plus className="w-4 h-4 mr-2" />Add Product
           </Button>
         </div>
@@ -565,7 +565,7 @@ const ProductForm = ({ token, product, onClose, onSave }) => {
           <label className="flex items-center gap-2"><input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />Active</label>
         </div>
         <div className="md:col-span-2 flex gap-4">
-          <Button type="submit" disabled={loading} className="bg-[#8B0000] hover:bg-red-800">{loading ? 'Saving...' : product ? 'Update' : 'Create'}</Button>
+          <Button type="submit" disabled={loading} className="bg-sky-500 hover:bg-sky-600">{loading ? 'Saving...' : product ? 'Update' : 'Create'}</Button>
           <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
         </div>
       </form>
@@ -698,7 +698,7 @@ const CouponsTab = ({ token }) => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Coupons</h2>
-        <Button onClick={() => setShowForm(!showForm)} className="bg-[#8B0000] hover:bg-red-800"><Plus className="w-4 h-4 mr-2" />Add Coupon</Button>
+        <Button onClick={() => setShowForm(!showForm)} className="bg-sky-500 hover:bg-sky-600"><Plus className="w-4 h-4 mr-2" />Add Coupon</Button>
       </div>
       {showForm && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
@@ -714,7 +714,7 @@ const CouponsTab = ({ token }) => {
             <div><Label>Min Order</Label><Input type="number" value={form.min_order_amount} onChange={(e) => setForm({ ...form, min_order_amount: e.target.value })} /></div>
             <div><Label>Max Discount</Label><Input type="number" value={form.max_discount} onChange={(e) => setForm({ ...form, max_discount: e.target.value })} /></div>
             <div><Label>Usage Limit</Label><Input type="number" value={form.usage_limit} onChange={(e) => setForm({ ...form, usage_limit: e.target.value })} /></div>
-            <div className="md:col-span-3"><Button type="submit" className="bg-[#8B0000] hover:bg-red-800">Create Coupon</Button></div>
+            <div className="md:col-span-3"><Button type="submit" className="bg-sky-500 hover:bg-sky-600">Create Coupon</Button></div>
           </form>
         </div>
       )}
@@ -781,7 +781,7 @@ const MediaTab = ({ token }) => {
         <div className="flex gap-4">
           <Input placeholder="Image name" value={newName} onChange={(e) => setNewName(e.target.value)} className="w-48" />
           <Input placeholder="Image URL" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} className="flex-1" />
-          <Button onClick={addMedia} className="bg-[#8B0000] hover:bg-red-800"><Plus className="w-4 h-4 mr-2" />Add</Button>
+          <Button onClick={addMedia} className="bg-sky-500 hover:bg-sky-600"><Plus className="w-4 h-4 mr-2" />Add</Button>
         </div>
       </div>
       <div className="bg-white rounded-xl p-6 shadow-sm border">
@@ -843,7 +843,7 @@ const SettingsTab = ({ token }) => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Site Settings</h2>
-        <Button onClick={save} disabled={saving} className="bg-[#8B0000] hover:bg-red-800"><Save className="w-4 h-4 mr-2" />{saving ? 'Saving...' : 'Save Changes'}</Button>
+        <Button onClick={save} disabled={saving} className="bg-sky-500 hover:bg-sky-600"><Save className="w-4 h-4 mr-2" />{saving ? 'Saving...' : 'Save Changes'}</Button>
       </div>
       <Tabs value={activeSettingsTab} onValueChange={setActiveSettingsTab}>
         <TabsList className="grid grid-cols-5 w-full max-w-2xl">
@@ -1009,7 +1009,7 @@ const AdminPage = () => {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-500">Welcome, {admin.name}</span>
-            <Link to="/" className="text-sm text-[#8B0000] hover:underline">View Store →</Link>
+            <Link to="/" className="text-sm text-sky-500 hover:underline">View Store →</Link>
           </div>
         </header>
         <main className="flex-1 p-6 overflow-auto">{renderTab()}</main>

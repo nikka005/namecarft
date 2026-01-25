@@ -61,7 +61,7 @@ const AboutPage = () => {
         </section>
 
         {/* Stats */}
-        <section className="py-12 bg-[#8B0000] text-white">
+        <section className="py-12 bg-sky-500 text-white">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
@@ -105,7 +105,7 @@ const AboutPage = () => {
               {values.map((value, index) => (
                 <div key={index} className="text-center p-6 bg-white rounded-2xl shadow-sm">
                   <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
-                    <value.icon className="w-7 h-7 text-[#8B0000]" />
+                    <value.icon className="w-7 h-7 text-sky-500" />
                   </div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">{value.title}</h3>
                   <p className="text-gray-500 text-sm">{value.description}</p>
@@ -124,7 +124,7 @@ const AboutPage = () => {
             </p>
             <Link
               to="/collections/all"
-              className="inline-block px-8 py-4 bg-[#8B0000] hover:bg-red-800 text-white font-medium rounded-lg transition-colors"
+              className="inline-block px-8 py-4 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg transition-colors"
             >
               Shop Now
             </Link>
