@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://sitecloner-15.preview.emergentagent.com/api"
+BASE_URL = "https://ename-boutique.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@test.com"
 ADMIN_PASSWORD = "Test123!"
 ADMIN_NAME = "Admin"
