@@ -104,7 +104,7 @@ const AboutPage = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {values.map((value, index) => (
                 <div key={index} className="text-center p-6 bg-white rounded-2xl shadow-sm">
-                  <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-sky-50 flex items-center justify-center">
                     <value.icon className="w-7 h-7 text-sky-500" />
                   </div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">{value.title}</h3>
