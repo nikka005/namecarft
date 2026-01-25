@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Lock, CreditCard, Truck, Shield } from 'lucide-react';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import { ChevronLeft, Lock, CreditCard, Truck, Shield, Smartphone, QrCode, Globe } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { siteConfig } from '../data/mock';
+import { siteConfig, paymentMethods } from '../data/mock';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Separator } from '../components/ui/separator';
 import { toast } from '../hooks/use-toast';
 
+const iconMap = {
+  'smartphone': Smartphone,
+  'qr-code': QrCode,
+  'credit-card': CreditCard,
+  'globe': Globe,
+  'truck': Truck
+};
+
 const CheckoutPage = () => {
   const { cart, cartTotal, cartCount, clearCart } = useCart();
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [couponApplied, setCouponApplied] = useState(false);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -26,22 +34,65 @@ const CheckoutPage = () => {
     city: '',
     state: '',
     pincode: '',
-    paymentMethod: 'razorpay'
+    paymentMethod: 'upi'
   });
 
   const shippingCost = cartTotal >= 1000 ? 0 : 99;
-  const total = cartTotal + shippingCost;
+  const total = cartTotal + shippingCost - discount;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const applyCoupon = () => {
+    if (!couponCode.trim()) return;
+    
+    // Mock coupon validation
+    const validCoupons = {
+      'SAVE10': { type: 'percentage', value: 10 },
+      'FLAT100': { type: 'fixed', value: 100 },
+      'VALENTINE': { type: 'percentage', value: 15 }
+    };
+    
+    const coupon = validCoupons[couponCode.toUpperCase()];
+    if (coupon) {
+      const discountAmount = coupon.type === 'percentage' 
+        ? cartTotal * (coupon.value / 100)
+        : coupon.value;
+      setDiscount(discountAmount);
+      setCouponApplied(true);
+      toast({
+        title: "Coupon Applied!",
+        description: `You saved ${siteConfig.currencySymbol}${discountAmount.toFixed(0)}`,
+      });
+    } else {
+      toast({
+        title: "Invalid Coupon",
+        description: "This coupon code is not valid.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate payment processing
+    // Simulate payment processing based on method
+    const processingMessages = {
+      'upi': 'Processing UPI payment...',
+      'upi-apps': 'Generating QR code...',
+      'razorpay': 'Redirecting to Razorpay...',
+      'stripe': 'Processing card payment...',
+      'cod': 'Confirming order...'
+    };
+
+    toast({
+      title: processingMessages[formData.paymentMethod],
+      description: "Please wait...",
+    });
+
     setTimeout(() => {
       setLoading(false);
       clearCart();
@@ -50,13 +101,19 @@ const CheckoutPage = () => {
         description: "You will receive a confirmation email shortly.",
       });
       navigate('/');
-    }, 2000);
+    }, 2500);
   };
 
   if (cart.length === 0) {
     return (
       <div className="min-h-screen bg-white">
-        <Header cartCount={0} />
+        <header className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-center">
+            <h1 className="text-xl font-serif italic text-gray-900">
+              Name <span className="font-normal">Strings</span>
+            </h1>
+          </div>
+        </header>
         <main className="max-w-4xl mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-serif text-gray-900 mb-4">Your cart is empty</h1>
           <p className="text-gray-500 mb-8">Add some items to proceed to checkout.</p>
@@ -67,7 +124,6 @@ const CheckoutPage = () => {
             Continue Shopping
           </Link>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -77,13 +133,13 @@ const CheckoutPage = () => {
       {/* Minimal Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+          <Link to="/cart" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
             <ChevronLeft className="w-5 h-5" />
-            <span>Back to store</span>
+            <span>Back to cart</span>
           </Link>
-          <h1 className="text-xl font-serif italic text-gray-900">
+          <Link to="/" className="text-xl font-serif italic text-gray-900">
             Name <span className="font-normal">Strings</span>
-          </h1>
+          </Link>
           <div className="flex items-center gap-1 text-green-600 text-sm">
             <Lock className="w-4 h-4" />
             <span>Secure Checkout</span>
@@ -95,7 +151,7 @@ const CheckoutPage = () => {
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Checkout Form */}
           <div>
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Contact Information */}
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Contact Information</h2>
@@ -215,31 +271,56 @@ const CheckoutPage = () => {
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Payment Method</h2>
                 <div className="space-y-3">
-                  {[
-                    { id: 'razorpay', name: 'Razorpay (UPI, Cards, Net Banking)', icon: CreditCard },
-                    { id: 'cod', name: 'Cash on Delivery', icon: Truck }
-                  ].map((method) => (
-                    <label
-                      key={method.id}
-                      className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
-                        formData.paymentMethod === method.id
-                          ? 'border-[#8B0000] bg-red-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value={method.id}
-                        checked={formData.paymentMethod === method.id}
-                        onChange={handleInputChange}
-                        className="w-4 h-4 text-[#8B0000] border-gray-300 focus:ring-[#8B0000]"
-                      />
-                      <method.icon className="w-5 h-5 text-gray-600" />
-                      <span className="font-medium text-gray-900">{method.name}</span>
-                    </label>
-                  ))}
+                  {paymentMethods.map((method) => {
+                    const IconComponent = iconMap[method.icon] || CreditCard;
+                    return (
+                      <label
+                        key={method.id}
+                        className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          formData.paymentMethod === method.id
+                            ? 'border-[#8B0000] bg-red-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value={method.id}
+                          checked={formData.paymentMethod === method.id}
+                          onChange={handleInputChange}
+                          className="w-4 h-4 text-[#8B0000] border-gray-300 focus:ring-[#8B0000]"
+                        />
+                        <IconComponent className="w-5 h-5 text-gray-600" />
+                        <div className="flex-1">
+                          <span className="font-medium text-gray-900 block">{method.name}</span>
+                          <span className="text-sm text-gray-500">{method.description}</span>
+                        </div>
+                      </label>
+                    );
+                  })}
                 </div>
+
+                {/* UPI ID input for UPI payment */}
+                {formData.paymentMethod === 'upi' && (
+                  <div className="mt-4">
+                    <Label htmlFor="upiId">UPI ID</Label>
+                    <Input
+                      id="upiId"
+                      placeholder="yourname@upi"
+                      className="mt-1"
+                    />
+                  </div>
+                )}
+
+                {/* QR Code for UPI Apps */}
+                {formData.paymentMethod === 'upi-apps' && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg text-center">
+                    <div className="w-32 h-32 mx-auto bg-white border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                      <QrCode className="w-16 h-16 text-gray-400" />
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2">QR code will be generated after order confirmation</p>
+                  </div>
+                )}
               </div>
 
               <button
@@ -290,11 +371,34 @@ const CheckoutPage = () => {
                 ))}
               </div>
 
+              {/* Coupon Code */}
+              <div className="mb-4">
+                <Label htmlFor="coupon">Coupon Code</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    id="coupon"
+                    placeholder="Enter code"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    disabled={couponApplied}
+                  />
+                  <button
+                    type="button"
+                    onClick={applyCoupon}
+                    disabled={couponApplied}
+                    className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 disabled:bg-gray-400 transition-colors"
+                  >
+                    Apply
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Try: SAVE10, FLAT100, VALENTINE</p>
+              </div>
+
               <Separator className="my-4" />
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-gray-600">
-                  <span>Subtotal</span>
+                  <span>Subtotal ({cartCount} items)</span>
                   <span>{siteConfig.currencySymbol}{cartTotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
@@ -303,6 +407,12 @@ const CheckoutPage = () => {
                     {shippingCost === 0 ? 'FREE' : `${siteConfig.currencySymbol}${shippingCost}`}
                   </span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount</span>
+                    <span>-{siteConfig.currencySymbol}{discount.toFixed(0)}</span>
+                  </div>
+                )}
                 <Separator />
                 <div className="flex justify-between text-lg font-medium text-gray-900">
                   <span>Total</span>
