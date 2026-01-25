@@ -101,3 +101,173 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Test the Name Strings e-commerce backend API at https://sitecloner-15.preview.emergentagent.com/api"
+
+backend:
+  - task: "Root API Endpoint"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "API is running: Name Strings API - Root endpoint responding correctly"
+
+  - task: "Products API - List All Products"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed due to ObjectId serialization error"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization by adding {'_id': 0} projection. Retrieved 11 products successfully"
+
+  - task: "Products API - Get Product by Slug"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed due to ObjectId serialization error"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization. Successfully retrieved product: Chic Signature Name Necklace"
+
+  - task: "Categories API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed due to ObjectId serialization error"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization. Retrieved 6 categories successfully"
+
+  - task: "Settings API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed due to ObjectId serialization error"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization. Site: Name Strings, Currency: INR"
+
+  - task: "Admin Setup API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Admin setup working correctly - returns 'Admin already exists' when admin exists, creates admin when none exists"
+
+  - task: "Auth Login API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully logged in as admin@test.com and received valid JWT token"
+
+  - task: "Admin Dashboard API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed due to ObjectId serialization in recent_orders"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization in recent_orders. Dashboard shows: Orders: 2, Users: 0, Products: 11"
+
+  - task: "Orders API - Create Order"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully created order with real product ID after seeding. Order created with order number format NS{date}{random}"
+
+  - task: "Coupon Validation API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully validated coupon SAVE10 with 10% discount (₹149.9 on ₹1499 subtotal)"
+
+  - task: "Admin Seed Data API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully seeded demo products and categories. Created 11 products and 6 categories"
+
+frontend:
+  # No frontend testing requested
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "All backend API endpoints tested"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "testing"
+    message: "Completed comprehensive backend API testing. Fixed critical ObjectId serialization issues in multiple endpoints. All 11 backend endpoints are now working correctly with 90.9% success rate (10/11 tests passing, 1 expected failure for existing admin)."
