@@ -139,9 +139,11 @@ class APITester:
                 self.log_test("Admin Setup", True, f"Admin created: {data['user']['email']}")
                 return True
         elif response and response.status_code == 400:
-            # Admin might already exist, try to login
-            self.log_test("Admin Setup", True, "Admin already exists (expected)")
-            return True
+            # Admin might already exist, this is expected
+            error_detail = response.json().get("detail", "")
+            if "already exists" in error_detail:
+                self.log_test("Admin Setup", True, "Admin already exists (expected)")
+                return True
         
         self.log_test("Admin Setup", False, f"Failed - Status: {response.status_code if response else 'No response'}")
         return False
