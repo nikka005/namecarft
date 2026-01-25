@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, User, ShoppingBag, ChevronDown, Menu, X } from 'lucide-react';
 import { siteConfig, navItems } from '../../data/mock';
+import { useCart } from '../../context/CartContext';
 
-const Header = ({ cartCount = 0 }) => {
+const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { cartCount, setIsCartOpen } = useCart();
 
   return (
     <header className="sticky top-0 z-50 bg-white">
@@ -80,8 +82,8 @@ const Header = ({ cartCount = 0 }) => {
                 <User className="w-5 h-5" />
               </Link>
 
-              <Link
-                to="/cart"
+              <button
+                onClick={() => setIsCartOpen(true)}
                 className="p-2 text-gray-700 hover:text-gray-900 transition-colors relative"
               >
                 <ShoppingBag className="w-5 h-5" />
@@ -90,7 +92,7 @@ const Header = ({ cartCount = 0 }) => {
                     {cartCount}
                   </span>
                 )}
-              </Link>
+              </button>
 
               {/* Mobile Menu Button */}
               <button
