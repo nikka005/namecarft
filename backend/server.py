@@ -320,7 +320,7 @@ async def get_product(slug: str):
 
 @api_router.get("/categories")
 async def get_categories():
-    categories = await db.categories.find({"is_active": True}).sort("order", 1).to_list(100)
+    categories = await db.categories.find({"is_active": True}, {"_id": 0}).sort("order", 1).to_list(100)
     return categories
 
 # ==================== ORDER ROUTES ====================
