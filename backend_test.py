@@ -208,10 +208,23 @@ class APITester:
     
     def test_create_order(self):
         """Test POST /orders endpoint"""
+        # First get a real product ID
+        products_response = self.make_request('GET', '/products')
+        product_id = None
+        
+        if products_response and products_response.status_code == 200:
+            products_data = products_response.json()
+            if products_data.get("products") and len(products_data["products"]) > 0:
+                product_id = products_data["products"][0]["id"]
+        
+        if not product_id:
+            self.log_test("Create Order", False, "No products available to create order")
+            return False
+        
         payload = {
             "items": [
                 {
-                    "product_id": "1",
+                    "product_id": product_id,
                     "quantity": 1,
                     "customization": {"name": "Test"}
                 }
