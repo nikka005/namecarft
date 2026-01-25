@@ -436,7 +436,7 @@ async def validate_coupon(code: str, subtotal: float):
 
 @api_router.get("/settings")
 async def get_settings():
-    settings = await db.settings.find_one({"id": "site_settings"})
+    settings = await db.settings.find_one({"id": "site_settings"}, {"_id": 0})
     if not settings:
         settings = SiteSettings().dict()
         await db.settings.insert_one(settings)
