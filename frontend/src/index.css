@@ -82,6 +82,17 @@ code {
     }
 }
 
+/* Hide Emergent badge */
+[class*="emergent"],
+[id*="emergent"],
+div[style*="emergent"],
+iframe[src*="emergent"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
 @layer base {
     [data-debug-wrapper="true"] {
         display: contents !important;
