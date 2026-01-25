@@ -29,7 +29,7 @@ const CartPage = () => {
             <p className="text-gray-500 mb-8">Looks like you haven't added anything to your cart yet.</p>
             <Link
               to="/collections/all"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-sky-500 text-white font-medium rounded-lg hover:bg-sky-600 transition-colors"
             >
               Continue Shopping
               <ArrowRight className="w-5 h-5" />
@@ -41,13 +41,13 @@ const CartPage = () => {
             <div className="lg:col-span-2">
               {/* Free Shipping Progress */}
               {!freeShipping && (
-                <div className="mb-6 p-4 bg-amber-50 rounded-lg">
-                  <p className="text-sm text-amber-800">
+                <div className="mb-6 p-4 bg-sky-50 rounded-lg">
+                  <p className="text-sm text-sky-800">
                     Add {siteConfig.currencySymbol}{remainingForFreeShipping.toLocaleString()} more for FREE shipping!
                   </p>
-                  <div className="mt-2 h-2 bg-amber-200 rounded-full overflow-hidden">
+                  <div className="mt-2 h-2 bg-sky-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-amber-500 rounded-full transition-all"
+                      className="h-full bg-sky-500 rounded-full transition-all"
                       style={{ width: `${Math.min(100, (cartTotal / shippingThreshold) * 100)}%` }}
                     />
                   </div>
@@ -76,7 +76,7 @@ const CartPage = () => {
                         <div>
                           <Link
                             to={`/products/${item.slug}`}
-                            className="font-medium text-gray-900 hover:text-red-600 transition-colors"
+                            className="font-medium text-gray-900 hover:text-sky-600 transition-colors"
                           >
                             {item.name}
                           </Link>
@@ -93,7 +93,7 @@ const CartPage = () => {
                         </div>
                         <button
                           onClick={() => removeFromCart(item.id, item.customization)}
-                          className="text-gray-400 hover:text-red-600 transition-colors"
+                          className="text-gray-400 hover:text-red-500 transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
@@ -103,14 +103,14 @@ const CartPage = () => {
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1, item.customization)}
-                            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-gray-400 transition-colors"
+                            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-sky-500 hover:text-sky-600 transition-colors"
                           >
                             <Minus className="w-4 h-4" />
                           </button>
                           <span className="font-medium w-8 text-center">{item.quantity}</span>
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity + 1, item.customization)}
-                            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-gray-400 transition-colors"
+                            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-sky-500 hover:text-sky-600 transition-colors"
                           >
                             <Plus className="w-4 h-4" />
                           </button>
@@ -151,14 +151,14 @@ const CartPage = () => {
 
                 <Link
                   to="/checkout"
-                  className="block w-full py-4 bg-[#8B0000] hover:bg-red-800 text-white text-center font-medium rounded-lg transition-colors mb-4"
+                  className="block w-full py-4 bg-sky-500 hover:bg-sky-600 text-white text-center font-medium rounded-lg transition-colors mb-4"
                 >
                   Proceed to Checkout
                 </Link>
 
                 <Link
                   to="/collections/all"
-                  className="block w-full py-3 text-gray-600 text-center text-sm hover:text-gray-900 transition-colors"
+                  className="block w-full py-3 text-gray-600 text-center text-sm hover:text-sky-600 transition-colors"
                 >
                   Continue Shopping
                 </Link>

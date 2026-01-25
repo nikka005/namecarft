@@ -21,8 +21,8 @@ const ProductPage = () => {
   const [selectedMetal, setSelectedMetal] = useState('gold');
   const [isWishlisted, setIsWishlisted] = useState(false);
 
-  const images = [product.image, product.hoverImage].filter(Boolean);
-  const savings = product.originalPrice - product.price;
+  const images = [product.image, product.hoverImage || product.hover_image].filter(Boolean);
+  const savings = (product.originalPrice || product.original_price) - product.price;
 
   const handleAddToCart = () => {
     addToCart(product, quantity, { name: customName, metal: selectedMetal });
@@ -43,9 +43,9 @@ const ProductPage = () => {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
-          <Link to="/" className="hover:text-gray-900">Home</Link>
+          <Link to="/" className="hover:text-sky-600">Home</Link>
           <span>/</span>
-          <Link to="/collections/all" className="hover:text-gray-900">All Products</Link>
+          <Link to="/collections/all" className="hover:text-sky-600">All Products</Link>
           <span>/</span>
           <span className="text-gray-900">{product.name}</span>
         </nav>
@@ -76,7 +76,7 @@ const ProductPage = () => {
                 </>
               )}
               {product.discount > 0 && (
-                <div className="absolute top-4 left-4 bg-red-600 text-white text-sm font-bold px-3 py-1 rounded">
+                <div className="absolute top-4 left-4 bg-sky-500 text-white text-sm font-bold px-3 py-1 rounded">
                   {product.discount}% OFF
                 </div>
               )}
@@ -90,7 +90,7 @@ const ProductPage = () => {
                     key={idx}
                     onClick={() => setCurrentImage(idx)}
                     className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                      currentImage === idx ? 'border-gray-900' : 'border-transparent'
+                      currentImage === idx ? 'border-sky-500' : 'border-transparent'
                     }`}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
@@ -109,10 +109,10 @@ const ProductPage = () => {
               <span className="text-3xl font-bold text-gray-900">
                 {siteConfig.currencySymbol}{product.price.toLocaleString()}
               </span>
-              {product.originalPrice > product.price && (
+              {(product.originalPrice || product.original_price) > product.price && (
                 <>
                   <span className="text-xl text-gray-400 line-through">
-                    {siteConfig.currencySymbol}{product.originalPrice.toLocaleString()}
+                    {siteConfig.currencySymbol}{(product.originalPrice || product.original_price).toLocaleString()}
                   </span>
                   <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
                     Save {siteConfig.currencySymbol}{savings.toLocaleString()}
@@ -131,7 +131,7 @@ const ProductPage = () => {
                     onClick={() => setSelectedMetal(metal.id)}
                     className={`px-4 py-2 rounded-lg border-2 transition-all flex items-center gap-2 ${
                       selectedMetal === metal.id
-                        ? 'border-gray-900 bg-gray-50'
+                        ? 'border-sky-500 bg-sky-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -170,14 +170,14 @@ const ProductPage = () => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-gray-400 transition-colors"
+                  className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-sky-500 hover:text-sky-600 transition-colors"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
                 <span className="text-lg font-medium w-12 text-center">{quantity}</span>
                 <button
                   onClick={() => setQuantity((q) => q + 1)}
-                  className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-gray-400 transition-colors"
+                  className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-sky-500 hover:text-sky-600 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -189,7 +189,7 @@ const ProductPage = () => {
               <button
                 onClick={handleAddToCart}
                 disabled={!customName.trim()}
-                className="flex-1 py-4 bg-[#8B0000] hover:bg-red-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+                className="flex-1 py-4 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
               >
                 Add to Cart - {siteConfig.currencySymbol}{(product.price * quantity).toLocaleString()}
               </button>
@@ -197,13 +197,13 @@ const ProductPage = () => {
                 onClick={() => setIsWishlisted(!isWishlisted)}
                 className={`w-14 h-14 rounded-lg border flex items-center justify-center transition-colors ${
                   isWishlisted
-                    ? 'bg-red-50 border-red-200 text-red-600'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-400'
+                    ? 'bg-sky-50 border-sky-200 text-sky-600'
+                    : 'border-gray-200 text-gray-600 hover:border-sky-400'
                 }`}
               >
                 <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current' : ''}`} />
               </button>
-              <button className="w-14 h-14 rounded-lg border border-gray-200 text-gray-600 hover:border-gray-400 flex items-center justify-center transition-colors">
+              <button className="w-14 h-14 rounded-lg border border-gray-200 text-gray-600 hover:border-sky-400 flex items-center justify-center transition-colors">
                 <Share2 className="w-5 h-5" />
               </button>
             </div>
@@ -211,15 +211,15 @@ const ProductPage = () => {
             {/* Trust Badges */}
             <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl">
               <div className="text-center">
-                <Truck className="w-6 h-6 mx-auto mb-2 text-gray-600" />
+                <Truck className="w-6 h-6 mx-auto mb-2 text-sky-600" />
                 <p className="text-xs text-gray-600">Free Shipping</p>
               </div>
               <div className="text-center">
-                <Shield className="w-6 h-6 mx-auto mb-2 text-gray-600" />
+                <Shield className="w-6 h-6 mx-auto mb-2 text-sky-600" />
                 <p className="text-xs text-gray-600">Secure Payment</p>
               </div>
               <div className="text-center">
-                <RotateCcw className="w-6 h-6 mx-auto mb-2 text-gray-600" />
+                <RotateCcw className="w-6 h-6 mx-auto mb-2 text-sky-600" />
                 <p className="text-xs text-gray-600">Easy Returns</p>
               </div>
             </div>

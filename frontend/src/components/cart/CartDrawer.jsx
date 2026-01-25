@@ -30,7 +30,7 @@ const CartDrawer = () => {
             <p className="text-gray-500 mb-6">Add some beautiful jewelry to get started!</p>
             <button
               onClick={() => setIsCartOpen(false)}
-              className="px-6 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors"
+              className="px-6 py-3 bg-sky-500 text-white font-medium rounded-lg hover:bg-sky-600 transition-colors"
             >
               Continue Shopping
             </button>
@@ -59,14 +59,14 @@ const CartDrawer = () => {
                     <div className="flex items-center gap-2 mt-2">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1, item.customization)}
-                        className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-gray-400 transition-colors"
+                        className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-sky-400 hover:text-sky-600 transition-colors"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
                       <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1, item.customization)}
-                        className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-gray-400 transition-colors"
+                        className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:border-sky-400 hover:text-sky-600 transition-colors"
                       >
                         <Plus className="w-3 h-3" />
                       </button>
@@ -94,13 +94,13 @@ const CartDrawer = () => {
               <Link
                 to="/checkout"
                 onClick={() => setIsCartOpen(false)}
-                className="block w-full py-4 bg-[#8B0000] hover:bg-red-800 text-white text-center font-medium rounded-lg transition-colors"
+                className="block w-full py-4 bg-sky-500 hover:bg-sky-600 text-white text-center font-medium rounded-lg transition-colors"
               >
                 Checkout
               </Link>
               <button
                 onClick={() => setIsCartOpen(false)}
-                className="block w-full py-3 text-gray-600 text-center text-sm hover:text-gray-900 transition-colors"
+                className="block w-full py-3 text-gray-600 text-center text-sm hover:text-sky-600 transition-colors"
               >
                 Continue Shopping
               </button>
