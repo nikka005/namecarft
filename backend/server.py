@@ -480,7 +480,7 @@ async def admin_dashboard(admin = Depends(get_admin_user)):
     total_revenue = revenue_result[0]["total"] if revenue_result else 0
     
     # Recent orders
-    recent_orders = await db.orders.find().sort("created_at", -1).limit(10).to_list(10)
+    recent_orders = await db.orders.find({}, {"_id": 0}).sort("created_at", -1).limit(10).to_list(10)
     
     # Order stats by status
     status_pipeline = [
