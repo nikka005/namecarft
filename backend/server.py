@@ -304,7 +304,7 @@ async def get_products(
     if search:
         query["name"] = {"$regex": search, "$options": "i"}
     
-    products = await db.products.find(query).skip(skip).limit(limit).to_list(limit)
+    products = await db.products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
     total = await db.products.count_documents(query)
     
     return {"products": products, "total": total}
