@@ -11,6 +11,7 @@ import CollectionPage from './pages/CollectionPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import AboutPage from './pages/AboutPage';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/pages/about-us" element={<AboutPage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/*" element={<AdminPage />} />
             {/* Fallback routes */}
             <Route path="*" element={<HomePage />} />
           </Routes>
