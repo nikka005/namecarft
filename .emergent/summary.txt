@@ -1,83 +1,104 @@
 <analysis>**original_problem_statement:**
-The user wants to build a feature-complete replica of the website . The initial request included a comprehensive list of features for a full-stack e-commerce SaaS application:
-- **Core Features:** User registration/login, a user dashboard, an order system with real-time tracking, a payment checkout page, and profile management.
-- **Admin Panel:** A secure admin dashboard with analytics, user/order management, product/service management (CRUD), pricing control, coupon system, and the ability to manage site content (text, images, logo) without code.
-- **Payment Integrations:** Razorpay, Stripe, UPI, and manual payment options.
-- **Notifications:** Automatic email and WhatsApp notifications for orders.
-- **Tech Stack:** React/Next.js frontend, FastAPI backend, and MongoDB/PostgreSQL database.
-- **Recent Requests:**
-    1.  Fix the non-functional her, him, kids category navigation buttons.
-    2.  Change the website's color theme to a lite blue shade.
-    3.  Remove the Made with Emergent badge (completed).
+The user wants to build a feature-complete replica of the website , which has now been rebranded to **Name Craft**.
+
+**Initial requirements included:**
+-   **Core Features:** User registration/login, a user dashboard, an order system with real-time tracking, a payment checkout page, and profile management.
+-   **Admin Panel:** A secure admin dashboard to manage products, orders, users, pricing, coupons, and site content (text, images, logo) without code.
+-   **Payment Integrations:** Razorpay, Stripe, and UPI.
+
+**Recent user requests that have been addressed in this session:**
+-   Fix non-functional category navigation buttons.
+-   Change the website's color theme to a lite blue shade.
+-   Resolve persistent admin login issues on both preview and custom domains.
+-   Fix deployment failures by adding a backend health check.
+-   Fix the auto-logout issue by implementing a static JWT secret.
+-   Rebrand the entire application from Name Strings to Name Craft.
+-   Fix the admin panel's sidebar UI layout.
+-   Fix the Add to Cart button on product pages.
+-   Implement a manual UPI payment system with QR code generation and admin approval.
+-   Create and link legal pages (Privacy Policy, Terms of Service, etc.).
+-   Implement a complete customer account system (login, registration, account dashboard).
+-   Fix a critical bug preventing order creation.
+-   Fix an issue where the admin-set UPI ID was not updating on the checkout page.
+-   Start the implementation of Razorpay with test keys.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application that clones the  website.
--   **Frontend:** Built with React and Tailwind CSS. It features a homepage, product pages, collection pages, a checkout page with payment options UI, and cart functionality. A comprehensive admin panel UI has been created.
--   **Backend:** A FastAPI server connected to a MongoDB database. It includes API endpoints for admin authentication, products, orders, customers, and site settings.
--   **Data:** The frontend is primarily powered by mock data located in . Backend integration is pending.
+A full-stack e-commerce application named Name Craft.
+-   **Frontend:** A React/Tailwind CSS application with a complete user-facing experience, including a homepage, product/collection pages, and a sophisticated multi-step checkout process. It features a full customer authentication system with a dedicated account page for order tracking and profile management.
+-   **Backend:** A monolithic FastAPI server connected to MongoDB. It serves APIs for products, site settings, admin/customer authentication, order creation, and payment processing. It includes a health check for deployment readiness and uses a static JWT secret for stable sessions.
+-   **Key Features:**
+    -   **Admin Panel:** A comprehensive dashboard to manage site settings, including branding and payment IDs. It features a view for orders with functionality to approve/reject manual UPI payments.
+    -   **Customer Accounts:** Full login, registration, and account dashboard for customers to view order history and manage their profile.
+    -   **Checkout Flow:** Supports guest checkout and logged-in user checkout.
+    -   **Payment Methods:**
+        -   **Manual UPI:** Fully functional. Generates a QR code based on the admin's UPI ID and allows users to submit a UTR number for manual verification.
+        -   **Razorpay:** Implementation is in progress.
 
 **Last working item**:
--   **Last item agent was working:** The agent was addressing two user requests simultaneously:
-    1.  Fixing the category navigation buttons (her, him, kids) on the homepage, which were not navigating to the correct pages.
-    2.  Changing the website's color scheme to a lite blue shade.
+-   **Last item agent was working:** Implementing Razorpay payment gateway integration. After the user reported that their test keys were not working, the agent initiated a full implementation from scratch. This involved adding backend endpoints for creating a Razorpay order and verifying the payment signature, installing the necessary SDKs ( for backend,  for frontend), and modifying the checkout page to include Razorpay as a payment option and handle the payment modal.
 -   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** Frontend testing agent. The test should verify that the category buttons navigate correctly and that the new light blue color scheme is applied consistently across all pages. A screenshot tool should also be used for visual confirmation.
+-   **Which testing method agent to use?** Both. The backend should be tested with  to ensure the Razorpay endpoints work. The frontend requires the  to simulate the full checkout flow.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1 (P0):** Category navigation buttons on the homepage are not working.
--   **Issue 2 (P1):** The site-wide color scheme change to a lite blue shade is incomplete.
+-   **Issue 1 (P0):** Razorpay payment integration is not functional.
 
 **Issues Detail:**
--   **Issue 1:**
-    -   **Attempted fixes:** The agent identified that the  component was only updating its internal state instead of triggering navigation. A file write was performed to modify .
+-   **Issue 1: Razorpay payment integration is not functional.**
+    -   **Attempted fixes:** The agent has written all the necessary code for the integration.
+        -   **Backend ():** Added  to generate an order on Razorpay's servers and  to validate the payment signature upon success. Installed the  pip package.
+        -   **Frontend ():** Installed , added logic to fetch Razorpay configuration (Key ID), and implemented a handler that creates an order via the backend and then opens the Razorpay checkout modal with the appropriate options.
     -   **Next debug checklist:**
-        1.  Verify that the updated  now uses React Router's  component or the  hook to handle navigation.
-        2.  Test each category button on the homepage to confirm it redirects to the correct URL (e.g., ).
-    -   **Why fix this issue and what will be achieved with the fix?** This is a critical bug fix. Fixing it will restore core user navigation for browsing product categories.
+        1.  Restart the backend service to ensure all new code and dependencies are loaded: backend: stopped
+backend: started.
+        2.  Go to the Admin Panel, navigate to Site Settings -> Payments, and confirm that the Razorpay Key ID and Key Secret can be entered and saved correctly.
+        3.  Use  to test the  endpoint directly. It should return a valid Razorpay order object.
+        4.  On the frontend, add an item to the cart and proceed to checkout.
+        5.  Select Razorpay as the payment method and click the final checkout button.
+        6.  Check the browser's developer console for any JavaScript errors and the network tab to see if the API calls to the backend are successful.
+    -   **Why fix this issue and what will be achieved with the fix?** This will enable a critical online payment method, allowing the business to accept automated card/UPI/wallet payments.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend
--   **Issue 2:**
-    -   **Attempted fixes:** The agent began applying the new color scheme by updating , , , and .
-    -   **Next debug checklist:**
-        1.  The agent noted it needs to update the remaining files. Systematically review all major components and pages (e.g., , , , ) and apply the light blue theme.
-        2.  Use the screenshot tool to verify color consistency on all key pages.
-    -   **Why fix this issue and what will be achieved with the fix?** This fulfills a direct user request to change the website's visual design.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Should Test frontend/backend/both after fix?** Both
 
 **In progress Task List**:
--   **Task 1: Complete and Verify UI Fixes**
-    -   **Where to resume:** The agent has written the first batch of files for the color and navigation fixes. The immediate next step is to continue updating the remaining frontend components to the light blue theme and then test both the navigation and the color changes thoroughly.
-    -   **What will be achieved with this?** The website will be fully functional as per the latest user requests, with working category navigation and a consistent new color scheme.
+-   **Task 1: Complete and Test Razorpay Integration**
+    -   **Where to resume:** The code has been written. The next immediate step is to restart the backend and begin testing the entire flow, starting with the admin panel configuration, then backend API endpoints, and finally the end-to-end user checkout experience on the frontend.
+    -   **What will be achieved with this?** A fully functional, automated payment gateway will be available to customers.
     -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Should Test frontend/backend/both after fix?** Both
 
 **Upcoming and Future Tasks**
--   **P0: Full Backend Integration:** Replace all mock data in  with live API calls. Implement the backend logic for all CRUD operations initiated from the admin panel (for Products, Orders, Customers, etc.).
--   **P1: User Authentication & Dashboard:** Implement user registration/login and create the user-facing dashboard for viewing order history.
--   **P2: Payment Gateway Integration:** Implement the backend logic for Razorpay and Stripe, using API keys configured in the admin panel. This includes handling payment webhooks and updating order statuses.
--   **P3: Order and Notification System:** Build out the complete order lifecycle and set up automatic email notifications for order confirmation and status updates.
--   **P4: Complete Admin Panel Functionality:** Implement user management (block/edit), refund management, and the support ticket system.
+-   **P1: Stripe Integration:** Implement Stripe as an alternative payment gateway, as specified in the original requirements.
+-   **P2: Automated Notifications:** Implement automatic email and/or WhatsApp notifications for order confirmation, shipping updates, and other events.
+-   **P3: Full Backend CRUD for Admin:** While the admin UI exists, ensure that all CRUD operations for Products, Categories, and Customers are fully implemented and functional via API calls.
+-   **P4: Advanced Admin Features:** Implement user management (block/edit), coupon management, refund processing, and a support ticket system.
 
 **Completed work in this session**
--   **Frontend Clone:** Created a visually accurate frontend replica of .
--   **Pages Created:** , , , , , .
--   **Core Components:** Implemented , , , , and .
--   **Cart System:** Implemented a functional cart using React Context ().
--   **Backend Setup:** Initialized a FastAPI backend with MongoDB and defined API endpoints and data models in .
--   **Admin Panel UI:** Built a comprehensive, multi-page admin interface at  for site management, including settings for branding and payment gateways.
--   **Badge Removal:** Successfully removed the Made with Emergent badge from all pages.
+-   **UI & Navigation Fixes:** Fixed homepage category navigation and applied a site-wide lite blue color theme.
+-   **Branding:** Rebranded the entire application to Name Craft, including the site name, logo text, and browser tab title.
+-   **Admin Panel Overhaul:**
+    -   Resolved all admin login issues on both preview and custom domains, which were caused by DB mismatches and deployment sync problems.
+    -   Fixed the admin sidebar layout for proper scrolling and logout button visibility.
+-   **Deployment Stability:**
+    -   Added a  endpoint to the backend to satisfy Kubernetes health checks and fix deployment failures.
+    -   Fixed the auto-logout bug by implementing a static .
+-   **Core E-commerce Flow:**
+    -   Fixed the Add to Cart functionality on product pages.
+    -   Fixed a critical bug that caused order creation to fail with a server error.
+-   **Customer Account System:** Implemented a full customer authentication system, including login/registration pages and a customer account dashboard to view order history and manage profiles.
+-   **Payment Systems:**
+    -   **Manual UPI:** Built a complete manual UPI payment system with QR code generation, UTR submission, and an admin approval workflow.
+    -   Fixed a bug where the admin-set UPI ID was not updating on the checkout page.
+-   **Content:** Created and linked essential legal pages (Privacy Policy, Terms, Refund, etc.) in the site footer.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Issue 1:  Attribute Error**
-    -   **Debug checklist:** An  warning appeared in the backend logs. This is likely a version incompatibility with . If authentication issues arise, pin  to a compatible version in .
-    -   **Why to solve this issue and what will be achieved with this?** To prevent potential authentication failures and ensure stable password hashing.
+    -   **Debug checklist:** A persistent  warning appears in the backend logs upon any password-related operation. This is likely due to a version incompatibility between  and . If any new authentication issues arise, the fix is to pin  to a compatible version (e.g., ) in  and reinstall dependencies.
+    -   **Why to solve this issue and what will be achieved with this?** To remove log noise and prevent potential future authentication failures.
     -   **Should Test frontend/backend/both after fix:** Backend
     -   **Is recurring issue?** Y
 
@@ -88,74 +109,95 @@ A full-stack application that clones the  website.
 
 
 **Key Technical Concepts**
--   **Frontend:** React, React Router, Tailwind CSS, Shadcn UI
--   **Backend:** FastAPI (Python)
--   **Database:** MongoDB (using  async driver)
--   **State Management:** React Context API for the shopping cart.
+-   **Frontend:** React, React Router, Tailwind CSS, Shadcn UI, 
+-   **Backend:** FastAPI, Pydantic, Motor (async MongoDB driver),  (Python SDK)
+-   **Database:** MongoDB
+-   **State Management:** React Context API (, )
+-   **Authentication:** JWT-based for both admins and customers.
 
 **key DB schema**
--   Pydantic models in  imply the following MongoDB collections:
-    -   : For admin credentials.
-    -   : For product information.
-    -   : For customer orders.
-    -   : For customer data.
-    -   : For dynamic site configuration from the admin panel.
+-   : Stores both customer and admin accounts. Contains , , , .
+-   : Stores order details, including ,  (for guests), , ,  (now includes ), , .
+-   : A single document collection () for all site-wide configuration, including , , , .
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   : Modified to fix navigation. Needs verification.
--    & : Modified to apply the new color theme and other custom styles.
--   : Contains the UI for the entire admin panel.
--   : Contains the UI for the checkout flow.
--   : The single file containing all backend logic, API endpoints, and database models.
--   : The source of all product data currently displayed on the frontend.
+-   : Heavily modified to add a health check, customer auth endpoints, manual UPI flow, Razorpay endpoints, and numerous bug fixes.
+-   : Completely refactored to handle customer login, account creation, manual UPI, and the ongoing Razorpay integration.
+-   : Modified to fix UI layout and add the payment approval workflow for manual UPI.
+-   : Updated with routes for all new pages and wrapped in the .
+-   : New file for managing customer authentication state.
+-   : New page for the customer dashboard.
+-   : New page for customer login/registration.
+-   : Title updated.
+-   :  was added.
 
 **Areas that need refactoring**:
--   The frontend's dependence on  must be refactored to use API calls to the backend.
--   The  file is monolithic and should be broken down into smaller, more manageable components for each admin section (e.g., Dashboard, Orders, Products).
+-   **:** This file is now critically oversized and complex (>1200 lines). It MUST be broken down into a structured project with separate modules for routes, models, services, and configuration to ensure maintainability.
+-   ** & :** Both are monolithic components handling too much logic and state. They should be broken down into smaller, reusable components (e.g., separate components for each admin tab or each checkout step).
 
 **key api endpoints**
--   : (POST) Creates the initial admin user.
--   : (POST) Authenticates an admin user.
--   : (GET) Fetches all products.
--   : (GET) Fetches all orders.
--   : (GET/POST) Manages site configuration.
+-   : **(GET)** Health check for deployment.
+-   : **(POST)** Creates a new customer account.
+-   : **(POST)** Authenticates both admins and customers.
+-   : **(GET)** Fetches the current logged-in user's details.
+-   : **(PUT)** Updates the current customer's profile.
+-   : **(GET)** Fetches orders for the logged-in customer.
+-   : **(POST)** Submits UTR details for a manual UPI payment.
+-   : **(POST)** Marks a manual payment as approved.
+-   : **(POST)** Creates a new Razorpay order.
+-   : **(POST)** Verifies a Razorpay payment signature.
+-   : **(GET)** Fetches public site settings.
+-   : **(GET/PUT)** Manages all site settings from the admin panel.
 
 **Critical Info for New Agent**
--   The immediate priority is to finish and verify the two UI fixes: fixing category navigation and completing the color scheme change.
--   The most significant upcoming task is the full backend integration. The entire frontend is currently running on mock data.
--   The user has high expectations for the admin panel, wanting it to control nearly every aspect of the site's content and configuration. The UI is built, but the backend logic is pending.
+-   The custom domain () and preview domain were out of sync, causing major login and data consistency issues. This was an infrastructure-level problem resolved by forcing a redeployment and adding a password-reset endpoint. Be aware that such issues can re-emerge and are not always code-related.
+-   The application now has two separate authentication flows: one for the admin at  and one for customers at .
+-   The immediate task is to test and finalize the Razorpay integration. The code is written but completely untested. Start by checking the admin panel settings, then  the backend, then test the full frontend flow.
 
 **documents and test reports created in this job**
--   None.
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **1. User:** Call Deployer Agent and Run Health Check to Check for Readiness for Deployment - Status: COMPLETED.
--   **2. User:** I check frontend there her him kids all buttons not working and change frond colour to lite blue shade - Status: IN PROGRESS. This is the current highest-priority task.
--   **3. User:** (Paraphrased) The admin panel needs to control everything: images, text, logo, payment methods, customer data, and send automatic emails. - Status: ACKNOWLEDGED, planned for future tasks.
--   **4. User:** (Paraphrased) Go to the next step, remove Made with Emergent, and add payment methods UI for UPI, Razorpay, and Stripe. - Status: COMPLETED (UI part is done, logic is pending).
--   **5. User:** thenamestrings.in this url and paper clone this and api this time you use domies and after we are change this using admin panel - Status: ACKNOWLEDGED, this guided the initial development.
+1.  **User:**  - **Status:** COMPLETED. Fixed a server error during order creation caused by a non-serializable MongoDB .
+2.  **User:**  - **Status:** COMPLETED. Fixed a bug where the checkout page was calling the wrong API endpoint to fetch the UPI ID.
+3.  **User:**  - **Status:** COMPLETED. Created and linked pages for Privacy Policy, Terms, Refunds, Shipping, and Contact.
+4.  **User:**  - **Status:** IN PROGRESS. This initiated the current work on implementing Razorpay from scratch.
+5.  **User:**  - **Status:** COMPLETED. Fixed auto-logout by setting a static JWT secret and updated the tab title.
+6.  **User:**  (re: admin login on custom domain) - **Status:** COMPLETED. Verified with screenshots that the login was working after fixes.
+7.  **User:**  and  - **Status:** COMPLETED. Fixed Add to Cart. Implemented a manual UPI QR code system as clarified by the user.
+8.  **User:**  - **Status:** COMPLETED. Implemented the entire customer account and authentication system.
+9.  **User:**  - **Status:** COMPLETED. Successfully debugged and fixed the admin login on the custom domain by using a newly created password reset endpoint.
+10. **User:**  and admin UI issues - **Status:** COMPLETED. Rebranded the app to Name Craft and fixed the admin sidebar layout.
 
 **Project Health Check:**
--   **Working:** Frontend rendering, backend server, database service.
--   **Broken:** Category navigation from the homepage is non-functional.
--   **Mocked:** All frontend data (products, categories), all admin panel functionality, and all payment methods are UI-only without backend logic.
+-   **Working:** Core application is stable. Frontend renders correctly. Admin and Customer authentication, product browsing, cart functionality, and the manual UPI checkout flow are all functional.
+-   **Broken:** The Razorpay integration is likely non-functional as it has been implemented but not tested.
+-   **Mocked:** Some minor site content (like footer links) is still hardcoded in  instead of being managed from the admin panel.
 
 **3rd Party Integrations**
 -   **Planned:**
-    -   Razorpay (Payments) — requires User API Key
     -   Stripe (Payments) — requires User API Key
+-   **In Progress:**
+    -   Razorpay (Payments) — requires User API Key
 
 **Testing status**
--   **Testing agent used after significant changes:** YES, a backend test was run previously.
+-   **Testing agent used after significant changes:** YES (early in the session).
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None.
--   **Known regressions:** The category navigation on the homepage is broken.
+-   **Known regressions:** None.
 
 **Credentials to test flow:**
--   **Admin Panel:** The agent previously created and used  with password  to log into the  route.
+-   **Admin Panel:**
+    -   **URL:** 
+    -   **Email:** 
+    -   **Password:** 
+-   **Customer Account:**
+    -   **URL:** 
+    -   Can be created via the registration form or during checkout.
 
 **What agent forgot to execute**
--   The agent started the work on fixing the navigation buttons and changing the color scheme but did not complete or verify the changes. The plan to update the remaining files for the new color theme was explicitly mentioned but not executed. The next agent must resume and complete this task.</analysis>
+-   The agent wrote a complete implementation for Razorpay integration but did not perform any testing (backend or frontend) to verify if it works. This is the most critical next step.</analysis>
