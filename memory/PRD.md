@@ -1,7 +1,7 @@
-# Name Strings - E-Commerce Platform PRD
+# Name Craft - E-Commerce Platform PRD
 
 ## Original Problem Statement
-Build a feature-complete replica of the website `thenamestrings.in` - an e-commerce SaaS application for personalized jewelry.
+Build a feature-complete replica of the website `thenamestrings.in` - an e-commerce SaaS application for personalized jewelry, rebranded to **Name Craft**.
 
 ## Core Requirements
 - User registration/login with dashboard
@@ -11,8 +11,8 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 - Automatic email/WhatsApp notifications
 
 ## Tech Stack
-- **Frontend:** React + Tailwind CSS + Shadcn UI
-- **Backend:** FastAPI (Python)
+- **Frontend:** React + Tailwind CSS + Shadcn UI + react-razorpay
+- **Backend:** FastAPI (Python) + razorpay SDK
 - **Database:** MongoDB
 
 ---
@@ -21,71 +21,94 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 
 ### Completed Features (January 2025)
 
-#### Frontend
+#### Core E-commerce
 - [x] Homepage with hero section, product carousels, category showcase
 - [x] Product listing pages with filtering and sorting
-- [x] Product detail pages
-- [x] Shopping cart with drawer UI (React Context)
-- [x] Checkout page with payment method UI (UPI, Razorpay, Stripe, COD)
-- [x] About page
-- [x] Admin panel UI (dashboard, orders, products, customers, coupons, media, settings)
-- [x] Category navigation buttons (Her, Him, Kids, Couple, Cultural, Express Ship)
-- [x] Light blue color theme applied site-wide
-- [x] "Made with Emergent" badge removed
+- [x] Product detail pages with personalization options
+- [x] Shopping cart with drawer UI (React Context + localStorage persistence)
+- [x] Multi-step checkout page with guest and logged-in user flows
+- [x] Category navigation (Women, Men, Kids, etc.)
+- [x] Light blue (sky-500) color theme site-wide
 
-#### Backend
-- [x] FastAPI server setup
-- [x] MongoDB connection
-- [x] Admin authentication endpoints (/api/admin/setup, /api/admin/login)
-- [x] Products API endpoints
-- [x] Orders API endpoints
-- [x] Site settings API endpoints
+#### Customer Authentication & Accounts
+- [x] Customer registration (/api/auth/register)
+- [x] Customer login (/api/auth/login)
+- [x] JWT-based authentication with static secret
+- [x] Customer account dashboard (/account)
+- [x] Order history in account
+- [x] Profile management
 
-### Bug Fixes (January 25, 2025)
-- [x] Fixed category navigation buttons - now properly navigate to collection pages
-- [x] Applied light blue (sky-500) color theme replacing dark red (#8B0000)
+#### Payment Integrations
+- [x] **Manual UPI Payment** - QR code generation, UTR submission, admin approval workflow
+- [x] **Razorpay Payment Gateway** - Full integration with test keys (Jan 26, 2025)
+  - Backend: Order creation, signature verification
+  - Frontend: Modal integration with Cards, Netbanking, Wallet, Pay Later options
+
+#### Admin Panel
+- [x] Admin login and authentication (/admin)
+- [x] Dashboard overview
+- [x] Orders management with payment approval for manual UPI
+- [x] Site settings management (branding, payment IDs)
+- [x] Fixed sidebar layout with proper scrolling
+
+#### Legal & Content
+- [x] Privacy Policy page
+- [x] Terms of Service page
+- [x] Refund Policy page
+- [x] Shipping Policy page
+- [x] Contact page
+
+#### Bug Fixes
+- [x] Fixed category navigation buttons
+- [x] Fixed admin login issues on custom domain
+- [x] Fixed "Add to Cart" functionality
+- [x] Fixed order creation server error (ObjectId serialization)
+- [x] Fixed UPI ID not updating from admin settings
+- [x] Fixed auto-logout (static JWT_SECRET)
+- [x] Fixed react-razorpay hook import issue (v3.0.1 API change)
+- [x] Added /health endpoint for deployment
 
 ---
 
 ## Current Status
 
-### What's Working
-- Frontend rendering and navigation
-- Shopping cart functionality
-- Admin panel UI
-- Backend server and database connection
+### What's Working ✅
+- Complete customer shopping flow (browse → cart → checkout)
+- Customer authentication and account management
+- Manual UPI payment with admin approval
+- **Razorpay payment integration (fully tested)**
+- Admin panel with site settings and order management
+- Product browsing and cart functionality
 
-### What's MOCKED (UI only, no backend logic)
-- All product data (from `/app/frontend/src/data/mock.js`)
-- Admin panel CRUD operations
-- Payment processing
-- Order management
+### What Needs Configuration
+- Razorpay live keys (for production)
+- Stripe integration (next task)
 
 ---
 
 ## Prioritized Backlog
 
-### P0 - Critical (Next)
-1. **Full Backend Integration** - Replace mock data with live API calls
-   - Connect frontend product listings to `/api/products`
-   - Implement product CRUD from admin panel
-   - Connect order management to backend
+### P0 - Completed ✅
+- ~~Razorpay Payment Integration~~
 
-### P1 - High Priority
-2. **User Authentication** - Registration/login flow with JWT
-3. **User Dashboard** - Order history, saved addresses
-4. **Payment Gateway Integration** - Razorpay and Stripe backend logic
+### P1 - High Priority (Next)
+1. **Stripe Payment Integration** - Add as alternative payment gateway
 
 ### P2 - Medium Priority
-5. **Order Lifecycle** - Status updates, tracking
-6. **Email Notifications** - Order confirmation, status updates
-7. **Admin Panel Backend** - Full CRUD for all sections
+2. **Automated Email Notifications** - Order confirmation, shipping updates
+3. **Full Admin CRUD** - Products, Categories management via API
+4. **WhatsApp Notifications** - Order updates via WhatsApp
 
 ### P3 - Lower Priority
-8. **WhatsApp Notifications**
-9. **User Management** (block/edit from admin)
-10. **Refund Management**
-11. **Support Ticket System**
+5. **User Management** - Block/edit users from admin
+6. **Coupon Management** - Full coupon system
+7. **Refund Processing** - Automated refund handling
+8. **Support Ticket System**
+
+### Refactoring Needed
+- **backend/server.py** - Split into modules (1200+ lines currently)
+- **CheckoutPage.jsx** - Break into smaller components
+- **AdminPage.jsx** - Break into smaller components
 
 ---
 
@@ -93,35 +116,48 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 ```
 /app/
 ├── backend/
-│   ├── server.py         # FastAPI app, routes, DB models
+│   ├── server.py         # Monolithic FastAPI app (needs refactoring)
 │   ├── requirements.txt
+│   ├── tests/            # Pytest tests
 │   └── .env
 ├── frontend/
 │   ├── src/
-│   │   ├── components/   # Reusable components
-│   │   ├── context/      # React Context (CartContext)
-│   │   ├── data/mock.js  # Mock data (to be replaced)
-│   │   ├── pages/        # Page components
+│   │   ├── components/   # Reusable components (ui/, products/, etc.)
+│   │   ├── context/      # CartContext, AuthContext
+│   │   ├── data/mock.js  # Some remaining mock data
+│   │   ├── pages/        # All page components
 │   │   ├── App.js        # Router config
 │   │   └── index.css     # Global styles
 │   └── package.json
+├── memory/
+│   └── PRD.md            # This file
 └── test_reports/
+    └── iteration_*.json  # Test reports
 ```
 
-## API Endpoints
-- `POST /api/admin/setup` - Create admin user
-- `POST /api/admin/login` - Admin authentication
-- `GET /api/products` - List products
-- `GET/POST /api/site-settings` - Site configuration
+## Key API Endpoints
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| /health | GET | Kubernetes health check |
+| /api/auth/register | POST | Customer registration |
+| /api/auth/login | POST | Customer/Admin login |
+| /api/auth/me | GET | Get current user |
+| /api/payment/razorpay/config | GET | Get Razorpay public config |
+| /api/payment/razorpay/create-order | POST | Create Razorpay order |
+| /api/payment/razorpay/verify | POST | Verify Razorpay payment |
+| /api/orders | POST | Create order |
+| /api/orders/my-orders | GET | Get user's orders |
+| /api/admin/settings | GET/PUT | Manage site settings |
 
 ## Test Credentials
-- Admin: `admin@test.com` / `admin123`
+- **Admin:** `admin@test.com` / `admin123`
+- **Razorpay Test Keys:** Configured in database
 
 ---
 
 ## Known Issues
-- bcrypt warning in backend logs (version compatibility with passlib)
+- bcrypt warning in backend logs (version compatibility with passlib) - cosmetic only
 
 ## Notes
-- Frontend uses mock data - backend integration is the next major task
-- Admin panel UI is complete but functionality needs backend connection
+- Preview and Production environments use separate databases
+- Razorpay keys need to be entered in each environment's admin panel
