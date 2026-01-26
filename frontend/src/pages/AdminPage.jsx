@@ -141,15 +141,15 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
   return (
     <>
       {isOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setIsOpen(false)} />}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white transform transition-transform lg:transform-none ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white transform transition-transform lg:transform-none flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-gray-800">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-serif italic">Name <span className="font-normal">Strings</span></h1>
+            <h1 className="text-xl font-serif italic">Name <span className="font-normal">Craft</span></h1>
             <button onClick={() => setIsOpen(false)} className="lg:hidden"><X className="w-5 h-5" /></button>
           </div>
           <p className="text-gray-400 text-sm mt-1">Admin Panel</p>
         </div>
-        <nav className="p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {menuItems.map((item) => (
             <button
               key={item.id}
@@ -161,9 +161,10 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
             </button>
           ))}
         </nav>
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
+        <div className="p-4 border-t border-gray-800">
           <button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
-            <LogOut className="w-5 h-5" />Logout
+            <LogOut className="w-5 h-5" />
+            Logout
           </button>
         </div>
       </aside>
