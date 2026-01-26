@@ -361,7 +361,7 @@ const OrdersTab = ({ token }) => {
                     <td className="px-6 py-4">{order.items?.length} items</td>
                     <td className="px-6 py-4 font-medium">₹{order.total?.toLocaleString()}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-xs ${order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{order.payment_status}</span>
+                      {getPaymentStatusBadge(order)}
                     </td>
                     <td className="px-6 py-4">
                       <Select value={order.order_status} onValueChange={(v) => updateOrder(order.id, { order_status: v })}>
@@ -377,7 +377,19 @@ const OrdersTab = ({ token }) => {
                       </Select>
                     </td>
                     <td className="px-6 py-4">
-                      <Button variant="ghost" size="sm" onClick={() => setSelectedOrder(order)}><Eye className="w-4 h-4" /></Button>
+                      <div className="flex items-center gap-1">
+                        {order.payment_status === 'pending_verification' && (
+                          <>
+                            <Button variant="ghost" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => approvePayment(order.id)} title="Approve Payment">
+                              <CheckCircle className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => rejectPayment(order.id)} title="Reject Payment">
+                              <XCircle className="w-4 h-4" />
+                            </Button>
+                          </>
+                        )}
+                        <Button variant="ghost" size="sm" onClick={() => setSelectedOrder(order)}><Eye className="w-4 h-4" /></Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
