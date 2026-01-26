@@ -26,8 +26,9 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ.get('DB_NAME', 'namestrings')]
 
-# JWT Config
-SECRET_KEY = os.environ.get('JWT_SECRET', secrets.token_hex(32))
+# JWT Config - Use fixed secret from env or a stable default for consistent token validation
+JWT_SECRET = os.environ.get('JWT_SECRET', 'namecraft-secure-jwt-secret-key-2024')
+SECRET_KEY = JWT_SECRET
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 7
 
