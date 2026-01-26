@@ -181,8 +181,9 @@ class OrderCreate(BaseModel):
 
 class Order(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    order_number: str = Field(default_factory=lambda: f"NS{datetime.now().strftime('%Y%m%d')}{secrets.token_hex(3).upper()}")
+    order_number: str = Field(default_factory=lambda: f"NC{datetime.now().strftime('%Y%m%d')}{secrets.token_hex(3).upper()}")
     user_id: Optional[str] = None
+    user_email: Optional[str] = None
     items: List[Dict[str, Any]]
     shipping_address: Dict[str, Any]
     payment_method: str
@@ -193,6 +194,7 @@ class Order(BaseModel):
     discount_amount: float = 0
     total: float
     coupon_code: Optional[str] = None
+    utr_number: Optional[str] = None
     payment_id: Optional[str] = None
     tracking_number: Optional[str] = None
     notes: Optional[str] = None
