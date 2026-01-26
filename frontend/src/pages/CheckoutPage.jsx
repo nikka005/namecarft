@@ -88,12 +88,21 @@ const CheckoutPage = () => {
     }
   }, [user]);
 
-  // Fetch site settings for UPI ID
+  // Fetch site settings and Razorpay config
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get(`${API}/settings`);
-        setSiteSettings(res.data);
+        const [settingsRes, razorpayRes] = await Promise.all([
+          axios.get(`${API}/settings`),
+          axios.get(`${API}/payment/razorpay/config`)
+        ]);
+        setSiteSettings(settingsRes.data);
+        setRazorpayConfig(razorpayRes.data);
+        
+        // Set default payment method based on availability
+        if (razorpayRes.data?.enabled) {
+          setFormData(prev => ({ ...prev, paymentMethod: 'razorpay' }));
+        }
       } catch (err) {
         console.error('Failed to fetch settings:', err);
       }
@@ -108,6 +117,70 @@ const CheckoutPage = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  // Handle Razorpay Payment
+  const handleRazorpayPayment = useCallback(async (orderData, savedOrderId) => {
+    try {
+      // Create Razorpay order
+      const razorpayOrderRes = await axios.post(`${API}/payment/razorpay/create-order`, {
+        amount: total,
+        order_id: savedOrderId,
+        email: formData.email
+      });
+
+      const options = {
+        key: razorpayConfig?.key_id,
+        amount: razorpayOrderRes.data.amount,
+        currency: razorpayOrderRes.data.currency,
+        name: razorpayConfig?.name || 'Name Craft',
+        description: 'Payment for your order',
+        order_id: razorpayOrderRes.data.id,
+        handler: async (response) => {
+          try {
+            // Verify payment
+            await axios.post(`${API}/payment/razorpay/verify`, {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              order_id: savedOrderId
+            });
+            
+            clearCart();
+            setOrderId(savedOrderId);
+            setCheckoutStep('confirmation');
+            toast({ title: "Payment Successful!", description: "Your order has been confirmed." });
+          } catch (err) {
+            toast({ title: "Verification Failed", description: "Please contact support.", variant: "destructive" });
+          }
+        },
+        prefill: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          contact: formData.phone
+        },
+        theme: {
+          color: '#0ea5e9'
+        },
+        modal: {
+          ondismiss: () => {
+            setLoading(false);
+            toast({ title: "Payment Cancelled", description: "You can try again.", variant: "destructive" });
+          }
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.on('payment.failed', (response) => {
+        toast({ title: "Payment Failed", description: response.error.description, variant: "destructive" });
+        setLoading(false);
+      });
+      rzp.open();
+    } catch (err) {
+      console.error('Razorpay error:', err);
+      toast({ title: "Error", description: "Failed to initialize payment.", variant: "destructive" });
+      setLoading(false);
+    }
+  }, [Razorpay, razorpayConfig, total, formData, clearCart]);
 
   const applyCoupon = () => {
     if (!couponCode.trim()) return;
