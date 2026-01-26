@@ -15,6 +15,11 @@ import AboutPage from './pages/AboutPage';
 import AdminPage from './pages/AdminPage';
 import AuthPage from './pages/AuthPage';
 import AccountPage from './pages/AccountPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsPage from './pages/TermsPage';
+import RefundPolicyPage from './pages/RefundPolicyPage';
+import ShippingPolicyPage from './pages/ShippingPolicyPage';
+import ContactPage from './pages/ContactPage';
 
 function App() {
   return (
@@ -37,6 +42,18 @@ function App() {
               <Route path="/account/*" element={<AccountPage />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/admin/*" element={<AdminPage />} />
+              {/* Legal Pages */}
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/pages/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/terms-conditions" element={<TermsPage />} />
+              <Route path="/pages/terms-conditions" element={<TermsPage />} />
+              <Route path="/refund-policy" element={<RefundPolicyPage />} />
+              <Route path="/pages/refund-policy" element={<RefundPolicyPage />} />
+              <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+              <Route path="/pages/shipping-policy" element={<ShippingPolicyPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/pages/contact" element={<ContactPage />} />
               {/* Fallback routes */}
               <Route path="*" element={<HomePage />} />
             </Routes>
