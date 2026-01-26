@@ -110,14 +110,16 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 
 ### P0 - Completed ✅
 - ~~Razorpay Payment Integration~~
+- ~~35 Original Products with AI Images~~
 
-### P1 - High Priority (Next)
+### P1 - Completed ✅
+- ~~Admin Panel Product CRUD~~
+- ~~Email Notifications (Order & Shipping)~~
+- ~~Branding Update (Name Craft)~~
+
+### P2 - High Priority (Next)
 1. **Stripe Payment Integration** - Add as alternative payment gateway
-
-### P2 - Medium Priority
-2. **Automated Email Notifications** - Order confirmation, shipping updates
-3. **Full Admin CRUD** - Products, Categories management via API
-4. **WhatsApp Notifications** - Order updates via WhatsApp
+2. **WhatsApp Notifications** - Order updates via WhatsApp Business API
 
 ### P3 - Lower Priority
 5. **User Management** - Block/edit users from admin
