@@ -1,7 +1,7 @@
 // Updated mock data - will sync with backend
 
 export const siteConfig = {
-  siteName: "Name Strings",
+  siteName: "Name Craft",
   tagline: "Make it memorable",
   topBarText: "India's most loved brand with over 1L+ orders delivered",
   currency: "INR",

@@ -37,7 +37,7 @@ const Header = () => {
             {/* Logo */}
             <Link to="/" className="flex-shrink-0">
               <h1 className="text-2xl font-serif italic text-gray-900">
-                Name <span className="font-normal">Strings</span>
+                Name <span className="font-normal">Craft</span>
               </h1>
             </Link>
 

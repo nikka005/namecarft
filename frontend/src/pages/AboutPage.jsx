@@ -47,7 +47,7 @@ const AboutPage = () => {
         <section className="relative h-[400px] bg-gray-900 overflow-hidden">
           <img
             src="https://images.pexels.com/photos/3674231/pexels-photo-3674231.jpeg?w=1920"
-            alt="About Name Strings"
+            alt="About Name Craft"
             className="w-full h-full object-cover opacity-50"
           />
           <div className="absolute inset-0 flex items-center justify-center">
@@ -80,7 +80,7 @@ const AboutPage = () => {
             <div className="text-center mb-12">
               <h2 className="text-3xl font-serif text-gray-900 mb-6">Making Memories Tangible</h2>
               <p className="text-gray-600 leading-relaxed mb-6">
-                Name Strings was born from a simple belief: that jewelry should tell a story. 
+                Name Craft was born from a simple belief: that jewelry should tell a story. 
                 What started as a small passion project has grown into India's most loved 
                 personalized jewelry brand, touching millions of hearts along the way.
               </p>
@@ -91,7 +91,7 @@ const AboutPage = () => {
               </p>
               <p className="text-gray-600 leading-relaxed">
                 With over 1 lakh orders delivered and 80,000+ happy customers, we're honored to be 
-                a part of your most cherished moments. Thank you for choosing Name Strings.
+                a part of your most cherished moments. Thank you for choosing Name Craft.
               </p>
             </div>
           </div>

@@ -37,7 +37,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1">
             <h2 className="text-2xl font-serif italic mb-4">
-              Name <span className="font-normal">Strings</span>
+              Name <span className="font-normal">Craft</span>
             </h2>
             <p className="text-gray-400 text-sm mb-4">
               India's #1 personalized jewellery brand. Making your moments memorable with handcrafted pieces.
