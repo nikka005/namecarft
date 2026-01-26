@@ -686,7 +686,7 @@ async def submit_payment(order_id: str, payment_data: dict):
     return {"success": True, "message": "Payment submitted for verification"}
 
 @api_router.post("/admin/orders/{order_id}/approve-payment")
-async def approve_payment(order_id: str, admin = Depends(require_admin)):
+async def approve_payment(order_id: str, admin = Depends(get_admin_user)):
     """Admin approves a payment"""
     order = await db.orders.find_one({"$or": [{"order_number": order_id}, {"id": order_id}]})
     if not order:
@@ -706,7 +706,7 @@ async def approve_payment(order_id: str, admin = Depends(require_admin)):
     return {"success": True, "message": "Payment approved successfully"}
 
 @api_router.post("/admin/orders/{order_id}/reject-payment")
-async def reject_payment(order_id: str, reason: str = "Payment verification failed", admin = Depends(require_admin)):
+async def reject_payment(order_id: str, reason: str = "Payment verification failed", admin = Depends(get_admin_user)):
     """Admin rejects a payment"""
     order = await db.orders.find_one({"$or": [{"order_number": order_id}, {"id": order_id}]})
     if not order:
