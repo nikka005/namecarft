@@ -561,8 +561,9 @@ async def get_my_orders(user = Depends(get_current_user)):
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
+    # Find orders by user_id OR by email
     orders = await db.orders.find(
-        {"user_id": user["id"]}, 
+        {"$or": [{"user_id": user["id"]}, {"user_email": user["email"]}]}, 
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
     
