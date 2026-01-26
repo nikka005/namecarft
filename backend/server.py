@@ -231,13 +231,13 @@ class CouponCreate(BaseModel):
 class SiteSettings(BaseModel):
     id: str = "site_settings"
     # Branding
-    site_name: str = "Name Strings"
+    site_name: str = "Name Craft"
     tagline: str = "Make it memorable"
     logo_url: Optional[str] = None
     favicon_url: Optional[str] = None
     top_bar_text: str = "India's most loved brand with over 1L+ orders delivered"
     # Contact
-    contact_email: str = "support@namestrings.in"
+    contact_email: str = "support@namecraft.shop"
     contact_phone: str = "+91 98765 43210"
     whatsapp_number: str = "+91 98765 43210"
     address: str = "Mumbai, Maharashtra, India"
@@ -256,7 +256,7 @@ class SiteSettings(BaseModel):
     express_shipping_cost: float = 199
     # Payment Methods
     upi_enabled: bool = True
-    upi_id: str = "namestrings@upi"
+    upi_id: str = "namecraft@upi"
     razorpay_enabled: bool = True
     razorpay_key_id: Optional[str] = None
     razorpay_key_secret: Optional[str] = None
@@ -270,7 +270,7 @@ class SiteSettings(BaseModel):
     smtp_port: int = 587
     smtp_user: Optional[str] = None
     smtp_password: Optional[str] = None
-    email_from_name: str = "Name Strings"
+    email_from_name: str = "Name Craft"
     email_from_address: Optional[str] = None
     send_order_confirmation: bool = True
     send_shipping_notification: bool = True
@@ -282,7 +282,7 @@ class SiteSettings(BaseModel):
     youtube_url: Optional[str] = None
     pinterest_url: Optional[str] = None
     # SEO
-    meta_title: str = "Name Strings | Personalized Jewelry"
+    meta_title: str = "Name Craft | Personalized Jewelry"
     meta_description: str = "India's #1 personalized jewelry brand. Custom necklaces, bracelets, and rings."
     google_analytics_id: Optional[str] = None
     facebook_pixel_id: Optional[str] = None
@@ -323,7 +323,7 @@ async def send_email(to_email: str, subject: str, html_content: str):
     try:
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
-        msg['From'] = f"{settings.get('email_from_name', 'Name Strings')} <{settings.get('email_from_address', settings['smtp_user'])}>"
+        msg['From'] = f"{settings.get('email_from_name', 'Name Craft')} <{settings.get('email_from_address', settings['smtp_user'])}>"
         msg['To'] = to_email
         
         html_part = MIMEText(html_content, 'html')
@@ -370,7 +370,7 @@ def generate_order_email(order: dict, settings: dict) -> str:
     <body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; padding: 20px 0; border-bottom: 2px solid #8B0000;">
             <h1 style="font-family: Georgia, serif; font-style: italic; margin: 0; color: #333;">
-                {settings.get('site_name', 'Name Strings')}
+                {settings.get('site_name', 'Name Craft')}
             </h1>
         </div>
         
@@ -431,7 +431,7 @@ def generate_order_email(order: dict, settings: dict) -> str:
                 <a href="#" style="color: #666; text-decoration: none; margin: 0 10px;">Instagram</a>
                 <a href="#" style="color: #666; text-decoration: none; margin: 0 10px;">Facebook</a>
             </p>
-            <p style="margin-top: 15px;">© {datetime.now().year} {settings.get('site_name', 'Name Strings')}. All rights reserved.</p>
+            <p style="margin-top: 15px;">© {datetime.now().year} {settings.get('site_name', 'Name Craft')}. All rights reserved.</p>
         </div>
     </body>
     </html>
@@ -445,7 +445,7 @@ def generate_shipping_email(order: dict, settings: dict) -> str:
     <head><meta charset="utf-8"><title>Your Order Has Shipped!</title></head>
     <body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; padding: 20px 0; border-bottom: 2px solid #8B0000;">
-            <h1 style="font-family: Georgia, serif; font-style: italic; margin: 0;">{settings.get('site_name', 'Name Strings')}</h1>
+            <h1 style="font-family: Georgia, serif; font-style: italic; margin: 0;">{settings.get('site_name', 'Name Craft')}</h1>
         </div>
         <div style="padding: 30px 0; text-align: center;">
             <h2 style="color: #8B0000;">🚚 Your Order Has Shipped!</h2>
@@ -454,7 +454,7 @@ def generate_shipping_email(order: dict, settings: dict) -> str:
             <p style="color: #666;">You can track your package using the tracking number above.</p>
         </div>
         <div style="text-align: center; padding: 20px; border-top: 1px solid #eee; color: #666; font-size: 0.85em;">
-            <p>© {datetime.now().year} {settings.get('site_name', 'Name Strings')}</p>
+            <p>© {datetime.now().year} {settings.get('site_name', 'Name Craft')}</p>
         </div>
     </body>
     </html>
@@ -1316,14 +1316,14 @@ async def test_email(to_email: str, admin = Depends(get_admin_user)):
     test_html = f"""
     <html>
     <body style="font-family: Arial, sans-serif; padding: 20px;">
-        <h1 style="color: #8B0000;">Test Email from {settings.get('site_name', 'Name Strings')}</h1>
+        <h1 style="color: #8B0000;">Test Email from {settings.get('site_name', 'Name Craft')}</h1>
         <p>If you're seeing this, your email configuration is working correctly!</p>
         <p style="color: #666;">Sent at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
     </body>
     </html>
     """
     
-    success = await send_email(to_email, f"Test Email - {settings.get('site_name', 'Name Strings')}", test_html)
+    success = await send_email(to_email, f"Test Email - {settings.get('site_name', 'Name Craft')}", test_html)
     
     if success:
         return {"success": True, "message": "Test email sent successfully"}
@@ -1396,7 +1396,7 @@ async def seed_data(admin = Depends(get_admin_user)):
 
 @api_router.get("/")
 async def root():
-    return {"message": "Name Strings API", "version": "2.0"}
+    return {"message": "Name Craft API", "version": "2.0"}
 
 # Include the router
 app.include_router(api_router)
