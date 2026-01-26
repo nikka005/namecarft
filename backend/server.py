@@ -691,6 +691,9 @@ async def create_order(order_data: OrderCreate, background_tasks: BackgroundTask
     order_dict = order.dict()
     await db.orders.insert_one(order_dict)
     
+    # Remove MongoDB _id from response
+    order_dict.pop('_id', None)
+    
     # Update user stats if user found
     if user_id:
         await db.users.update_one(
