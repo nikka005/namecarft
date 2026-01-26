@@ -78,10 +78,21 @@ const Header = () => {
               </button>
 
               <Link
-                to="/account"
-                className="p-2 text-gray-700 hover:text-sky-600 transition-colors"
+                to={isAuthenticated ? "/account" : "/login"}
+                className="p-2 text-gray-700 hover:text-sky-600 transition-colors flex items-center gap-1"
+                title={isAuthenticated ? user?.name : 'Sign In'}
               >
-                <User className="w-5 h-5" />
+                {isAuthenticated ? (
+                  <>
+                    <User className="w-5 h-5" />
+                    <span className="hidden md:inline text-sm">{user?.name?.split(' ')[0]}</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-5 h-5" />
+                    <span className="hidden md:inline text-sm">Sign In</span>
+                  </>
+                )}
               </Link>
 
               <button
