@@ -188,8 +188,7 @@ const ProductPage = () => {
             <div className="flex gap-4 mb-8">
               <button
                 onClick={handleAddToCart}
-                disabled={!customName.trim()}
-                className="flex-1 py-4 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+                className="flex-1 py-4 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg transition-colors"
               >
                 Add to Cart - {siteConfig.currencySymbol}{(product.price * quantity).toLocaleString()}
               </button>
