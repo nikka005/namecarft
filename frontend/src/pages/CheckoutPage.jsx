@@ -8,7 +8,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { toast } from '../hooks/use-toast';
 import axios from 'axios';
-import useRazorpay from 'react-razorpay';
+import { useRazorpay } from 'react-razorpay';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const API = `${BACKEND_URL}/api`;
