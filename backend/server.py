@@ -797,6 +797,128 @@ async def get_order(order_id: str, user = Depends(get_current_user)):
     
     return order
 
+# ==================== RAZORPAY PAYMENT ROUTES ====================
+
+def get_razorpay_client():
+    """Get Razorpay client with keys from settings"""
+    # Get keys from database settings
+    import asyncio
+    loop = asyncio.new_event_loop()
+    settings = loop.run_until_complete(db.settings.find_one({"id": "site_settings"}, {"_id": 0}))
+    loop.close()
+    
+    key_id = settings.get("razorpay_key_id") if settings else None
+    key_secret = settings.get("razorpay_key_secret") if settings else None
+    
+    if not key_id or not key_secret:
+        return None
+    
+    return razorpay.Client(auth=(key_id, key_secret))
+
+@api_router.post("/payment/razorpay/create-order")
+async def create_razorpay_order(data: dict):
+    """Create a Razorpay order for payment"""
+    settings = await db.settings.find_one({"id": "site_settings"}, {"_id": 0})
+    
+    if not settings or not settings.get("razorpay_enabled"):
+        raise HTTPException(status_code=400, detail="Razorpay is not enabled")
+    
+    key_id = settings.get("razorpay_key_id")
+    key_secret = settings.get("razorpay_key_secret")
+    
+    if not key_id or not key_secret:
+        raise HTTPException(status_code=400, detail="Razorpay keys not configured")
+    
+    try:
+        client = razorpay.Client(auth=(key_id, key_secret))
+        
+        amount = int(data.get("amount", 0) * 100)  # Convert to paise
+        
+        razorpay_order = client.order.create({
+            "amount": amount,
+            "currency": "INR",
+            "payment_capture": 1,
+            "notes": {
+                "order_id": data.get("order_id", ""),
+                "customer_email": data.get("email", "")
+            }
+        })
+        
+        return {
+            "id": razorpay_order["id"],
+            "amount": razorpay_order["amount"],
+            "currency": razorpay_order["currency"],
+            "key_id": key_id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create Razorpay order: {str(e)}")
+
+@api_router.post("/payment/razorpay/verify")
+async def verify_razorpay_payment(data: dict):
+    """Verify Razorpay payment signature and update order"""
+    settings = await db.settings.find_one({"id": "site_settings"}, {"_id": 0})
+    
+    if not settings:
+        raise HTTPException(status_code=400, detail="Settings not found")
+    
+    key_secret = settings.get("razorpay_key_secret")
+    
+    razorpay_order_id = data.get("razorpay_order_id")
+    razorpay_payment_id = data.get("razorpay_payment_id")
+    razorpay_signature = data.get("razorpay_signature")
+    order_id = data.get("order_id")
+    
+    if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
+        raise HTTPException(status_code=400, detail="Missing payment details")
+    
+    # Verify signature
+    message = f"{razorpay_order_id}|{razorpay_payment_id}"
+    generated_signature = hmac.new(
+        key_secret.encode(),
+        message.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    
+    if generated_signature != razorpay_signature:
+        raise HTTPException(status_code=400, detail="Invalid payment signature")
+    
+    # Update order status
+    if order_id:
+        await db.orders.update_one(
+            {"$or": [{"id": order_id}, {"order_number": order_id}]},
+            {"$set": {
+                "payment_status": "paid",
+                "order_status": "confirmed",
+                "payment_id": razorpay_payment_id,
+                "razorpay_order_id": razorpay_order_id,
+                "updated_at": datetime.utcnow()
+            }}
+        )
+    
+    return {"success": True, "message": "Payment verified successfully"}
+
+@api_router.get("/payment/razorpay/config")
+async def get_razorpay_config():
+    """Get Razorpay public config for frontend"""
+    settings = await db.settings.find_one({"id": "site_settings"}, {"_id": 0})
+    
+    if not settings or not settings.get("razorpay_enabled"):
+        return {"enabled": False}
+    
+    key_id = settings.get("razorpay_key_id")
+    
+    if not key_id:
+        return {"enabled": False}
+    
+    return {
+        "enabled": True,
+        "key_id": key_id,
+        "name": settings.get("site_name", "Name Craft"),
+        "description": "Payment for your order",
+        "currency": "INR",
+        "image": settings.get("site_logo", "")
+    }
+
 # ==================== COUPON ROUTES ====================
 
 @api_router.post("/coupons/validate")
