@@ -5,7 +5,8 @@ import {
   LayoutDashboard, Package, ShoppingCart, Users, Settings, Tags,
   LogOut, Menu, X, Plus, Edit, Trash2, Eye, Image, Mail, Globe,
   CreditCard, Smartphone, Truck, DollarSign, UserCheck, TrendingUp,
-  Search, Download, RefreshCw, Save, Send, Check, AlertCircle
+  Search, Download, RefreshCw, Save, Send, Check, AlertCircle,
+  CheckCircle, XCircle
 } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
