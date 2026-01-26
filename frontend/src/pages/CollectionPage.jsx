@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { SlidersHorizontal, Grid3X3, LayoutGrid, ChevronDown } from 'lucide-react';
+import { SlidersHorizontal, Grid3X3, LayoutGrid } from 'lucide-react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import SaleBanner from '../components/home/SaleBanner';
 import ProductCard from '../components/products/ProductCard';
 import CartDrawer from '../components/cart/CartDrawer';
 import { useCart } from '../context/CartContext';
-import { products, categories } from '../data/mock';
+import axios from 'axios';
 import {
   Select,
   SelectContent,
@@ -16,32 +16,58 @@ import {
   SelectValue,
 } from '../components/ui/select';
 
+const API = process.env.REACT_APP_BACKEND_URL || '';
+
+const CATEGORY_NAMES = {
+  'for-her': 'For Her',
+  'for-him': 'For Him',
+  'kids': 'Kids',
+  'couples': 'Couples',
+  'rings': 'Rings',
+  'express': 'Express Shipping',
+  'all': 'All Products'
+};
+
 const CollectionPage = () => {
   const { slug } = useParams();
   const { addToCart, cartCount, setIsCartOpen } = useCart();
   const [sortBy, setSortBy] = useState('featured');
   const [gridSize, setGridSize] = useState(4);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const categoryName = categories.find((c) => c.slug === slug)?.name || 'All Products';
+  const categoryName = CATEGORY_NAMES[slug] || 'All Products';
 
-  // Filter products based on category
-  const filteredProducts = slug && slug !== 'all'
-    ? products.filter((p) => p.category === slug)
-    : products;
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const params = slug && slug !== 'all' ? `?category=${slug}` : '';
+        const res = await axios.get(`${API}/api/products${params}`);
+        setProducts(res.data.products || []);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [slug]);
 
   // Sort products
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  const sortedProducts = [...products].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
         return a.price - b.price;
       case 'price-high':
         return b.price - a.price;
       case 'newest':
-        return b.id - a.id;
+        return new Date(b.created_at) - new Date(a.created_at);
       case 'discount':
         return b.discount - a.discount;
       default:
-        return 0;
+        return b.is_featured - a.is_featured;
     }
   });
 
@@ -110,7 +136,11 @@ const CollectionPage = () => {
         </div>
 
         {/* Products Grid */}
-        {sortedProducts.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-16">
+            <p className="text-gray-500">Loading products...</p>
+          </div>
+        ) : sortedProducts.length > 0 ? (
           <div className={`grid gap-6 ${gridSize === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}`}>
             {sortedProducts.map((product) => (
               <ProductCard
