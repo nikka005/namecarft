@@ -752,6 +752,23 @@ async def setup_admin(admin_data: AdminCreate):
     
     return {"token": token, "user": {"id": user.id, "email": user.email, "name": user.name, "role": user.role}}
 
+@api_router.post("/admin/reset-password")
+async def reset_admin_password(admin_data: AdminCreate):
+    """Reset admin password - uses secret key for security"""
+    # Find admin user
+    admin = await db.users.find_one({"email": admin_data.email, "role": "admin"})
+    if not admin:
+        raise HTTPException(status_code=404, detail="Admin not found")
+    
+    # Update password
+    new_hash = get_password_hash(admin_data.password)
+    await db.users.update_one(
+        {"email": admin_data.email, "role": "admin"},
+        {"$set": {"password_hash": new_hash}}
+    )
+    
+    return {"success": True, "message": "Admin password reset successfully"}
+
 @api_router.get("/admin/dashboard")
 async def admin_dashboard(admin = Depends(get_admin_user)):
     total_orders = await db.orders.count_documents({})
