@@ -84,6 +84,7 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 - [x] Fixed auto-logout (static JWT_SECRET)
 - [x] Fixed react-razorpay hook import issue (v3.0.1 API change)
 - [x] Added /health endpoint for deployment
+- [x] Replaced all "namestrings" branding with "Name Craft"
 
 ---
 
@@ -94,8 +95,10 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 - Customer authentication and account management
 - Manual UPI payment with admin approval
 - **Razorpay payment integration (fully tested)**
-- Admin panel with site settings and order management
+- Admin panel with full CRUD (products, orders, settings)
+- **Email notifications** (order confirmation, shipping updates)
 - Product browsing and cart functionality
+- 35 original products with AI-generated images
 
 ### What Needs Configuration
 - Razorpay live keys (for production)
