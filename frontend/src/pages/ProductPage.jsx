@@ -25,6 +25,16 @@ const ProductPage = () => {
   const savings = (product.originalPrice || product.original_price) - product.price;
 
   const handleAddToCart = () => {
+    if (!customName.trim()) {
+      // Scroll to name input and focus it
+      const nameInput = document.getElementById('custom-name-input');
+      if (nameInput) {
+        nameInput.focus();
+        nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      alert('Please enter a name for personalization');
+      return;
+    }
     addToCart(product, quantity, { name: customName, metal: selectedMetal });
     setIsCartOpen(true);
   };
