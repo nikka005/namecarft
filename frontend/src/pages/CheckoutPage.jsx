@@ -42,11 +42,13 @@ const CheckoutPage = () => {
   const { cart, cartTotal, cartCount, clearCart } = useCart();
   const { user, token, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [Razorpay] = useRazorpay();
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
   const [siteSettings, setSiteSettings] = useState(null);
+  const [razorpayConfig, setRazorpayConfig] = useState(null);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [createAccount, setCreateAccount] = useState(false);
   const [password, setPassword] = useState('');
@@ -66,7 +68,7 @@ const CheckoutPage = () => {
     city: '',
     state: '',
     pincode: '',
-    paymentMethod: 'upi'
+    paymentMethod: 'razorpay'
   });
 
   // Pre-fill form if user is logged in
