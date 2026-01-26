@@ -412,6 +412,24 @@ const CheckoutPage = () => {
           {/* Checkout Form */}
           <div>
             <form onSubmit={handleProceedToPayment} className="space-y-6">
+              {/* Login/Register Banner for guests */}
+              {!isAuthenticated && (
+                <div className="bg-sky-50 border border-sky-200 rounded-xl p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <User className="w-5 h-5 text-sky-600" />
+                      <div>
+                        <p className="font-medium text-gray-900">Already have an account?</p>
+                        <p className="text-sm text-gray-500">Sign in to track your order easily</p>
+                      </div>
+                    </div>
+                    <Link to="/login" state={{ from: '/checkout' }} className="px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors text-sm font-medium">
+                      Sign In
+                    </Link>
+                  </div>
+                </div>
+              )}
+
               {/* Contact Information */}
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Contact Information</h2>
@@ -424,6 +442,35 @@ const CheckoutPage = () => {
                     <Label htmlFor="phone">Phone</Label>
                     <Input id="phone" name="phone" type="tel" required placeholder="+91 98765 43210" value={formData.phone} onChange={handleInputChange} data-testid="checkout-phone" />
                   </div>
+                  
+                  {/* Create Account Option for guests */}
+                  {!isAuthenticated && (
+                    <div className="pt-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={createAccount}
+                          onChange={(e) => setCreateAccount(e.target.checked)}
+                          className="w-4 h-4 text-sky-500 rounded border-gray-300"
+                        />
+                        <span className="text-sm text-gray-700">Create an account to track your orders</span>
+                      </label>
+                      {createAccount && (
+                        <div className="mt-3">
+                          <Label htmlFor="password">Create Password</Label>
+                          <Input 
+                            id="password" 
+                            type="password" 
+                            placeholder="Min 6 characters" 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            minLength={6}
+                            required={createAccount}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
