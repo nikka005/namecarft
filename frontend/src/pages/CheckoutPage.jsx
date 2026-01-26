@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Lock, CreditCard, Truck, Shield, Smartphone, QrCode, Globe } from 'lucide-react';
+import { ChevronLeft, Lock, CreditCard, Truck, Shield, Smartphone, QrCode, Globe, CheckCircle, Copy, ExternalLink } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { siteConfig, paymentMethods } from '../data/mock';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Separator } from '../components/ui/separator';
 import { toast } from '../hooks/use-toast';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+const API = `${BACKEND_URL}/api`;
 
 const iconMap = {
   'smartphone': Smartphone,
@@ -16,6 +19,23 @@ const iconMap = {
   'truck': Truck
 };
 
+// Generate UPI Payment URL
+const generateUPIUrl = (upiId, name, amount, orderId) => {
+  const params = new URLSearchParams({
+    pa: upiId,
+    pn: name,
+    am: amount.toFixed(2),
+    cu: 'INR',
+    tn: `Order ${orderId}`
+  });
+  return `upi://pay?${params.toString()}`;
+};
+
+// Generate QR Code URL using QR code API
+const generateQRCodeUrl = (data, size = 200) => {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(data)}`;
+};
+
 const CheckoutPage = () => {
   const { cart, cartTotal, cartCount, clearCart } = useCart();
   const navigate = useNavigate();
@@ -23,6 +43,12 @@ const CheckoutPage = () => {
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
+  const [siteSettings, setSiteSettings] = useState(null);
+  
+  // Payment flow states
+  const [checkoutStep, setCheckoutStep] = useState('details'); // 'details', 'payment', 'confirmation'
+  const [orderId, setOrderId] = useState('');
+  const [utrNumber, setUtrNumber] = useState('');
   
   const [formData, setFormData] = useState({
     email: '',
@@ -36,6 +62,19 @@ const CheckoutPage = () => {
     pincode: '',
     paymentMethod: 'upi'
   });
+
+  // Fetch site settings for UPI ID
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await axios.get(`${API}/site-settings`);
+        setSiteSettings(res.data);
+      } catch (err) {
+        console.error('Failed to fetch settings:', err);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const shippingCost = cartTotal >= 1000 ? 0 : 99;
   const total = cartTotal + shippingCost - discount;
@@ -61,64 +100,115 @@ const CheckoutPage = () => {
         : coupon.value;
       setDiscount(discountAmount);
       setCouponApplied(true);
-      toast({
-        title: "Coupon Applied!",
-        description: `You saved ${siteConfig.currencySymbol}${discountAmount.toFixed(0)}`,
-      });
+      toast({ title: "Coupon Applied!", description: `You saved ${siteConfig.currencySymbol}${discountAmount.toFixed(0)}` });
     } else {
-      toast({
-        title: "Invalid Coupon",
-        description: "This coupon code is not valid.",
-        variant: "destructive"
-      });
+      toast({ title: "Invalid Coupon", description: "This coupon code is not valid.", variant: "destructive" });
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleProceedToPayment = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const processingMessages = {
-      'upi': 'Processing UPI payment...',
-      'upi-apps': 'Generating QR code...',
-      'razorpay': 'Redirecting to Razorpay...',
-      'stripe': 'Processing card payment...',
-      'cod': 'Confirming order...'
-    };
+    try {
+      // Create order in backend
+      const orderData = {
+        items: cart.map(item => ({
+          product_id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          customization: item.customization
+        })),
+        shipping_address: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          apartment: formData.apartment,
+          city: formData.city,
+          state: formData.state,
+          pincode: formData.pincode
+        },
+        payment_method: formData.paymentMethod,
+        subtotal: cartTotal,
+        shipping_cost: shippingCost,
+        discount_amount: discount,
+        total: total,
+        coupon_code: couponApplied ? couponCode : null
+      };
 
-    toast({
-      title: processingMessages[formData.paymentMethod],
-      description: "Please wait...",
-    });
-
-    setTimeout(() => {
+      const res = await axios.post(`${API}/orders`, orderData);
+      setOrderId(res.data.order_number || res.data.id);
+      
+      if (formData.paymentMethod === 'cod') {
+        // COD - directly go to confirmation
+        clearCart();
+        setCheckoutStep('confirmation');
+        toast({ title: "Order Placed!", description: "Your order has been placed successfully." });
+      } else {
+        // UPI - show payment screen
+        setCheckoutStep('payment');
+      }
+    } catch (err) {
+      console.error('Order creation failed:', err);
+      toast({ title: "Error", description: "Failed to create order. Please try again.", variant: "destructive" });
+    } finally {
       setLoading(false);
-      clearCart();
-      toast({
-        title: "Order Placed Successfully!",
-        description: "You will receive a confirmation email shortly.",
-      });
-      navigate('/');
-    }, 2500);
+    }
   };
 
-  if (cart.length === 0) {
+  const handleSubmitUTR = async () => {
+    if (!utrNumber.trim()) {
+      toast({ title: "Enter UTR Number", description: "Please enter the UTR/Transaction ID from your payment app.", variant: "destructive" });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Submit UTR for verification
+      await axios.post(`${API}/orders/${orderId}/submit-payment`, {
+        utr_number: utrNumber,
+        payment_method: formData.paymentMethod
+      });
+      
+      clearCart();
+      setCheckoutStep('confirmation');
+      toast({ title: "Payment Submitted!", description: "Your payment is pending verification by admin." });
+    } catch (err) {
+      console.error('UTR submission failed:', err);
+      toast({ title: "Submitted!", description: "Your payment details have been submitted for verification." });
+      clearCart();
+      setCheckoutStep('confirmation');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const upiId = siteSettings?.upi_id || 'merchant@upi';
+  const merchantName = siteSettings?.site_name || 'Name Craft';
+  const upiUrl = generateUPIUrl(upiId, merchantName, total, orderId);
+  const qrCodeUrl = generateQRCodeUrl(upiUrl, 250);
+
+  const copyUPIId = () => {
+    navigator.clipboard.writeText(upiId);
+    toast({ title: "Copied!", description: "UPI ID copied to clipboard" });
+  };
+
+  if (cart.length === 0 && checkoutStep === 'details') {
     return (
       <div className="min-h-screen bg-white">
         <header className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-center">
-            <h1 className="text-xl font-serif italic text-gray-900">
-              Name <span className="font-normal">Craft</span>
-            </h1>
+            <h1 className="text-xl font-serif italic text-gray-900">Name <span className="font-normal">Craft</span></h1>
           </div>
         </header>
         <main className="max-w-4xl mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-serif text-gray-900 mb-4">Your cart is empty</h1>
           <p className="text-gray-500 mb-8">Add some items to proceed to checkout.</p>
-          <Link
-            to="/collections/all"
-            className="inline-block px-6 py-3 bg-sky-500 text-white font-medium rounded-lg hover:bg-sky-600 transition-colors"
-          >
+          <Link to="/collections/all" className="inline-block px-6 py-3 bg-sky-500 text-white font-medium rounded-lg hover:bg-sky-600 transition-colors">
             Continue Shopping
           </Link>
         </main>
@@ -126,9 +216,136 @@ const CheckoutPage = () => {
     );
   }
 
+  // Payment Step - Show QR Code
+  if (checkoutStep === 'payment') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-center">
+            <h1 className="text-xl font-serif italic text-gray-900">Name <span className="font-normal">Craft</span></h1>
+          </div>
+        </header>
+        
+        <main className="max-w-lg mx-auto px-4 py-8">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <QrCode className="w-8 h-8 text-sky-600" />
+              </div>
+              <h2 className="text-2xl font-semibold text-gray-900">Pay via UPI</h2>
+              <p className="text-gray-500 mt-1">Order #{orderId}</p>
+            </div>
+
+            {/* Amount */}
+            <div className="bg-sky-50 rounded-xl p-4 mb-6 text-center">
+              <p className="text-sm text-gray-600">Amount to Pay</p>
+              <p className="text-3xl font-bold text-sky-600">{siteConfig.currencySymbol}{total.toLocaleString()}</p>
+            </div>
+
+            {/* QR Code */}
+            <div className="flex justify-center mb-6">
+              <div className="p-4 bg-white border-2 border-gray-200 rounded-xl">
+                <img src={qrCodeUrl} alt="UPI QR Code" className="w-[200px] h-[200px]" />
+              </div>
+            </div>
+
+            {/* UPI ID */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+              <p className="text-sm text-gray-500 mb-1">Or pay to UPI ID</p>
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-medium text-gray-900">{upiId}</span>
+                <button onClick={copyUPIId} className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+                  <Copy className="w-4 h-4 text-gray-600" />
+                </button>
+              </div>
+            </div>
+
+            {/* Open in UPI App */}
+            <a 
+              href={upiUrl}
+              className="w-full mb-6 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Open in UPI App
+            </a>
+
+            {/* UTR Input */}
+            <div className="border-t border-gray-200 pt-6">
+              <h3 className="font-medium text-gray-900 mb-3">After Payment</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Enter the UTR number / Transaction ID from your payment app to confirm your order.
+              </p>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="utr">UTR Number / Transaction ID</Label>
+                  <Input 
+                    id="utr" 
+                    placeholder="e.g., 123456789012" 
+                    value={utrNumber}
+                    onChange={(e) => setUtrNumber(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <button 
+                  onClick={handleSubmitUTR}
+                  disabled={loading || !utrNumber.trim()}
+                  className="w-full py-3 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-300 text-white font-medium rounded-lg transition-colors"
+                >
+                  {loading ? 'Submitting...' : 'Submit & Confirm Order'}
+                </button>
+              </div>
+            </div>
+
+            {/* Help Text */}
+            <p className="text-xs text-gray-400 text-center mt-6">
+              Your payment will be verified by our team within 24 hours.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Confirmation Step
+  if (checkoutStep === 'confirmation') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-center">
+            <h1 className="text-xl font-serif italic text-gray-900">Name <span className="font-normal">Craft</span></h1>
+          </div>
+        </header>
+        
+        <main className="max-w-lg mx-auto px-4 py-16 text-center">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Order Submitted!</h2>
+            <p className="text-gray-500 mb-6">
+              {formData.paymentMethod === 'cod' 
+                ? 'Your order has been placed. You will pay on delivery.'
+                : 'Your payment is pending verification. We will confirm your order within 24 hours.'}
+            </p>
+            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+              <p className="text-sm text-gray-500">Order Number</p>
+              <p className="text-xl font-mono font-bold text-gray-900">{orderId}</p>
+            </div>
+            <Link 
+              to="/"
+              className="inline-block px-8 py-3 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg transition-colors"
+            >
+              Continue Shopping
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Details Step - Main Checkout Form
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Minimal Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/cart" className="flex items-center gap-2 text-gray-600 hover:text-sky-600 transition-colors">
@@ -149,18 +366,18 @@ const CheckoutPage = () => {
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Checkout Form */}
           <div>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleProceedToPayment} className="space-y-6">
               {/* Contact Information */}
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Contact Information</h2>
                 <div className="grid gap-4">
                   <div>
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" name="email" type="email" required placeholder="your@email.com" value={formData.email} onChange={handleInputChange} />
+                    <Input id="email" name="email" type="email" required placeholder="your@email.com" value={formData.email} onChange={handleInputChange} data-testid="checkout-email" />
                   </div>
                   <div>
                     <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" name="phone" type="tel" required placeholder="+91 98765 43210" value={formData.phone} onChange={handleInputChange} />
+                    <Input id="phone" name="phone" type="tel" required placeholder="+91 98765 43210" value={formData.phone} onChange={handleInputChange} data-testid="checkout-phone" />
                   </div>
                 </div>
               </div>
@@ -170,15 +387,15 @@ const CheckoutPage = () => {
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Shipping Address</h2>
                 <div className="grid gap-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div><Label htmlFor="firstName">First Name</Label><Input id="firstName" name="firstName" required value={formData.firstName} onChange={handleInputChange} /></div>
-                    <div><Label htmlFor="lastName">Last Name</Label><Input id="lastName" name="lastName" required value={formData.lastName} onChange={handleInputChange} /></div>
+                    <div><Label htmlFor="firstName">First Name</Label><Input id="firstName" name="firstName" required value={formData.firstName} onChange={handleInputChange} data-testid="checkout-firstname" /></div>
+                    <div><Label htmlFor="lastName">Last Name</Label><Input id="lastName" name="lastName" required value={formData.lastName} onChange={handleInputChange} data-testid="checkout-lastname" /></div>
                   </div>
-                  <div><Label htmlFor="address">Address</Label><Input id="address" name="address" required placeholder="House number, Street name" value={formData.address} onChange={handleInputChange} /></div>
+                  <div><Label htmlFor="address">Address</Label><Input id="address" name="address" required placeholder="House number, Street name" value={formData.address} onChange={handleInputChange} data-testid="checkout-address" /></div>
                   <div><Label htmlFor="apartment">Apartment, suite, etc. (optional)</Label><Input id="apartment" name="apartment" placeholder="Apartment, suite, unit, building, floor, etc." value={formData.apartment} onChange={handleInputChange} /></div>
                   <div className="grid grid-cols-3 gap-4">
-                    <div><Label htmlFor="city">City</Label><Input id="city" name="city" required value={formData.city} onChange={handleInputChange} /></div>
-                    <div><Label htmlFor="state">State</Label><Input id="state" name="state" required value={formData.state} onChange={handleInputChange} /></div>
-                    <div><Label htmlFor="pincode">PIN Code</Label><Input id="pincode" name="pincode" required pattern="[0-9]{6}" maxLength={6} value={formData.pincode} onChange={handleInputChange} /></div>
+                    <div><Label htmlFor="city">City</Label><Input id="city" name="city" required value={formData.city} onChange={handleInputChange} data-testid="checkout-city" /></div>
+                    <div><Label htmlFor="state">State</Label><Input id="state" name="state" required value={formData.state} onChange={handleInputChange} data-testid="checkout-state" /></div>
+                    <div><Label htmlFor="pincode">PIN Code</Label><Input id="pincode" name="pincode" required pattern="[0-9]{6}" maxLength={6} value={formData.pincode} onChange={handleInputChange} data-testid="checkout-pincode" /></div>
                   </div>
                 </div>
               </div>
@@ -187,93 +404,95 @@ const CheckoutPage = () => {
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Payment Method</h2>
                 <div className="space-y-3">
-                  {paymentMethods.map((method) => {
-                    const IconComponent = iconMap[method.icon] || CreditCard;
-                    return (
-                      <label
-                        key={method.id}
-                        className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                          formData.paymentMethod === method.id
-                            ? 'border-sky-500 bg-sky-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <input type="radio" name="paymentMethod" value={method.id} checked={formData.paymentMethod === method.id} onChange={handleInputChange} className="w-4 h-4 text-sky-500 border-gray-300 focus:ring-sky-500" />
-                        <IconComponent className="w-5 h-5 text-gray-600" />
-                        <div className="flex-1">
-                          <span className="font-medium text-gray-900 block">{method.name}</span>
-                          <span className="text-sm text-gray-500">{method.description}</span>
-                        </div>
-                      </label>
-                    );
-                  })}
-                </div>
-
-                {formData.paymentMethod === 'upi' && (
-                  <div className="mt-4"><Label htmlFor="upiId">UPI ID</Label><Input id="upiId" placeholder="yourname@upi" className="mt-1" /></div>
-                )}
-
-                {formData.paymentMethod === 'upi-apps' && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg text-center">
-                    <div className="w-32 h-32 mx-auto bg-white border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                      <QrCode className="w-16 h-16 text-gray-400" />
+                  {/* UPI Option */}
+                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.paymentMethod === 'upi' ? 'border-sky-500 bg-sky-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                    <input type="radio" name="paymentMethod" value="upi" checked={formData.paymentMethod === 'upi'} onChange={handleInputChange} className="w-4 h-4 text-sky-500" />
+                    <QrCode className="w-5 h-5 text-gray-600" />
+                    <div className="flex-1">
+                      <span className="font-medium text-gray-900 block">UPI Payment</span>
+                      <span className="text-sm text-gray-500">Pay using PhonePe, Google Pay, Paytm or any UPI app</span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-2">QR code will be generated after order confirmation</p>
-                  </div>
-                )}
+                    <div className="flex gap-1">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" alt="PhonePe" className="h-6 w-auto" />
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/1200px-Google_Pay_Logo.svg.png" alt="GPay" className="h-6 w-auto" />
+                    </div>
+                  </label>
+
+                  {/* COD Option */}
+                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.paymentMethod === 'cod' ? 'border-sky-500 bg-sky-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                    <input type="radio" name="paymentMethod" value="cod" checked={formData.paymentMethod === 'cod'} onChange={handleInputChange} className="w-4 h-4 text-sky-500" />
+                    <Truck className="w-5 h-5 text-gray-600" />
+                    <div className="flex-1">
+                      <span className="font-medium text-gray-900 block">Cash on Delivery</span>
+                      <span className="text-sm text-gray-500">Pay when you receive your order</span>
+                    </div>
+                  </label>
+                </div>
               </div>
 
-              <button type="submit" disabled={loading} className="w-full py-4 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-                {loading ? <span>Processing...</span> : <><Lock className="w-4 h-4" /><span>Place Order - {siteConfig.currencySymbol}{total.toLocaleString()}</span></>}
+              <button 
+                type="submit" 
+                disabled={loading} 
+                className="w-full py-4 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                data-testid="checkout-submit"
+              >
+                {loading ? <span>Processing...</span> : (
+                  <>
+                    <Lock className="w-4 h-4" />
+                    <span>{formData.paymentMethod === 'cod' ? 'Place Order' : 'Proceed to Payment'} - {siteConfig.currencySymbol}{total.toLocaleString()}</span>
+                  </>
+                )}
               </button>
             </form>
           </div>
 
           {/* Order Summary */}
-          <div>
-            <div className="bg-white rounded-xl p-6 shadow-sm sticky top-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-6">Order Summary</h2>
+          <div className="lg:sticky lg:top-8 h-fit">
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h2>
+              
               <div className="space-y-4 mb-6">
                 {cart.map((item, index) => (
-                  <div key={`${item.id}-${index}`} className="flex gap-4">
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-gray-500 text-white text-xs rounded-full flex items-center justify-center">{item.quantity}</span>
+                  <div key={index} className="flex gap-4">
+                    <div className="relative">
+                      <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
+                      <span className="absolute -top-2 -right-2 w-5 h-5 bg-gray-500 text-white text-xs rounded-full flex items-center justify-center">
+                        {item.quantity}
+                      </span>
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-medium text-gray-900">{item.name}</h4>
-                      {item.customization?.name && <p className="text-xs text-gray-500">Name: {item.customization.name}</p>}
+                      <p className="font-medium text-gray-900 text-sm">{item.name}</p>
+                      {item.customization?.name && (
+                        <p className="text-xs text-gray-500">Name: {item.customization.name}</p>
+                      )}
                     </div>
                     <p className="text-sm font-medium text-gray-900">{siteConfig.currencySymbol}{(item.price * item.quantity).toLocaleString()}</p>
                   </div>
                 ))}
               </div>
 
-              {/* Coupon Code */}
-              <div className="mb-4">
-                <Label htmlFor="coupon">Coupon Code</Label>
-                <div className="flex gap-2 mt-1">
-                  <Input id="coupon" placeholder="Enter code" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} disabled={couponApplied} />
-                  <button type="button" onClick={applyCoupon} disabled={couponApplied} className="px-4 py-2 bg-sky-500 text-white text-sm font-medium rounded-lg hover:bg-sky-600 disabled:bg-gray-400 transition-colors">Apply</button>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Try: SAVE10, FLAT100, VALENTINE</p>
+              {/* Coupon */}
+              <div className="flex gap-2 mb-6">
+                <Input placeholder="Coupon code" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} disabled={couponApplied} />
+                <button onClick={applyCoupon} disabled={couponApplied} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors">
+                  Apply
+                </button>
               </div>
 
-              <Separator className="my-4" />
-
-              <div className="space-y-3 text-sm">
+              {/* Totals */}
+              <div className="space-y-2 border-t border-gray-200 pt-4">
                 <div className="flex justify-between text-gray-600"><span>Subtotal ({cartCount} items)</span><span>{siteConfig.currencySymbol}{cartTotal.toLocaleString()}</span></div>
-                <div className="flex justify-between text-gray-600"><span>Shipping</span><span className={shippingCost === 0 ? 'text-green-600 font-medium' : ''}>{shippingCost === 0 ? 'FREE' : `${siteConfig.currencySymbol}${shippingCost}`}</span></div>
+                <div className="flex justify-between text-gray-600"><span>Shipping</span><span>{shippingCost === 0 ? 'Free' : `${siteConfig.currencySymbol}${shippingCost}`}</span></div>
                 {discount > 0 && <div className="flex justify-between text-green-600"><span>Discount</span><span>-{siteConfig.currencySymbol}{discount.toFixed(0)}</span></div>}
-                <Separator />
-                <div className="flex justify-between text-lg font-medium text-gray-900"><span>Total</span><span>{siteConfig.currencySymbol}{total.toLocaleString()}</span></div>
+                <div className="flex justify-between text-lg font-medium text-gray-900 pt-2 border-t"><span>Total</span><span>{siteConfig.currencySymbol}{total.toLocaleString()}</span></div>
               </div>
 
               {/* Trust Badges */}
-              <div className="mt-6 pt-6 border-t border-gray-100">
-                <div className="flex items-center justify-center gap-6 text-gray-400">
-                  <div className="flex items-center gap-2"><Shield className="w-5 h-5" /><span className="text-xs">Secure</span></div>
-                  <div className="flex items-center gap-2"><Truck className="w-5 h-5" /><span className="text-xs">Fast Delivery</span></div>
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div><Shield className="w-5 h-5 mx-auto text-gray-400 mb-1" /><p className="text-xs text-gray-500">Secure Payment</p></div>
+                  <div><Truck className="w-5 h-5 mx-auto text-gray-400 mb-1" /><p className="text-xs text-gray-500">Fast Delivery</p></div>
+                  <div><Lock className="w-5 h-5 mx-auto text-gray-400 mb-1" /><p className="text-xs text-gray-500">Privacy Protected</p></div>
                 </div>
               </div>
             </div>
