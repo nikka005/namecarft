@@ -661,6 +661,68 @@ async def get_user_orders(user = Depends(get_current_user)):
     orders = await db.orders.find({"user_id": user["id"]}, {"_id": 0}).sort("created_at", -1).to_list(100)
     return orders
 
+@api_router.post("/orders/{order_id}/submit-payment")
+async def submit_payment(order_id: str, payment_data: dict):
+    """Submit UTR number for manual payment verification"""
+    # Find order by order_number or id
+    order = await db.orders.find_one({"$or": [{"order_number": order_id}, {"id": order_id}]})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    utr_number = payment_data.get("utr_number", "")
+    payment_method = payment_data.get("payment_method", "upi")
+    
+    # Update order with UTR and set payment status to pending_verification
+    await db.orders.update_one(
+        {"_id": order["_id"]},
+        {"$set": {
+            "utr_number": utr_number,
+            "payment_method": payment_method,
+            "payment_status": "pending_verification",
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    return {"success": True, "message": "Payment submitted for verification"}
+
+@api_router.post("/admin/orders/{order_id}/approve-payment")
+async def approve_payment(order_id: str, admin = Depends(require_admin)):
+    """Admin approves a payment"""
+    order = await db.orders.find_one({"$or": [{"order_number": order_id}, {"id": order_id}]})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    await db.orders.update_one(
+        {"_id": order["_id"]},
+        {"$set": {
+            "payment_status": "paid",
+            "order_status": "confirmed",
+            "payment_verified_at": datetime.utcnow(),
+            "payment_verified_by": admin["id"],
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    return {"success": True, "message": "Payment approved successfully"}
+
+@api_router.post("/admin/orders/{order_id}/reject-payment")
+async def reject_payment(order_id: str, reason: str = "Payment verification failed", admin = Depends(require_admin)):
+    """Admin rejects a payment"""
+    order = await db.orders.find_one({"$or": [{"order_number": order_id}, {"id": order_id}]})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    await db.orders.update_one(
+        {"_id": order["_id"]},
+        {"$set": {
+            "payment_status": "rejected",
+            "payment_rejection_reason": reason,
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    return {"success": True, "message": "Payment rejected"}
+
 @api_router.get("/orders/{order_id}")
 async def get_order(order_id: str, user = Depends(get_current_user)):
     order = await db.orders.find_one({"id": order_id}, {"_id": 0})
