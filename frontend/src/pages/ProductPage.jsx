@@ -157,17 +157,18 @@ const ProductPage = () => {
 
             {/* Personalization */}
             <div className="mb-6">
-              <Label htmlFor="customName" className="text-sm font-medium text-gray-900 mb-3 block">
+              <Label htmlFor="custom-name-input" className="text-sm font-medium text-gray-900 mb-3 block">
                 Personalize with a Name *
               </Label>
               <Input
-                id="customName"
+                id="custom-name-input"
                 type="text"
                 placeholder="Enter name (max 10 characters)"
                 maxLength={10}
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
                 className="max-w-xs"
+                data-testid="custom-name-input"
               />
               <p className="text-xs text-gray-500 mt-2">
                 Please double-check spelling. Personalized items cannot be returned.
