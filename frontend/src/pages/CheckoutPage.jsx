@@ -262,15 +262,19 @@ const CheckoutPage = () => {
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
       const res = await axios.post(`${API}/orders`, orderData, config);
-      setOrderId(res.data.order_number || res.data.id);
+      const savedOrderId = res.data.order_number || res.data.id;
+      setOrderId(savedOrderId);
       
       if (formData.paymentMethod === 'cod') {
         // COD - directly go to confirmation
         clearCart();
         setCheckoutStep('confirmation');
         toast({ title: "Order Placed!", description: "Your order has been placed successfully." });
+      } else if (formData.paymentMethod === 'razorpay') {
+        // Razorpay payment
+        await handleRazorpayPayment(orderData, savedOrderId);
       } else {
-        // UPI - show payment screen
+        // UPI manual - show payment screen
         setCheckoutStep('payment');
       }
     } catch (err) {
