@@ -42,7 +42,7 @@ const CheckoutPage = () => {
   const { cart, cartTotal, cartCount, clearCart } = useCart();
   const { user, token, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [Razorpay] = useRazorpay();
+  const { error: razorpayError, isLoading: razorpayLoading, Razorpay } = useRazorpay();
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
