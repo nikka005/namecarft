@@ -38,7 +38,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer(auto_error=False)
 
 # Create the main app
-app = FastAPI(title="Name Strings API")
+app = FastAPI(title="Name Craft API")
+
+# Health check endpoint for Kubernetes - MUST be at root level
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Kubernetes liveness/readiness probes"""
+    return {"status": "healthy", "service": "name-craft-api"}
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
