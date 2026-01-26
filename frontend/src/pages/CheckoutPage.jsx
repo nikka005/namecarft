@@ -39,12 +39,16 @@ const generateQRCodeUrl = (data, size = 200) => {
 
 const CheckoutPage = () => {
   const { cart, cartTotal, cartCount, clearCart } = useCart();
+  const { user, token, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
   const [siteSettings, setSiteSettings] = useState(null);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [createAccount, setCreateAccount] = useState(false);
+  const [password, setPassword] = useState('');
   
   // Payment flow states
   const [checkoutStep, setCheckoutStep] = useState('details'); // 'details', 'payment', 'confirmation'
@@ -63,6 +67,23 @@ const CheckoutPage = () => {
     pincode: '',
     paymentMethod: 'upi'
   });
+
+  // Pre-fill form if user is logged in
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone,
+        firstName: user.name?.split(' ')[0] || prev.firstName,
+        lastName: user.name?.split(' ').slice(1).join(' ') || prev.lastName,
+        address: user.address || prev.address,
+        city: user.city || prev.city,
+        state: user.state || prev.state,
+        pincode: user.pincode || prev.pincode
+      }));
+    }
+  }, [user]);
 
   // Fetch site settings for UPI ID
   useEffect(() => {
