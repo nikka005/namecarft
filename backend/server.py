@@ -535,6 +535,34 @@ async def get_me(user = Depends(get_current_user)):
         raise HTTPException(status_code=401, detail="Not authenticated")
     return {"id": user["id"], "email": user["email"], "name": user["name"], "role": user.get("role", "user")}
 
+@api_router.put("/auth/profile")
+async def update_profile(profile_data: dict, user = Depends(get_current_user)):
+    """Update user profile"""
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    allowed_fields = ["name", "phone", "address", "city", "state", "pincode"]
+    update_data = {k: v for k, v in profile_data.items() if k in allowed_fields}
+    update_data["updated_at"] = datetime.utcnow()
+    
+    await db.users.update_one({"id": user["id"]}, {"$set": update_data})
+    
+    updated_user = await db.users.find_one({"id": user["id"]}, {"_id": 0, "password_hash": 0})
+    return updated_user
+
+@api_router.get("/orders/my-orders")
+async def get_my_orders(user = Depends(get_current_user)):
+    """Get orders for logged in user"""
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    orders = await db.orders.find(
+        {"user_id": user["id"]}, 
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return orders
+
 # ==================== PRODUCT ROUTES ====================
 
 @api_router.get("/products")
