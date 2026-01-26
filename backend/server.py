@@ -662,8 +662,21 @@ async def create_order(order_data: OrderCreate, background_tasks: BackgroundTask
     
     total = subtotal + shipping_cost - discount_amount
     
+    # Get user email from shipping address
+    user_email = order_data.shipping_address.email
+    
+    # If not logged in, try to find user by email and link the order
+    user_id = None
+    if user:
+        user_id = user["id"]
+    else:
+        existing_user = await db.users.find_one({"email": user_email}, {"_id": 0})
+        if existing_user:
+            user_id = existing_user["id"]
+    
     order = Order(
-        user_id=user["id"] if user else None,
+        user_id=user_id,
+        user_email=user_email,
         items=order_items,
         shipping_address=order_data.shipping_address.dict(),
         payment_method=order_data.payment_method,
@@ -677,10 +690,10 @@ async def create_order(order_data: OrderCreate, background_tasks: BackgroundTask
     order_dict = order.dict()
     await db.orders.insert_one(order_dict)
     
-    # Update user stats if logged in
-    if user:
+    # Update user stats if user found
+    if user_id:
         await db.users.update_one(
-            {"id": user["id"]},
+            {"id": user_id},
             {"$inc": {"orders_count": 1, "total_spent": total}}
         )
     
