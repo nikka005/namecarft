@@ -18,13 +18,22 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     const savedCart = localStorage.getItem('namestrings_cart');
     if (savedCart) {
-      setCart(JSON.parse(savedCart));
+      try {
+        const parsed = JSON.parse(savedCart);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCart(parsed);
+        }
+      } catch (e) {
+        console.error('Failed to parse cart:', e);
+      }
     }
   }, []);
 
-  // Save cart to localStorage whenever it changes
+  // Save cart to localStorage whenever it changes (only if cart has items or was explicitly cleared)
   useEffect(() => {
-    localStorage.setItem('namestrings_cart', JSON.stringify(cart));
+    if (cart.length > 0 || localStorage.getItem('namestrings_cart') !== null) {
+      localStorage.setItem('namestrings_cart', JSON.stringify(cart));
+    }
   }, [cart]);
 
   const addToCart = (product, quantity = 1, customization = {}) => {
