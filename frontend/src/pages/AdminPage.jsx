@@ -29,8 +29,8 @@ import {
 import { toast } from '../hooks/use-toast';
 import { Toaster } from '../components/ui/toaster';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Use relative URL for API calls - works on any domain
+const API = '/api';
 
 // Custom hook for admin auth
 const useAdmin = () => {
