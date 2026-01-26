@@ -7,10 +7,10 @@ const SocialGallery = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-2xl lg:text-3xl font-serif text-gray-900 mb-2">
-            #namestrings Social Family
+            #namecraft Social Family
           </h2>
           <p className="text-gray-500">
-            Visual Reviews Directly by Consumers | Mention @namestrings to get Featured Here
+            Visual Reviews Directly by Consumers | Mention @namecraft to get Featured Here
           </p>
         </div>
 

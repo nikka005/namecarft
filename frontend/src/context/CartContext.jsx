@@ -16,7 +16,7 @@ export const CartProvider = ({ children }) => {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem('namestrings_cart');
+    const savedCart = localStorage.getItem('namecraft_cart');
     if (savedCart) {
       try {
         const parsed = JSON.parse(savedCart);
@@ -31,8 +31,8 @@ export const CartProvider = ({ children }) => {
 
   // Save cart to localStorage whenever it changes (only if cart has items or was explicitly cleared)
   useEffect(() => {
-    if (cart.length > 0 || localStorage.getItem('namestrings_cart') !== null) {
-      localStorage.setItem('namestrings_cart', JSON.stringify(cart));
+    if (cart.length > 0 || localStorage.getItem('namecraft_cart') !== null) {
+      localStorage.setItem('namecraft_cart', JSON.stringify(cart));
     }
   }, [cart]);
 
