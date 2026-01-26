@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Lock, CreditCard, Truck, Shield, Smartphone, QrCode, Globe, CheckCircle, Copy, ExternalLink } from 'lucide-react';
+import { ChevronLeft, Lock, CreditCard, Truck, Shield, Smartphone, QrCode, Globe, CheckCircle, Copy, ExternalLink, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { siteConfig, paymentMethods } from '../data/mock';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
