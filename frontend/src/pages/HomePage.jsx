@@ -12,12 +12,28 @@ import TrustBadges from '../components/home/TrustBadges';
 import SpinWheel from '../components/common/SpinWheel';
 import CartDrawer from '../components/cart/CartDrawer';
 import { useCart } from '../context/CartContext';
-import { products } from '../data/mock';
+import axios from 'axios';
+
+const API = process.env.REACT_APP_BACKEND_URL || '';
 
 const HomePage = () => {
   const [activeCategory, setActiveCategory] = useState('for-her');
   const [showSpinWheel, setShowSpinWheel] = useState(false);
   const { addToCart, cartCount, setIsCartOpen } = useCart();
+  const [products, setProducts] = useState([]);
+
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${API}/api/products?limit=20`);
+        setProducts(res.data.products || []);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   // Show spin wheel after 5 seconds (first visit only)
   useEffect(() => {
@@ -31,8 +47,8 @@ const HomePage = () => {
     }
   }, []);
 
-  const featuredProducts = products.filter((p) => p.featured);
-  const uniqueFinds = products.filter((p) => !p.featured || p.category === 'for-her');
+  const featuredProducts = products.filter((p) => p.is_featured);
+  const uniqueFinds = products.filter((p) => !p.is_featured || p.category === 'for-her');
 
   const handleAddToCart = (product) => {
     addToCart(product);
@@ -51,7 +67,7 @@ const HomePage = () => {
         <ProductCarousel
           title="Perfect For Gifting"
           products={featuredProducts}
-          viewAllLink="/collections/gifting"
+          viewAllLink="/collections/all"
           onAddToCart={handleAddToCart}
         />
         
