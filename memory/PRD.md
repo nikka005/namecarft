@@ -56,10 +56,17 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 
 #### Admin Panel
 - [x] Admin login and authentication (/admin)
-- [x] Dashboard overview
+- [x] Dashboard overview with stats
 - [x] Orders management with payment approval for manual UPI
-- [x] Site settings management (branding, payment IDs)
+- [x] **Full Product CRUD** - Add, edit, delete products from admin panel
+- [x] Order status management with shipping notifications
+- [x] Site settings management (branding, payment IDs, email, shipping)
 - [x] Fixed sidebar layout with proper scrolling
+
+#### Email Notifications
+- [x] Order confirmation emails (automatic on order creation)
+- [x] Shipping notification emails (automatic when order status changed to "shipped")
+- [x] SMTP configuration in admin panel (Gmail, custom SMTP)
 
 #### Legal & Content
 - [x] Privacy Policy page
