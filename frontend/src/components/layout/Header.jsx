@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, User, ShoppingBag, ChevronDown, Menu, X } from 'lucide-react';
+import { Search, User, ShoppingBag, ChevronDown, Menu, X, LogIn } from 'lucide-react';
 import { siteConfig, navItems } from '../../data/mock';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { cartCount, setIsCartOpen } = useCart();
+  const { user, isAuthenticated } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-white">
