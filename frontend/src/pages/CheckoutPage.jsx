@@ -576,13 +576,30 @@ const CheckoutPage = () => {
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Payment Method</h2>
                 <div className="space-y-3">
-                  {/* UPI Option */}
+                  {/* Razorpay Option */}
+                  {razorpayConfig?.enabled && (
+                    <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.paymentMethod === 'razorpay' ? 'border-sky-500 bg-sky-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                      <input type="radio" name="paymentMethod" value="razorpay" checked={formData.paymentMethod === 'razorpay'} onChange={handleInputChange} className="w-4 h-4 text-sky-500" />
+                      <CreditCard className="w-5 h-5 text-gray-600" />
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-900 block">Pay Online (Razorpay)</span>
+                        <span className="text-sm text-gray-500">Cards, UPI, Net Banking, Wallets</span>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" className="h-6 w-auto" />
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Visa.svg/200px-Visa.svg.png" alt="Visa" className="h-4 w-auto" />
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" alt="Mastercard" className="h-5 w-auto" />
+                      </div>
+                    </label>
+                  )}
+
+                  {/* UPI Manual Option */}
                   <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.paymentMethod === 'upi' ? 'border-sky-500 bg-sky-50' : 'border-gray-200 hover:border-gray-300'}`}>
                     <input type="radio" name="paymentMethod" value="upi" checked={formData.paymentMethod === 'upi'} onChange={handleInputChange} className="w-4 h-4 text-sky-500" />
                     <QrCode className="w-5 h-5 text-gray-600" />
                     <div className="flex-1">
-                      <span className="font-medium text-gray-900 block">UPI Payment</span>
-                      <span className="text-sm text-gray-500">Pay using PhonePe, Google Pay, Paytm or any UPI app</span>
+                      <span className="font-medium text-gray-900 block">UPI (QR Code)</span>
+                      <span className="text-sm text-gray-500">Scan QR with PhonePe, Google Pay, Paytm</span>
                     </div>
                     <div className="flex gap-1">
                       <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" alt="PhonePe" className="h-6 w-auto" />
