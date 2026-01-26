@@ -306,18 +306,18 @@ export const footerLinks = {
   ],
   help: [
     { name: "Contact Us", href: "/contact" },
-    { name: "FAQs", href: "/faqs" },
-    { name: "Shipping & Delivery", href: "/shipping" },
-    { name: "Returns & Refunds", href: "/returns" }
+    { name: "Track Order", href: "/account" },
+    { name: "Shipping Policy", href: "/shipping-policy" },
+    { name: "Returns & Refunds", href: "/refund-policy" }
   ],
   about: [
     { name: "Our Story", href: "/about" },
-    { name: "Reviews", href: "/reviews" },
-    { name: "Blog", href: "/blog" }
+    { name: "Reviews", href: "/collections/all" },
+    { name: "Contact", href: "/contact" }
   ],
   legal: [
-    { name: "Privacy Policy", href: "/privacy" },
-    { name: "Terms of Service", href: "/terms" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms & Conditions", href: "/terms" },
     { name: "Refund Policy", href: "/refund-policy" }
   ]
 };
