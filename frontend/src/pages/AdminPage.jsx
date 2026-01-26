@@ -276,6 +276,40 @@ const OrdersTab = ({ token }) => {
     } catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
   };
 
+  const approvePayment = async (orderId) => {
+    try {
+      await api.post(`/admin/orders/${orderId}/approve-payment`, {}, token);
+      toast({ title: 'Payment Approved', description: 'Order has been confirmed' });
+      fetchOrders();
+    } catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
+  };
+
+  const rejectPayment = async (orderId) => {
+    try {
+      await api.post(`/admin/orders/${orderId}/reject-payment`, {}, token);
+      toast({ title: 'Payment Rejected' });
+      fetchOrders();
+    } catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
+  };
+
+  const getPaymentStatusBadge = (order) => {
+    const status = order.payment_status;
+    const styles = {
+      'paid': 'bg-green-100 text-green-700',
+      'pending': 'bg-yellow-100 text-yellow-700',
+      'pending_verification': 'bg-blue-100 text-blue-700',
+      'rejected': 'bg-red-100 text-red-700'
+    };
+    return (
+      <div className="space-y-1">
+        <span className={`px-2 py-1 rounded-full text-xs ${styles[status] || 'bg-gray-100 text-gray-700'}`}>
+          {status === 'pending_verification' ? 'Pending Verification' : status}
+        </span>
+        {order.utr_number && <p className="text-xs text-gray-500">UTR: {order.utr_number}</p>}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
