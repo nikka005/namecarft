@@ -158,6 +158,9 @@ class CartItem(BaseModel):
     product_id: str
     quantity: int
     customization: Dict[str, Any] = {}
+    name: Optional[str] = None
+    price: Optional[float] = None
+    image: Optional[str] = None
 
 class ShippingAddress(BaseModel):
     first_name: str
