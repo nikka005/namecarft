@@ -89,7 +89,7 @@ const CheckoutPage = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get(`${API}/site-settings`);
+        const res = await axios.get(`${API}/settings`);
         setSiteSettings(res.data);
       } catch (err) {
         console.error('Failed to fetch settings:', err);
