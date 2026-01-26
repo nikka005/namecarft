@@ -1392,6 +1392,133 @@ async def seed_data(admin = Depends(get_admin_user)):
     
     return {"success": True, "message": "Data seeded successfully"}
 
+# ==================== DATA MIGRATION ====================
+
+@api_router.post("/admin/seed-products")
+async def seed_products(admin = Depends(get_admin_user)):
+    """One-time migration: Delete old products and add 35 new products"""
+    
+    # AI Generated Images
+    AI_IMAGES = {
+        'hero_necklace': 'https://static.prod-images.emergentagent.com/jobs/9d1dc081-f684-46a4-910e-adc6bbd703a7/images/f8c6efac80ae614536d1764b9a0a170f7f052c57b2b71df301cd29f7d7098064.png',
+        'rose_box': 'https://static.prod-images.emergentagent.com/jobs/9d1dc081-f684-46a4-910e-adc6bbd703a7/images/5050e972d9dc4fc45ea5f4231b20933ccc5c2499b6c382d95e467787578f8af7.png',
+        'kids_bracelet': 'https://static.prod-images.emergentagent.com/jobs/9d1dc081-f684-46a4-910e-adc6bbd703a7/images/3b0ea511d8cce0fb7b141203688ff7fa9c5f4e711ea338f881f4ef3ab19022ba.png',
+        'infinity_ring': 'https://static.prod-images.emergentagent.com/jobs/9d1dc081-f684-46a4-910e-adc6bbd703a7/images/7cadb3dfad6ec995430963bc1e1301db97653351bb2c2c47038f953bdf0512ee.png',
+        'couple_bracelet': 'https://static.prod-images.emergentagent.com/jobs/9d1dc081-f684-46a4-910e-adc6bbd703a7/images/6391f64240274bca52ba985f92b03ac223f615f672a948c3e8552e1a72193866.png',
+    }
+    
+    STOCK = [
+        'https://images.unsplash.com/photo-1758995115518-26f90aa61b97?w=600',
+        'https://images.unsplash.com/photo-1758995115643-1e8348bfde39?w=600',
+        'https://images.unsplash.com/photo-1601121141499-17ae80afc03a?w=600',
+        'https://images.pexels.com/photos/14509757/pexels-photo-14509757.jpeg?w=600',
+        'https://images.unsplash.com/photo-1668619322685-e634175f8182?w=600',
+        'https://images.unsplash.com/photo-1681091636907-85eb440dfe06?w=600',
+        'https://images.pexels.com/photos/14509642/pexels-photo-14509642.jpeg?w=600',
+        'https://images.unsplash.com/photo-1588909006332-2e30f95291bc?w=600',
+        'https://images.unsplash.com/photo-1720528347642-e70ea18b4140?w=600',
+        'https://images.pexels.com/photos/29612233/pexels-photo-29612233.jpeg?w=600',
+        'https://images.unsplash.com/photo-1761210875101-1273b9ae5600?w=600',
+        'https://images.unsplash.com/photo-1758995115543-983c55f98a33?w=600',
+        'https://images.unsplash.com/photo-1761211115639-54394f139142?w=600',
+        'https://images.unsplash.com/photo-1761211106346-939cb32005d7?w=600',
+        'https://images.pexels.com/photos/29193429/pexels-photo-29193429.jpeg?w=600',
+        'https://images.unsplash.com/photo-1766560362710-b1d951aab881?w=600',
+        'https://images.pexels.com/photos/16849040/pexels-photo-16849040.png?w=600',
+        'https://images.pexels.com/photos/7104205/pexels-photo-7104205.jpeg?w=600',
+        'https://images.pexels.com/photos/29218181/pexels-photo-29218181.jpeg?w=600',
+        'https://images.pexels.com/photos/16304556/pexels-photo-16304556.jpeg?w=600',
+    ]
+    
+    PRODUCTS = [
+        {'name': 'Personalized Name Necklace', 'category': 'for-her', 'price': 1299, 'original_price': 1999, 'discount': 35, 'image': AI_IMAGES['hero_necklace'], 'description': 'Elegant personalized name necklace crafted with premium quality. Perfect gift for her.', 'is_featured': True},
+        {'name': 'Rose Box Heart Necklace', 'category': 'for-her', 'price': 1999, 'original_price': 2999, 'discount': 33, 'image': AI_IMAGES['rose_box'], 'description': 'Beautiful preserved rose box with gold heart necklace. Romantic gift for special occasions.', 'is_featured': True},
+        {'name': 'Infinity Heart Pendant', 'category': 'for-her', 'price': 1499, 'original_price': 2299, 'discount': 35, 'image': STOCK[10], 'description': 'Stunning infinity heart pendant symbolizing eternal love. Customizable with names.', 'is_featured': False},
+        {'name': 'Initial Letter Necklace', 'category': 'for-her', 'price': 999, 'original_price': 1499, 'discount': 33, 'image': STOCK[11], 'description': 'Delicate initial letter pendant necklace. Personalize with your loved ones initial.', 'is_featured': False},
+        {'name': 'Heart Name Ring Necklace', 'category': 'for-her', 'price': 1599, 'original_price': 2499, 'discount': 36, 'image': STOCK[12], 'description': 'Beautiful heart pendant with name rings. Each ring represents someone special.', 'is_featured': False},
+        {'name': 'Layered Chain Necklace', 'category': 'for-her', 'price': 1199, 'original_price': 1799, 'discount': 33, 'image': STOCK[13], 'description': 'Trendy layered chain necklace with customizable pendants.', 'is_featured': False},
+        {'name': 'Classic Gold Name Chain', 'category': 'for-her', 'price': 1799, 'original_price': 2799, 'discount': 36, 'image': STOCK[0], 'description': 'Timeless gold name chain necklace. Premium quality craftsmanship.', 'is_featured': False},
+        {'name': 'Minimalist Bar Necklace', 'category': 'for-her', 'price': 899, 'original_price': 1399, 'discount': 36, 'image': STOCK[14], 'description': 'Sleek minimalist bar necklace with custom engraving option.', 'is_featured': False},
+        {'name': 'Leather Name Bracelet', 'category': 'for-him', 'price': 1299, 'original_price': 1999, 'discount': 35, 'image': AI_IMAGES['couple_bracelet'], 'description': 'Premium leather bracelet with personalized name plate. Perfect for men.', 'is_featured': True},
+        {'name': 'Steel ID Bracelet', 'category': 'for-him', 'price': 1499, 'original_price': 2299, 'discount': 35, 'image': STOCK[18], 'description': 'Stainless steel ID bracelet with custom engraving. Durable and stylish.', 'is_featured': False},
+        {'name': 'Braided Leather Band', 'category': 'for-him', 'price': 999, 'original_price': 1499, 'discount': 33, 'image': STOCK[19], 'description': 'Handcrafted braided leather band with silver clasp.', 'is_featured': False},
+        {'name': 'Mens Beaded Bracelet', 'category': 'for-him', 'price': 799, 'original_price': 1199, 'discount': 33, 'image': STOCK[5], 'description': 'Natural stone beaded bracelet with custom charm.', 'is_featured': False},
+        {'name': 'Anchor Chain Bracelet', 'category': 'for-him', 'price': 1199, 'original_price': 1799, 'discount': 33, 'image': STOCK[6], 'description': 'Bold anchor chain bracelet with name engraving.', 'is_featured': False},
+        {'name': 'Titanium Cuff Bracelet', 'category': 'for-him', 'price': 1599, 'original_price': 2499, 'discount': 36, 'image': STOCK[4], 'description': 'Premium titanium cuff with inner personalization.', 'is_featured': False},
+        {'name': 'Double Wrap Leather', 'category': 'for-him', 'price': 1099, 'original_price': 1699, 'discount': 35, 'image': STOCK[7], 'description': 'Stylish double wrap leather bracelet with magnetic clasp.', 'is_featured': False},
+        {'name': 'Rainbow Name Bracelet', 'category': 'kids', 'price': 699, 'original_price': 999, 'discount': 30, 'image': AI_IMAGES['kids_bracelet'], 'description': 'Colorful rainbow bracelet with personalized name beads. Safe for kids.', 'is_featured': True},
+        {'name': 'Butterfly Charm Bracelet', 'category': 'kids', 'price': 599, 'original_price': 899, 'discount': 33, 'image': STOCK[15], 'description': 'Adorable butterfly charm bracelet with name pendant.', 'is_featured': False},
+        {'name': 'Star Moon Necklace', 'category': 'kids', 'price': 799, 'original_price': 1199, 'discount': 33, 'image': STOCK[16], 'description': 'Magical star and moon necklace with initial charm.', 'is_featured': False},
+        {'name': 'Princess Crown Pendant', 'category': 'kids', 'price': 899, 'original_price': 1399, 'discount': 36, 'image': STOCK[17], 'description': 'Sparkly princess crown pendant with custom name.', 'is_featured': False},
+        {'name': 'Superhero ID Bracelet', 'category': 'kids', 'price': 649, 'original_price': 999, 'discount': 35, 'image': STOCK[2], 'description': 'Cool superhero-themed ID bracelet for kids.', 'is_featured': False},
+        {'name': 'Matching Name Bracelets Set', 'category': 'couples', 'price': 1999, 'original_price': 2999, 'discount': 33, 'image': AI_IMAGES['couple_bracelet'], 'description': 'His and hers matching bracelets with personalized names. Perfect couple gift.', 'is_featured': True},
+        {'name': 'Interlocking Heart Pendants', 'category': 'couples', 'price': 2499, 'original_price': 3499, 'discount': 29, 'image': STOCK[10], 'description': 'Two hearts that interlock perfectly. Each pendant customized with initials.', 'is_featured': False},
+        {'name': 'King Queen Bracelets', 'category': 'couples', 'price': 1799, 'original_price': 2699, 'discount': 33, 'image': STOCK[1], 'description': 'Royal themed couple bracelets with crown charms.', 'is_featured': False},
+        {'name': 'Coordinates Necklace Set', 'category': 'couples', 'price': 2199, 'original_price': 3299, 'discount': 33, 'image': STOCK[11], 'description': 'Custom coordinates of your special place on matching necklaces.', 'is_featured': False},
+        {'name': 'Puzzle Piece Pendants', 'category': 'couples', 'price': 1699, 'original_price': 2499, 'discount': 32, 'image': STOCK[12], 'description': 'Two puzzle pieces that fit together. Symbolizing perfect match.', 'is_featured': False},
+        {'name': 'Infinity Diamond Ring', 'category': 'rings', 'price': 2499, 'original_price': 3999, 'discount': 38, 'image': AI_IMAGES['infinity_ring'], 'description': 'Elegant infinity ring with diamond accents. Engrave a special message inside.', 'is_featured': True},
+        {'name': 'Name Band Ring', 'category': 'rings', 'price': 1299, 'original_price': 1999, 'discount': 35, 'image': STOCK[7], 'description': 'Classic band ring with custom name engraving.', 'is_featured': False},
+        {'name': 'Birthstone Promise Ring', 'category': 'rings', 'price': 1799, 'original_price': 2699, 'discount': 33, 'image': STOCK[8], 'description': 'Beautiful promise ring with birthstone and name.', 'is_featured': False},
+        {'name': 'Stacking Name Rings Set', 'category': 'rings', 'price': 1999, 'original_price': 2999, 'discount': 33, 'image': STOCK[9], 'description': 'Set of 3 stackable rings, each with a name.', 'is_featured': False},
+        {'name': 'Signet Initial Ring', 'category': 'rings', 'price': 1499, 'original_price': 2299, 'discount': 35, 'image': STOCK[3], 'description': 'Classic signet ring with initial engraving.', 'is_featured': False},
+        {'name': 'Quick Ship Name Pendant', 'category': 'express', 'price': 999, 'original_price': 1499, 'discount': 33, 'image': STOCK[0], 'description': 'Ready to ship personalized pendant. Delivered in 2-3 days.', 'is_featured': False},
+        {'name': 'Express Heart Necklace', 'category': 'express', 'price': 1199, 'original_price': 1799, 'discount': 33, 'image': STOCK[10], 'description': 'Fast delivery heart necklace with name engraving.', 'is_featured': False},
+        {'name': 'Rush Order Bracelet', 'category': 'express', 'price': 899, 'original_price': 1399, 'discount': 36, 'image': STOCK[4], 'description': 'Express personalized bracelet. Perfect for last-minute gifts.', 'is_featured': False},
+        {'name': 'Same Day Initial Pendant', 'category': 'express', 'price': 799, 'original_price': 1199, 'discount': 33, 'image': STOCK[11], 'description': 'Initial pendant with same-day dispatch option.', 'is_featured': False},
+        {'name': 'Quick Custom Ring', 'category': 'express', 'price': 1099, 'original_price': 1699, 'discount': 35, 'image': STOCK[8], 'description': 'Express delivery personalized ring. Ships within 24 hours.', 'is_featured': False},
+    ]
+    
+    def create_slug(name):
+        return name.lower().replace(' ', '-').replace('&', 'and')
+    
+    # Delete all existing products
+    delete_result = await db.products.delete_many({})
+    
+    # Add new products
+    added = 0
+    for product in PRODUCTS:
+        slug = create_slug(product['name'])
+        doc = {
+            'id': str(uuid.uuid4()),
+            'name': product['name'],
+            'slug': slug,
+            'description': product['description'],
+            'price': float(product['price']),
+            'original_price': float(product['original_price']),
+            'discount': product['discount'],
+            'image': product['image'],
+            'hover_image': product['image'],
+            'category': product['category'],
+            'metal_types': ['gold', 'rose-gold', 'silver'],
+            'is_featured': product.get('is_featured', False),
+            'is_active': True,
+            'in_stock': True,
+            'stock_quantity': 100,
+            'created_at': datetime.utcnow(),
+            'updated_at': datetime.utcnow(),
+        }
+        await db.products.insert_one(doc)
+        added += 1
+    
+    # Update hero settings
+    await db.settings.update_one(
+        {'id': 'site_settings'},
+        {'$set': {
+            'hero_title': '100% Real Rose Box + Necklace',
+            'hero_cta': 'GET YOURS NOW',
+            'hero_image': AI_IMAGES['rose_box'],
+            'hero_link': '/products/rose-box-heart-necklace',
+        }},
+        upsert=True
+    )
+    
+    return {
+        "success": True,
+        "deleted": delete_result.deleted_count,
+        "added": added,
+        "message": f"Deleted {delete_result.deleted_count} old products, added {added} new products"
+    }
+
 # ==================== ROOT ====================
 
 @api_router.get("/")
