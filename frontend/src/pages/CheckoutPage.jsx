@@ -130,6 +130,25 @@ const CheckoutPage = () => {
 
   const handleProceedToPayment = async (e) => {
     e.preventDefault();
+    
+    // If not logged in and wants to create account, register first
+    if (!isAuthenticated && createAccount && password) {
+      try {
+        const name = `${formData.firstName} ${formData.lastName}`.trim();
+        await axios.post(`${API}/auth/register`, {
+          name,
+          email: formData.email,
+          password,
+          phone: formData.phone
+        });
+        toast({ title: "Account Created!", description: "You can now track your orders" });
+      } catch (err) {
+        if (err.response?.status !== 400) { // Ignore if email exists
+          toast({ title: "Account Error", description: err.response?.data?.detail || "Failed to create account", variant: "destructive" });
+        }
+      }
+    }
+    
     setLoading(true);
 
     try {
@@ -159,10 +178,14 @@ const CheckoutPage = () => {
         shipping_cost: shippingCost,
         discount_amount: discount,
         total: total,
-        coupon_code: couponApplied ? couponCode : null
+        coupon_code: couponApplied ? couponCode : null,
+        user_email: formData.email
       };
+      
+      // Add auth header if logged in
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
-      const res = await axios.post(`${API}/orders`, orderData);
+      const res = await axios.post(`${API}/orders`, orderData, config);
       setOrderId(res.data.order_number || res.data.id);
       
       if (formData.paymentMethod === 'cod') {
