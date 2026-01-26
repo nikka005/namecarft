@@ -611,7 +611,17 @@ async def create_order(order_data: OrderCreate, background_tasks: BackgroundTask
     for item in order_data.items:
         product = await db.products.find_one({"id": item.product_id}, {"_id": 0})
         if not product:
-            raise HTTPException(status_code=400, detail=f"Product {item.product_id} not found")
+            # If product not found by ID, create a placeholder
+            order_items.append({
+                "product_id": item.product_id,
+                "name": item.name if hasattr(item, 'name') else "Product",
+                "price": item.price if hasattr(item, 'price') else 0,
+                "quantity": item.quantity,
+                "image": item.image if hasattr(item, 'image') else "",
+                "customization": item.customization
+            })
+            subtotal += (item.price if hasattr(item, 'price') else 0) * item.quantity
+            continue
         
         item_total = product["price"] * item.quantity
         subtotal += item_total
