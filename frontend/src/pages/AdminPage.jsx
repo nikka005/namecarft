@@ -620,6 +620,7 @@ const ProductForm = ({ token, product, onClose, onSave }) => {
         <div className="md:col-span-2 flex gap-6">
           <label className="flex items-center gap-2"><input type="checkbox" checked={form.is_featured} onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} />Featured</label>
           <label className="flex items-center gap-2"><input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />Active</label>
+          <label className="flex items-center gap-2 text-sky-600"><input type="checkbox" checked={form.allow_custom_image} onChange={(e) => setForm({ ...form, allow_custom_image: e.target.checked })} />📷 Allow Customer Photo Upload</label>
         </div>
         <div className="md:col-span-2 flex gap-4">
           <Button type="submit" disabled={loading} className="bg-sky-500 hover:bg-sky-600">{loading ? 'Saving...' : product ? 'Update' : 'Create'}</Button>
