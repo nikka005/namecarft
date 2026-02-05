@@ -545,6 +545,7 @@ const ProductsTab = ({ token }) => {
                     </td>
                     <td className="px-6 py-4">{product.stock_quantity}</td>
                     <td className="px-6 py-4">{product.is_featured ? <Check className="w-5 h-5 text-green-500" /> : '-'}</td>
+                    <td className="px-6 py-4">{product.allow_custom_image ? <span className="text-sky-500">📷</span> : '-'}</td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 rounded-full text-xs ${product.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>{product.is_active ? 'Active' : 'Inactive'}</span>
                     </td>
