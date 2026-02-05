@@ -675,7 +675,12 @@ async def get_products(
     if featured is not None:
         query["is_featured"] = featured
     if search:
-        query["name"] = {"$regex": search, "$options": "i"}
+        # Search in name and description
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}},
+            {"category": {"$regex": search, "$options": "i"}}
+        ]
     
     products = await db.products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
     total = await db.products.count_documents(query)
