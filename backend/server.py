@@ -694,6 +694,39 @@ async def get_product(slug: str):
         raise HTTPException(status_code=404, detail="Product not found")
     return product
 
+# ==================== FILE UPLOAD ====================
+
+from fastapi.staticfiles import StaticFiles
+import shutil
+
+UPLOAD_DIR = ROOT_DIR / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+@api_router.post("/upload/image")
+async def upload_image(file: UploadFile = File(...)):
+    """Upload customer image for personalized orders"""
+    # Validate file type
+    allowed_types = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Only images allowed.")
+    
+    # Validate file size (max 5MB)
+    contents = await file.read()
+    if len(contents) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large. Max 5MB allowed.")
+    
+    # Generate unique filename
+    ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = UPLOAD_DIR / filename
+    
+    # Save file
+    with open(filepath, "wb") as f:
+        f.write(contents)
+    
+    # Return URL
+    return {"url": f"/api/uploads/{filename}", "filename": filename}
+
 # ==================== CATEGORY ROUTES ====================
 
 @api_router.get("/categories")
