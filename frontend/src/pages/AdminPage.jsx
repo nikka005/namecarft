@@ -521,6 +521,7 @@ const ProductsTab = ({ token }) => {
                   <th className="px-6 py-4">Price</th>
                   <th className="px-6 py-4">Stock</th>
                   <th className="px-6 py-4">Featured</th>
+                  <th className="px-6 py-4">📷 Photo</th>
                   <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4">Actions</th>
                 </tr>
