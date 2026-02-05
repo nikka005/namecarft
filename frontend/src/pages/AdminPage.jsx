@@ -570,7 +570,8 @@ const ProductForm = ({ token, product, onClose, onSave }) => {
     name: product?.name || '', slug: product?.slug || '', description: product?.description || '',
     price: product?.price || '', original_price: product?.original_price || '', discount: product?.discount || 0,
     image: product?.image || '', hover_image: product?.hover_image || '', category: product?.category || 'for-her',
-    is_featured: product?.is_featured || false, is_active: product?.is_active !== false, stock_quantity: product?.stock_quantity || 100, tags: product?.tags?.join(', ') || ''
+    is_featured: product?.is_featured || false, is_active: product?.is_active !== false, stock_quantity: product?.stock_quantity || 100, tags: product?.tags?.join(', ') || '',
+    allow_custom_image: product?.allow_custom_image || false
   });
   const [loading, setLoading] = useState(false);
 
