@@ -654,6 +654,12 @@ const CheckoutPage = () => {
                       {item.customization?.name && (
                         <p className="text-xs text-gray-500">Name: {item.customization.name}</p>
                       )}
+                      {item.customization?.metal && (
+                        <p className="text-xs text-gray-500">Metal: {item.customization.metal}</p>
+                      )}
+                      {item.customization?.customImage && (
+                        <p className="text-xs text-sky-600">📷 Custom photo attached</p>
+                      )}
                     </div>
                     <p className="text-sm font-medium text-gray-900">{siteConfig.currencySymbol}{(item.price * item.quantity).toLocaleString()}</p>
                   </div>
