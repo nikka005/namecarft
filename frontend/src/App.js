@@ -20,6 +20,10 @@ import TermsPage from './pages/TermsPage';
 import RefundPolicyPage from './pages/RefundPolicyPage';
 import ShippingPolicyPage from './pages/ShippingPolicyPage';
 import ContactPage from './pages/ContactPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import HelpPage from './pages/HelpPage';
+import SearchPage from './pages/SearchPage';
 
 function App() {
   return (
@@ -38,10 +42,14 @@ function App() {
               <Route path="/pages/about-us" element={<AboutPage />} />
               <Route path="/login" element={<AuthPage />} />
               <Route path="/register" element={<AuthPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/account" element={<AccountPage />} />
               <Route path="/account/*" element={<AccountPage />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/admin/*" element={<AdminPage />} />
+              <Route path="/help" element={<HelpPage />} />
+              <Route path="/search" element={<SearchPage />} />
               {/* Legal Pages */}
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/pages/privacy-policy" element={<PrivacyPolicyPage />} />
