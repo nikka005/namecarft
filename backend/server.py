@@ -543,6 +543,93 @@ async def get_me(user = Depends(get_current_user)):
         raise HTTPException(status_code=401, detail="Not authenticated")
     return {"id": user["id"], "email": user["email"], "name": user["name"], "role": user.get("role", "user")}
 
+@api_router.post("/auth/forgot-password")
+async def forgot_password(data: dict, background_tasks: BackgroundTasks):
+    """Send password reset email"""
+    email = data.get("email", "").lower().strip()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    
+    user = await db.users.find_one({"email": email})
+    if not user:
+        # Don't reveal if email exists or not for security
+        return {"success": True, "message": "If an account exists, you will receive a reset email"}
+    
+    # Generate reset token
+    reset_token = str(uuid.uuid4())
+    reset_expiry = datetime.utcnow() + timedelta(hours=1)
+    
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"reset_token": reset_token, "reset_token_expiry": reset_expiry}}
+    )
+    
+    # Get site settings
+    settings = await db.settings.find_one({"id": "site_settings"}, {"_id": 0})
+    if not settings:
+        settings = {}
+    
+    # Send email
+    reset_link = f"{settings.get('site_url', 'https://namecraft.shop')}/reset-password?token={reset_token}"
+    email_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"><title>Reset Your Password</title></head>
+    <body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; padding: 20px 0; border-bottom: 2px solid #0ea5e9;">
+            <h1 style="font-family: Georgia, serif; margin: 0; color: #0ea5e9;">Name Craft</h1>
+        </div>
+        <div style="padding: 30px 0;">
+            <h2 style="color: #333;">Reset Your Password</h2>
+            <p>Hi {user.get('name', 'there')},</p>
+            <p>We received a request to reset your password. Click the button below to create a new password:</p>
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{reset_link}" style="background: #0ea5e9; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;">Reset Password</a>
+            </div>
+            <p style="color: #666; font-size: 0.9em;">This link will expire in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+        </div>
+        <div style="text-align: center; padding: 20px; border-top: 1px solid #eee; color: #666; font-size: 0.85em;">
+            <p>© {datetime.now().year} Name Craft. All rights reserved.</p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    background_tasks.add_task(send_email, email, "Reset Your Password - Name Craft", email_html)
+    
+    return {"success": True, "message": "If an account exists, you will receive a reset email"}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(data: dict):
+    """Reset password with token"""
+    token = data.get("token", "")
+    new_password = data.get("password", "")
+    
+    if not token or not new_password:
+        raise HTTPException(status_code=400, detail="Token and password are required")
+    
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    user = await db.users.find_one({
+        "reset_token": token,
+        "reset_token_expiry": {"$gt": datetime.utcnow()}
+    })
+    
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    
+    # Update password
+    await db.users.update_one(
+        {"id": user["id"]},
+        {
+            "$set": {"password_hash": get_password_hash(new_password)},
+            "$unset": {"reset_token": "", "reset_token_expiry": ""}
+        }
+    )
+    
+    return {"success": True, "message": "Password reset successfully"}
+
 @api_router.put("/auth/profile")
 async def update_profile(profile_data: dict, user = Depends(get_current_user)):
     """Update user profile"""
