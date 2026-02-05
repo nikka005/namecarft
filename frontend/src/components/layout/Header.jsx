@@ -132,14 +132,20 @@ const Header = () => {
         {/* Search Bar */}
         {searchOpen && (
           <div className="border-t border-gray-100 py-4 px-4">
-            <div className="max-w-2xl mx-auto relative">
+            <form onSubmit={handleSearch} className="max-w-2xl mx-auto relative">
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for products..."
                 className="w-full px-4 py-3 pl-12 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                autoFocus
               />
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            </div>
+              <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2 text-sky-600 font-medium">
+                Search
+              </button>
+            </form>
           </div>
         )}
 
