@@ -1616,6 +1616,7 @@ async def seed_products(admin = Depends(get_admin_user)):
             'category': product['category'],
             'metal_types': ['gold', 'rose-gold', 'silver'],
             'is_featured': product.get('is_featured', False),
+            'allow_custom_image': product['category'] in ['for-her', 'couples'] or 'Necklace' in product['name'] or 'Ring' in product['name'] or 'Pendant' in product['name'],
             'is_active': True,
             'in_stock': True,
             'stock_quantity': 100,
