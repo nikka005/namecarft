@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Heart, Share2, Truck, Shield, RotateCcw, Minus, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Share2, Truck, Shield, RotateCcw, Minus, Plus, Upload, X, Image as ImageIcon } from 'lucide-react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import SaleBanner from '../components/home/SaleBanner';
@@ -15,6 +15,7 @@ const API = process.env.REACT_APP_BACKEND_URL || '';
 const ProductPage = () => {
   const { slug } = useParams();
   const { addToCart, cartCount, setIsCartOpen } = useCart();
+  const fileInputRef = useRef(null);
   
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,6 +25,11 @@ const ProductPage = () => {
   const [customName, setCustomName] = useState('');
   const [selectedMetal, setSelectedMetal] = useState('gold');
   const [isWishlisted, setIsWishlisted] = useState(false);
+  
+  // Image upload state
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [uploadedImagePreview, setUploadedImagePreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -43,6 +49,57 @@ const ProductPage = () => {
       fetchProduct();
     }
   }, [slug]);
+
+  const handleImageSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setUploadedImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+    
+    // Upload to server
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await axios.post(`${API}/api/upload/image`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      setUploadedImage(res.data.url);
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Failed to upload image. Please try again.');
+      setUploadedImagePreview(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeUploadedImage = () => {
+    setUploadedImage(null);
+    setUploadedImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   if (loading) {
     return (
@@ -84,7 +141,11 @@ const ProductPage = () => {
       alert('Please enter a name for personalization');
       return;
     }
-    addToCart(product, quantity, { name: customName, metal: selectedMetal });
+    addToCart(product, quantity, { 
+      name: customName, 
+      metal: selectedMetal,
+      customImage: uploadedImage || null
+    });
     setIsCartOpen(true);
   };
 
@@ -192,7 +253,7 @@ const ProductPage = () => {
               <Label className="text-sm font-medium text-gray-900 mb-3 block">
                 Select Metal Type
               </Label>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 {metals.map((metal) => (
                   <button
                     key={metal.id}
@@ -231,6 +292,54 @@ const ProductPage = () => {
               </p>
             </div>
 
+            {/* Custom Image Upload */}
+            <div>
+              <Label className="text-sm font-medium text-gray-900 mb-2 block">
+                Upload Your Photo (Optional)
+              </Label>
+              <p className="text-xs text-gray-500 mb-3">
+                Upload a photo to be engraved/printed on your jewelry
+              </p>
+              
+              {uploadedImagePreview ? (
+                <div className="relative inline-block">
+                  <img 
+                    src={uploadedImagePreview} 
+                    alt="Uploaded" 
+                    className="w-32 h-32 object-cover rounded-lg border-2 border-sky-500"
+                  />
+                  <button
+                    onClick={removeUploadedImage}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                  {uploading && (
+                    <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm">Uploading...</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full max-w-xs border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-sky-500 hover:bg-sky-50 transition-colors"
+                >
+                  <ImageIcon className="w-10 h-10 mx-auto text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-600">Click to upload your photo</p>
+                  <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+                </div>
+              )}
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+            </div>
+
             {/* Quantity */}
             <div>
               <Label className="text-sm font-medium text-gray-900 mb-2 block">
@@ -257,10 +366,11 @@ const ProductPage = () => {
             <div className="flex gap-4">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 bg-sky-500 text-white font-medium py-4 rounded-xl hover:bg-sky-600 transition-colors"
+                disabled={uploading}
+                className="flex-1 bg-sky-500 text-white font-medium py-4 rounded-xl hover:bg-sky-600 transition-colors disabled:bg-gray-400"
                 data-testid="add-to-cart-btn"
               >
-                Add to Cart - ₹{(product.price * quantity).toLocaleString()}
+                {uploading ? 'Uploading...' : `Add to Cart - ₹${(product.price * quantity).toLocaleString()}`}
               </button>
               <button
                 onClick={() => setIsWishlisted(!isWishlisted)}
