@@ -427,6 +427,14 @@ const OrdersTab = ({ token }) => {
                     <div className="flex-1">
                       <p className="font-medium">{item.name}</p>
                       <p className="text-sm text-gray-500">Name: {item.customization?.name || 'N/A'}</p>
+                      {item.customization?.metal && (
+                        <p className="text-sm text-gray-500">Metal: {item.customization.metal}</p>
+                      )}
+                      {item.customization?.customImage && (
+                        <a href={item.customization.customImage} target="_blank" rel="noopener noreferrer" className="text-sm text-sky-600 hover:underline flex items-center gap-1">
+                          📷 View Customer Photo
+                        </a>
+                      )}
                     </div>
                     <p>x{item.quantity}</p>
                     <p className="font-medium">₹{(item.price * item.quantity).toLocaleString()}</p>
