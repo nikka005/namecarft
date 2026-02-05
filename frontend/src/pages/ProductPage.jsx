@@ -292,7 +292,8 @@ const ProductPage = () => {
               </p>
             </div>
 
-            {/* Custom Image Upload */}
+            {/* Custom Image Upload - Only show if product allows it */}
+            {product.allow_custom_image && (
             <div>
               <Label className="text-sm font-medium text-gray-900 mb-2 block">
                 Upload Your Photo (Optional)
