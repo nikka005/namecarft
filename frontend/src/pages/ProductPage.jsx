@@ -340,6 +340,7 @@ const ProductPage = () => {
                 className="hidden"
               />
             </div>
+            )}
 
             {/* Quantity */}
             <div>
