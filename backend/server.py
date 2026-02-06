@@ -1279,7 +1279,22 @@ async def bulk_upload_products(file: UploadFile = File(...), admin = Depends(get
         raise HTTPException(status_code=400, detail="Only CSV files are supported")
     
     contents = await file.read()
-    decoded = contents.decode('utf-8')
+    
+    # Try different encodings
+    decoded = None
+    for encoding in ['utf-8-sig', 'utf-8', 'latin-1', 'cp1252']:
+        try:
+            decoded = contents.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    
+    if decoded is None:
+        raise HTTPException(status_code=400, detail="Could not decode file. Please save as UTF-8 CSV.")
+    
+    # Remove BOM if present
+    if decoded.startswith('\ufeff'):
+        decoded = decoded[1:]
     
     reader = csv.DictReader(io.StringIO(decoded))
     
@@ -1288,19 +1303,27 @@ async def bulk_upload_products(file: UploadFile = File(...), admin = Depends(get
     
     for row_num, row in enumerate(reader, start=2):
         try:
-            # Required fields
-            name = row.get('name', '').strip()
-            price = row.get('price', '').strip()
-            original_price = row.get('original_price', '').strip()
-            category = row.get('category', '').strip()
-            image = row.get('image', '').strip()
+            # Required fields - handle different column name formats
+            name = (row.get('name') or row.get('Name') or row.get('NAME') or '').strip()
+            price = (row.get('price') or row.get('Price') or row.get('PRICE') or '').strip()
+            original_price = (row.get('original_price') or row.get('Original Price') or row.get('Original_Price') or row.get('MRP') or '').strip()
+            category = (row.get('category') or row.get('Category') or row.get('CATEGORY') or '').strip()
+            image = (row.get('image') or row.get('Image') or row.get('IMAGE') or row.get('image_url') or '').strip()
             
-            if not all([name, price, original_price, category, image]):
-                errors.append(f"Row {row_num}: Missing required fields (name, price, original_price, category, image)")
+            if not all([name, price, category]):
+                errors.append(f"Row {row_num}: Missing required fields (name, price, category)")
                 continue
             
+            # Set original_price to price if not provided
+            if not original_price:
+                original_price = price
+            
+            # Set default image if not provided
+            if not image:
+                image = "https://via.placeholder.com/400x400?text=No+Image"
+            
             # Generate slug
-            slug = name.lower().replace(' ', '-').replace('&', 'and').replace("'", "")
+            slug = name.lower().replace(' ', '-').replace('&', 'and').replace("'", "").replace('(', '').replace(')', '').replace(',', '')
             
             # Check if product already exists
             existing = await db.products.find_one({"slug": slug})
@@ -1309,13 +1332,16 @@ async def bulk_upload_products(file: UploadFile = File(...), admin = Depends(get
                 continue
             
             # Calculate discount if not provided
-            price_float = float(price)
-            original_price_float = float(original_price)
-            discount = row.get('discount', '').strip()
+            price_float = float(price.replace(',', ''))
+            original_price_float = float(original_price.replace(',', ''))
+            discount = (row.get('discount') or row.get('Discount') or '').strip()
             if discount:
-                discount_int = int(discount)
+                discount_int = int(float(discount))
             else:
-                discount_int = int(((original_price_float - price_float) / original_price_float) * 100)
+                if original_price_float > price_float:
+                    discount_int = int(((original_price_float - price_float) / original_price_float) * 100)
+                else:
+                    discount_int = 0
             
             # Create product document
             doc = {
