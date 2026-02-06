@@ -28,17 +28,20 @@ export const categories = [
   { id: 1, name: "Her", slug: "for-her" },
   { id: 2, name: "Him", slug: "for-him" },
   { id: 3, name: "Kids", slug: "kids" },
-  { id: 4, name: "Couple", slug: "couple" },
-  { id: 5, name: "Cultural", slug: "cultural" },
-  { id: 6, name: "Express Ship", slug: "express-ship" }
+  { id: 4, name: "Couples", slug: "couples" },
+  { id: 5, name: "Rings", slug: "rings" },
+  { id: 6, name: "Earrings", slug: "earrings" },
+  { id: 7, name: "Personalized", slug: "personalized-gifts" },
+  { id: 8, name: "Express Ship", slug: "express" }
 ];
 
 export const navItems = [
-  { name: "Women", href: "/collections/for-her", hasDropdown: true },
+  { name: "Women", href: "/collections/for-her", hasDropdown: false },
   { name: "Men", href: "/collections/for-him", hasDropdown: false },
-  { name: "Kids", href: "/collections/kids", hasDropdown: false },
-  { name: "Express Shipping", href: "/collections/express-ship", hasDropdown: false },
-  { name: "Best sellers", href: "/collections/all", hasDropdown: false, highlight: true }
+  { name: "Couples", href: "/collections/couples", hasDropdown: false },
+  { name: "Earrings", href: "/collections/earrings", hasDropdown: false },
+  { name: "Personalized", href: "/collections/personalized-gifts", hasDropdown: false, highlight: true },
+  { name: "All Products", href: "/collections/all", hasDropdown: false }
 ];
 
 export const products = [
