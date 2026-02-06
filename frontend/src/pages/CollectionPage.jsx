@@ -24,6 +24,8 @@ const CATEGORY_NAMES = {
   'kids': 'Kids',
   'couples': 'Couples',
   'rings': 'Rings',
+  'earrings': 'Earrings',
+  'personalized-gifts': 'Personalized Gifts',
   'express': 'Express Shipping',
   'all': 'All Products'
 };
