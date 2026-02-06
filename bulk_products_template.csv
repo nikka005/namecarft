@@ -1,0 +1,8 @@
+name,price,original_price,category,image,description,discount,hover_image,is_featured,allow_custom_image,stock_quantity
+Personalized Heart Necklace,1299,1999,for-her,https://example.com/heart-necklace.jpg,Beautiful heart-shaped necklace with custom name engraving. Perfect gift for her.,35,,TRUE,TRUE,100
+Rose Gold Name Bracelet,999,1499,for-her,https://example.com/bracelet.jpg,Elegant rose gold bracelet with personalized name.,33,,FALSE,FALSE,50
+Men's Leather ID Bracelet,1199,1799,for-him,https://example.com/mens-bracelet.jpg,Premium leather bracelet with custom engraving for men.,33,,FALSE,FALSE,100
+Kids Rainbow Necklace,699,999,kids,https://example.com/kids-necklace.jpg,Colorful rainbow necklace with child's name.,30,,FALSE,TRUE,75
+Couple Promise Rings Set,2499,3499,couples,https://example.com/couple-rings.jpg,Matching promise rings with both names engraved.,29,,TRUE,TRUE,60
+Infinity Diamond Ring,1999,2999,rings,https://example.com/infinity-ring.jpg,Elegant infinity ring with diamond accents.,33,,TRUE,TRUE,40
+Express Name Pendant,899,1299,express,https://example.com/express-pendant.jpg,Quick delivery personalized pendant. Ships in 24 hours.,31,,FALSE,FALSE,200
