@@ -503,6 +503,11 @@ const ProductsTab = ({ token }) => {
     const file = e.target.files[0];
     if (!file) return;
     
+    if (!file.name.endsWith('.csv')) {
+      toast({ title: 'Please upload a CSV file', variant: 'destructive' });
+      return;
+    }
+    
     setUploading(true);
     try {
       const formData = new FormData();
@@ -513,19 +518,27 @@ const ProductsTab = ({ token }) => {
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || `HTTP ${res.status}`);
+      }
+      
       const data = await res.json();
       
       if (data.success) {
         toast({ title: `✅ ${data.message}` });
         if (data.errors?.length > 0) {
           console.log('Upload errors:', data.errors);
+          toast({ title: `⚠️ ${data.errors.length} rows had errors - check console`, variant: 'warning' });
         }
         fetchProducts();
       } else {
         toast({ title: data.detail || 'Upload failed', variant: 'destructive' });
       }
     } catch (err) {
-      toast({ title: 'Upload failed', variant: 'destructive' });
+      console.error('Bulk upload error:', err);
+      toast({ title: `Upload failed: ${err.message}`, variant: 'destructive' });
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
