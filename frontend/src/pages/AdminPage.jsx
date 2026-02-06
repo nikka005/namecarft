@@ -495,15 +495,67 @@ const ProductsTab = ({ token }) => {
     } catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
   };
 
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleBulkUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await fetch(`${API}/api/admin/products/bulk-upload`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        toast({ title: `✅ ${data.message}` });
+        if (data.errors?.length > 0) {
+          console.log('Upload errors:', data.errors);
+        }
+        fetchProducts();
+      } else {
+        toast({ title: data.detail || 'Upload failed', variant: 'destructive' });
+      }
+    } catch (err) {
+      toast({ title: 'Upload failed', variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">Products</h2>
-        <div className="flex gap-4">
+        <div className="flex gap-4 flex-wrap">
           <div className="relative flex-1 md:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
           </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            onChange={handleBulkUpload}
+            className="hidden"
+          />
+          <Button 
+            variant="outline" 
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            {uploading ? 'Uploading...' : 'Bulk Upload CSV'}
+          </Button>
           <Button onClick={() => { setEditingProduct(null); setShowForm(true); }} className="bg-sky-500 hover:bg-sky-600">
             <Plus className="w-4 h-4 mr-2" />Add Product
           </Button>
