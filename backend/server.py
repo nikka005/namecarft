@@ -1344,23 +1344,29 @@ async def bulk_upload_products(file: UploadFile = File(...), admin = Depends(get
                     discount_int = 0
             
             # Create product document
+            description = (row.get('description') or row.get('Description') or '').strip()
+            hover_image = (row.get('hover_image') or row.get('Hover Image') or '').strip()
+            is_featured = (row.get('is_featured') or row.get('Featured') or '').strip().upper() in ['TRUE', 'YES', '1']
+            allow_custom_image = (row.get('allow_custom_image') or row.get('Custom Image') or '').strip().upper() in ['TRUE', 'YES', '1']
+            stock_qty = (row.get('stock_quantity') or row.get('Stock') or '100').strip()
+            
             doc = {
                 'id': str(uuid.uuid4()),
                 'name': name,
                 'slug': slug,
-                'description': row.get('description', '').strip() or f'Beautiful {name}. Perfect gift for your loved ones.',
+                'description': description or f'Beautiful {name}. Perfect gift for your loved ones.',
                 'price': price_float,
                 'original_price': original_price_float,
                 'discount': discount_int,
                 'image': image,
-                'hover_image': row.get('hover_image', '').strip() or image,
-                'category': category,
+                'hover_image': hover_image or image,
+                'category': category.lower().replace(' ', '-'),
                 'metal_types': ['gold', 'rose-gold', 'silver'],
-                'is_featured': row.get('is_featured', '').strip().upper() == 'TRUE',
-                'allow_custom_image': row.get('allow_custom_image', '').strip().upper() == 'TRUE',
+                'is_featured': is_featured,
+                'allow_custom_image': allow_custom_image,
                 'is_active': True,
                 'in_stock': True,
-                'stock_quantity': int(row.get('stock_quantity', '100').strip() or '100'),
+                'stock_quantity': int(stock_qty) if stock_qty.isdigit() else 100,
                 'created_at': datetime.utcnow(),
                 'updated_at': datetime.utcnow(),
             }
