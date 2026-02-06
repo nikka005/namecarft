@@ -1268,6 +1268,90 @@ async def admin_update_order(
     
     return {"success": True}
 
+@api_router.post("/admin/products/bulk-upload")
+async def bulk_upload_products(file: UploadFile = File(...), admin = Depends(get_admin_user)):
+    """Bulk upload products from CSV file"""
+    import csv
+    import io
+    
+    # Validate file type
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Only CSV files are supported")
+    
+    contents = await file.read()
+    decoded = contents.decode('utf-8')
+    
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    added = 0
+    errors = []
+    
+    for row_num, row in enumerate(reader, start=2):
+        try:
+            # Required fields
+            name = row.get('name', '').strip()
+            price = row.get('price', '').strip()
+            original_price = row.get('original_price', '').strip()
+            category = row.get('category', '').strip()
+            image = row.get('image', '').strip()
+            
+            if not all([name, price, original_price, category, image]):
+                errors.append(f"Row {row_num}: Missing required fields (name, price, original_price, category, image)")
+                continue
+            
+            # Generate slug
+            slug = name.lower().replace(' ', '-').replace('&', 'and').replace("'", "")
+            
+            # Check if product already exists
+            existing = await db.products.find_one({"slug": slug})
+            if existing:
+                errors.append(f"Row {row_num}: Product '{name}' already exists")
+                continue
+            
+            # Calculate discount if not provided
+            price_float = float(price)
+            original_price_float = float(original_price)
+            discount = row.get('discount', '').strip()
+            if discount:
+                discount_int = int(discount)
+            else:
+                discount_int = int(((original_price_float - price_float) / original_price_float) * 100)
+            
+            # Create product document
+            doc = {
+                'id': str(uuid.uuid4()),
+                'name': name,
+                'slug': slug,
+                'description': row.get('description', '').strip() or f'Beautiful {name}. Perfect gift for your loved ones.',
+                'price': price_float,
+                'original_price': original_price_float,
+                'discount': discount_int,
+                'image': image,
+                'hover_image': row.get('hover_image', '').strip() or image,
+                'category': category,
+                'metal_types': ['gold', 'rose-gold', 'silver'],
+                'is_featured': row.get('is_featured', '').strip().upper() == 'TRUE',
+                'allow_custom_image': row.get('allow_custom_image', '').strip().upper() == 'TRUE',
+                'is_active': True,
+                'in_stock': True,
+                'stock_quantity': int(row.get('stock_quantity', '100').strip() or '100'),
+                'created_at': datetime.utcnow(),
+                'updated_at': datetime.utcnow(),
+            }
+            
+            await db.products.insert_one(doc)
+            added += 1
+            
+        except Exception as e:
+            errors.append(f"Row {row_num}: {str(e)}")
+    
+    return {
+        "success": True,
+        "added": added,
+        "errors": errors,
+        "message": f"Successfully added {added} products" + (f" with {len(errors)} errors" if errors else "")
+    }
+
 @api_router.get("/admin/products")
 async def admin_get_products(
     search: Optional[str] = None,
