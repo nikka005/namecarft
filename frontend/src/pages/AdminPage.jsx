@@ -513,7 +513,7 @@ const ProductsTab = ({ token }) => {
       const formData = new FormData();
       formData.append('file', file);
       
-      const res = await fetch(`${API}/api/admin/products/bulk-upload`, {
+      const res = await fetch(`${BACKEND_URL}/api/admin/products/bulk-upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
