@@ -965,6 +965,15 @@ async def create_order(order_data: OrderCreate, background_tasks: BackgroundTask
             email_html
         )
     
+    # Send WhatsApp notification in background
+    if settings.get("send_whatsapp_order_confirmation", True) and order_data.shipping_address.phone:
+        whatsapp_message = generate_order_whatsapp_message(order_dict, settings)
+        background_tasks.add_task(
+            send_whatsapp_message,
+            order_data.shipping_address.phone,
+            whatsapp_message
+        )
+    
     return order_dict
 
 @api_router.get("/orders")
