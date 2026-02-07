@@ -135,6 +135,8 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
     { id: 'products', label: 'Products', icon: Package },
     { id: 'customers', label: 'Customers', icon: Users },
     { id: 'coupons', label: 'Coupons', icon: Tags },
+    { id: 'refunds', label: 'Refunds', icon: RefreshCw },
+    { id: 'navigation', label: 'Navigation', icon: Menu },
     { id: 'media', label: 'Media Library', icon: Image },
     { id: 'settings', label: 'Site Settings', icon: Settings },
   ];
