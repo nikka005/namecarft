@@ -132,6 +132,7 @@ const ProductPage = () => {
   const savings = (product.original_price || 0) - product.price;
 
   const handleAddToCart = () => {
+    // Name is always required
     if (!customName.trim()) {
       const nameInput = document.getElementById('custom-name-input');
       if (nameInput) {
@@ -141,6 +142,17 @@ const ProductPage = () => {
       alert('Please enter a name for personalization');
       return;
     }
+    
+    // Photo is required if product has allow_custom_image enabled
+    if (product.allow_custom_image && !uploadedImage) {
+      const uploadSection = document.getElementById('photo-upload-section');
+      if (uploadSection) {
+        uploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      alert('Please upload your photo for this product');
+      return;
+    }
+    
     addToCart(product, quantity, { 
       name: customName, 
       metal: selectedMetal,
