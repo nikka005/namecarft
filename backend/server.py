@@ -1400,6 +1400,15 @@ async def admin_update_order(
             f"Your Order #{order['order_number']} Has Shipped!",
             email_html
         )
+        
+        # Send WhatsApp shipping notification
+        if settings.get("send_whatsapp_shipping_notification", True) and order.get("shipping_address", {}).get("phone"):
+            whatsapp_message = generate_shipping_whatsapp_message(order, settings)
+            background_tasks.add_task(
+                send_whatsapp_message,
+                order["shipping_address"]["phone"],
+                whatsapp_message
+            )
     
     return {"success": True}
 
