@@ -495,6 +495,97 @@ def generate_shipping_email(order: dict, settings: dict) -> str:
     </html>
     """
 
+# ==================== WHATSAPP HELPERS ====================
+
+import httpx
+
+async def send_whatsapp_message(to_phone: str, message: str):
+    """Send WhatsApp message using Meta Business API"""
+    settings = await db.settings.find_one({"id": "site_settings"}, {"_id": 0})
+    if not settings:
+        return False
+    
+    if not settings.get("whatsapp_enabled"):
+        logger.info("WhatsApp notifications disabled")
+        return False
+    
+    api_token = settings.get("whatsapp_api_token")
+    phone_id = settings.get("whatsapp_business_phone_id")
+    
+    if not api_token or not phone_id:
+        logger.warning("WhatsApp not configured")
+        return False
+    
+    # Clean phone number (remove spaces, dashes, ensure country code)
+    clean_phone = to_phone.replace(" ", "").replace("-", "").replace("+", "")
+    if not clean_phone.startswith("91"):
+        clean_phone = "91" + clean_phone
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"https://graph.facebook.com/v18.0/{phone_id}/messages",
+                headers={
+                    "Authorization": f"Bearer {api_token}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "messaging_product": "whatsapp",
+                    "to": clean_phone,
+                    "type": "text",
+                    "text": {"body": message}
+                }
+            )
+            if response.status_code == 200:
+                logger.info(f"WhatsApp sent to {clean_phone}")
+                return True
+            else:
+                logger.error(f"WhatsApp error: {response.text}")
+                return False
+    except Exception as e:
+        logger.error(f"WhatsApp exception: {e}")
+        return False
+
+def generate_order_whatsapp_message(order: dict, settings: dict) -> str:
+    """Generate order confirmation message for WhatsApp"""
+    items_text = ""
+    for item in order.get('items', [])[:3]:  # Limit to 3 items
+        items_text += f"• {item.get('name', '')} x{item.get('quantity', 1)}\n"
+    if len(order.get('items', [])) > 3:
+        items_text += f"  ...and {len(order.get('items', [])) - 3} more items\n"
+    
+    return f"""🎉 *Order Confirmed!*
+
+Hi {order.get('shipping_address', {}).get('first_name', 'there')}!
+
+Your order *#{order.get('order_number', '')}* has been placed successfully.
+
+*Items:*
+{items_text}
+*Total:* ₹{order.get('total', 0):,.0f}
+
+We'll notify you when your order ships!
+
+Thank you for shopping with {settings.get('site_name', 'Name Craft')} 💝"""
+
+def generate_shipping_whatsapp_message(order: dict, settings: dict) -> str:
+    """Generate shipping notification message for WhatsApp"""
+    tracking_info = ""
+    if order.get('tracking_number'):
+        tracking_info = f"\n*Tracking Number:* {order.get('tracking_number')}"
+    
+    return f"""🚚 *Your Order Has Shipped!*
+
+Hi {order.get('shipping_address', {}).get('first_name', 'there')}!
+
+Great news! Your order *#{order.get('order_number', '')}* is on its way.{tracking_info}
+
+Estimated delivery: 3-5 business days
+
+Track your package and stay updated!
+
+- {settings.get('site_name', 'Name Craft')} Team"""
+
 # ==================== AUTH HELPERS ====================
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
