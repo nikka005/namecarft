@@ -77,7 +77,7 @@ PRODUCTS = [
         "discount": 47,
         "allow_custom_image": False,
         "description": "Classic gold chain necklace for everyday elegance. Minimalist and versatile.",
-        "image": "https://images.unsplash.com/photo-1703034390153-7d1d72e111e8a?w=600",
+        "image": "https://images.unsplash.com/photo-1703034390153-7d1d72111e8a?w=600",
         "hover_image": "https://images.unsplash.com/photo-1601121141499-17ae80afc03a?w=600"
     },
 
