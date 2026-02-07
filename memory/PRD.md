@@ -149,18 +149,22 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 
 ### P2 - High Priority (Next)
 1. **Stripe Payment Integration** - Add as alternative payment gateway
-2. **WhatsApp Notifications** - Order updates via WhatsApp Business API
 
 ### P3 - Lower Priority
-5. **User Management** - Block/edit users from admin
-6. **Coupon Management** - Full coupon system
-7. **Refund Processing** - Automated refund handling
-8. **Support Ticket System**
+5. **Support Ticket System** - Customer support workflow
+6. **Inventory Management** - Stock tracking per product
+
+### ✅ Completed P2/P3 Tasks
+- ✅ **WhatsApp Notifications** - Order updates via WhatsApp Business API (Feb 7, 2025)
+- ✅ **User Management** - Block/activate users from admin (Customers tab)
+- ✅ **Coupon Management** - Full coupon system in admin (Coupons tab)
+- ✅ **Refund Processing** - Refunds management in admin (Feb 7, 2025)
+- ✅ **Dynamic Navigation** - Navigation managed from admin (Feb 7, 2025)
 
 ### Refactoring Needed
-- **backend/server.py** - Split into modules (1200+ lines currently)
+- **backend/server.py** - Split into modules (2000+ lines currently)
 - **CheckoutPage.jsx** - Break into smaller components
-- **AdminPage.jsx** - Break into smaller components
+- **AdminPage.jsx** - Break into smaller components (1500+ lines)
 
 ---
 
@@ -176,7 +180,7 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 │   ├── src/
 │   │   ├── components/   # Reusable components (ui/, products/, etc.)
 │   │   ├── context/      # CartContext, AuthContext
-│   │   ├── data/mock.js  # Some remaining mock data
+│   │   ├── data/mock.js  # Minimal mock data (fallback only)
 │   │   ├── pages/        # All page components
 │   │   ├── App.js        # Router config
 │   │   └── index.css     # Global styles
@@ -194,6 +198,10 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 | /api/auth/register | POST | Customer registration |
 | /api/auth/login | POST | Customer/Admin login |
 | /api/auth/me | GET | Get current user |
+| /api/navigation | GET | Get dynamic navigation items |
+| /api/admin/navigation | GET/POST/PUT/DELETE | Manage navigation |
+| /api/admin/refunds | GET/POST/PUT/DELETE | Manage refunds |
+| /api/admin/test-whatsapp | POST | Send test WhatsApp message |
 | /api/payment/razorpay/config | GET | Get Razorpay public config |
 | /api/payment/razorpay/create-order | POST | Create Razorpay order |
 | /api/payment/razorpay/verify | POST | Verify Razorpay payment |
