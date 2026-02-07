@@ -1409,6 +1409,8 @@ const AdminPage = () => {
       case 'products': return <ProductsTab token={token} />;
       case 'customers': return <CustomersTab token={token} />;
       case 'coupons': return <CouponsTab token={token} />;
+      case 'refunds': return <RefundsTab token={token} />;
+      case 'navigation': return <NavigationTab token={token} />;
       case 'media': return <MediaTab token={token} />;
       case 'settings': return <SettingsTab token={token} />;
       default: return <DashboardTab token={token} />;
