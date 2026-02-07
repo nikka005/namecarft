@@ -147,7 +147,7 @@ async def seed_products():
             "price": p['price'],
             "original_price": p['original_price'],
             "category": p['category'],
-            "description": f"Beautiful {p['name']} - Perfect gift for your loved ones",
+            "description": p.get('description', f"Beautiful {p['name']} - Perfect gift for your loved ones"),
             "discount": p['discount'],
             "image": images[idx][0],
             "hover_image": images[idx][1],
