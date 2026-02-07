@@ -314,6 +314,35 @@ class MediaItem(BaseModel):
     alt_text: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class Refund(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    order_id: str
+    order_number: str
+    user_email: str
+    amount: float
+    reason: str
+    status: str = "pending"  # pending, approved, rejected, processed
+    admin_notes: Optional[str] = None
+    processed_by: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    processed_at: Optional[datetime] = None
+
+class RefundCreate(BaseModel):
+    order_id: str
+    amount: float
+    reason: str
+
+class NavigationItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    href: str
+    order: int = 0
+    is_active: bool = True
+    highlight: bool = False
+    icon: Optional[str] = None
+    parent_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 # ==================== EMAIL HELPERS ====================
 
 async def send_email(to_email: str, subject: str, html_content: str):
