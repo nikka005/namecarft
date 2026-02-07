@@ -306,12 +306,12 @@ const ProductPage = () => {
 
             {/* Custom Image Upload - Only show if product allows it */}
             {product.allow_custom_image && (
-            <div>
+            <div id="photo-upload-section">
               <Label className="text-sm font-medium text-gray-900 mb-2 block">
-                Upload Your Photo (Optional)
+                Upload Your Photo <span className="text-red-500">*</span>
               </Label>
               <p className="text-xs text-gray-500 mb-3">
-                Upload a photo to be engraved/printed on your jewelry
+                Upload a photo to be engraved/printed on your jewelry (Required)
               </p>
               
               {uploadedImagePreview ? (
@@ -336,11 +336,11 @@ const ProductPage = () => {
               ) : (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full max-w-xs border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-sky-500 hover:bg-sky-50 transition-colors"
+                  className="w-full max-w-xs border-2 border-dashed border-red-300 rounded-lg p-6 text-center cursor-pointer hover:border-sky-500 hover:bg-sky-50 transition-colors"
                 >
                   <ImageIcon className="w-10 h-10 mx-auto text-gray-400 mb-2" />
                   <p className="text-sm text-gray-600">Click to upload your photo</p>
-                  <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+                  <p className="text-xs text-red-400 mt-1">Required - PNG, JPG up to 5MB</p>
                 </div>
               )}
               
