@@ -49,38 +49,49 @@ STOCK_IMAGES = {
     ],
 }
 
-# 30 Products
+# 30 Valentine Special & Personalized Products
 PRODUCTS = [
-    {"name": "Oxidised Jhumka Earrings", "price": 599, "original_price": 999, "category": "earrings", "discount": 40},
-    {"name": "Gold Finish Jhumka Combo (3)", "price": 1299, "original_price": 2499, "category": "earrings", "discount": 48},
-    {"name": "Pearl Drop Jhumka", "price": 899, "original_price": 1699, "category": "earrings", "discount": 47},
-    {"name": "Wedding Wear Jhumka", "price": 999, "original_price": 1899, "category": "earrings", "discount": 47},
-    {"name": "Temple Jhumka Set", "price": 1199, "original_price": 2299, "category": "earrings", "discount": 48},
-    {"name": "Kundan Jhumka Earrings", "price": 799, "original_price": 1499, "category": "earrings", "discount": 47},
-    {"name": "Meenakari Jhumka", "price": 899, "original_price": 1699, "category": "earrings", "discount": 47},
-    {"name": "Chandbali Earrings", "price": 1099, "original_price": 2099, "category": "earrings", "discount": 48},
-    {"name": "Peacock Jhumka", "price": 999, "original_price": 1899, "category": "earrings", "discount": 47},
-    {"name": "Antique Finish Jhumka", "price": 699, "original_price": 1299, "category": "earrings", "discount": 46},
-    {"name": "Bridal Jhumka Set", "price": 1499, "original_price": 2899, "category": "earrings", "discount": 48},
-    {"name": "Personalized Photo Envelope Necklace", "price": 1299, "original_price": 1999, "category": "personalized-gifts", "discount": 35, "allow_custom_image": True},
-    {"name": "Personalized Eye Photo Necklace", "price": 1399, "original_price": 2199, "category": "personalized-gifts", "discount": 36, "allow_custom_image": True},
-    {"name": "Custom Name Necklace Gold", "price": 1199, "original_price": 1899, "category": "for-her", "discount": 37, "allow_custom_image": True},
-    {"name": "Photo Music Fridge Magnet", "price": 799, "original_price": 1299, "category": "personalized-gifts", "discount": 38, "allow_custom_image": True},
-    {"name": "Couple Initials Bracelet Set", "price": 1599, "original_price": 2499, "category": "couples", "discount": 36},
-    {"name": "Heart Photo Locket", "price": 1099, "original_price": 1799, "category": "personalized-gifts", "discount": 39, "allow_custom_image": True},
-    {"name": "Infinity Love Necklace", "price": 1199, "original_price": 1899, "category": "for-her", "discount": 37},
-    {"name": "Men Leather Bracelet", "price": 899, "original_price": 1499, "category": "for-him", "discount": 40},
-    {"name": "Couple Ring Set", "price": 1899, "original_price": 2999, "category": "couples", "discount": 37},
-    {"name": "Name Engraved Ring", "price": 999, "original_price": 1699, "category": "rings", "discount": 41},
-    {"name": "Rose Gold Name Necklace", "price": 1299, "original_price": 1999, "category": "for-her", "discount": 35},
-    {"name": "Couple Heart Pendant Set", "price": 1499, "original_price": 2399, "category": "couples", "discount": 37},
-    {"name": "Silver Initial Ring", "price": 799, "original_price": 1299, "category": "rings", "discount": 38},
-    {"name": "Birthstone Necklace", "price": 1399, "original_price": 2199, "category": "for-her", "discount": 36},
-    {"name": "Couple Name Bracelet", "price": 1299, "original_price": 1999, "category": "couples", "discount": 35},
-    {"name": "Custom Photo Keychain", "price": 499, "original_price": 799, "category": "personalized-gifts", "discount": 38, "allow_custom_image": True},
-    {"name": "Pearl Pendant Necklace", "price": 1099, "original_price": 1799, "category": "for-her", "discount": 39},
-    {"name": "Diamond Cut Name Necklace", "price": 1599, "original_price": 2499, "category": "for-her", "discount": 36},
-    {"name": "Express Delivery Gift Box", "price": 299, "original_price": 499, "category": "personalized-gifts", "discount": 40},
+    # Personalized Name Jewelry (Custom Name)
+    {"name": "Custom Name Necklace - Gold Plated", "price": 1299, "original_price": 2499, "category": "for-her", "discount": 48, "allow_custom_image": False, "description": "Elegant gold-plated necklace with your loved one's name beautifully crafted. Perfect Valentine's gift!"},
+    {"name": "Personalized Name Bracelet - Rose Gold", "price": 999, "original_price": 1899, "category": "for-her", "discount": 47, "allow_custom_image": False, "description": "Stunning rose gold bracelet personalized with any name. A romantic keepsake she'll treasure forever."},
+    {"name": "Custom Couple Names Pendant", "price": 1599, "original_price": 2999, "category": "couples", "discount": 47, "allow_custom_image": False, "description": "Two hearts, two names, one pendant. Perfect for couples who want to carry each other's name close to heart."},
+    {"name": "Personalized Name Ring - Sterling Silver", "price": 1199, "original_price": 2199, "category": "rings", "discount": 45, "allow_custom_image": False, "description": "Beautiful sterling silver ring engraved with your special name. A timeless gift of love."},
+    {"name": "Custom Name Anklet - Gold Finish", "price": 799, "original_price": 1499, "category": "for-her", "discount": 47, "allow_custom_image": False, "description": "Delicate gold-finish anklet with custom name. Add a personal touch to every step she takes."},
+    
+    # Personalized Photo Jewelry (Custom Image + Name)
+    {"name": "Photo Heart Locket Necklace", "price": 1499, "original_price": 2799, "category": "personalized-gifts", "discount": 46, "allow_custom_image": True, "description": "Keep your favorite memory close to your heart. Upload your photo and we'll craft it into this beautiful locket."},
+    {"name": "Custom Photo Projection Bracelet", "price": 1799, "original_price": 3299, "category": "personalized-gifts", "discount": 45, "allow_custom_image": True, "description": "Magic bracelet that projects your photo when held to light! A secret love message only you two know."},
+    {"name": "Personalized Photo Pendant - Circle", "price": 1299, "original_price": 2499, "category": "personalized-gifts", "discount": 48, "allow_custom_image": True, "description": "Your cherished photo beautifully embedded in a stunning circle pendant. Memories you can wear!"},
+    {"name": "Custom Photo Envelope Necklace", "price": 1399, "original_price": 2599, "category": "personalized-gifts", "discount": 46, "allow_custom_image": True, "description": "A secret love letter pendant - open the tiny envelope to reveal your special photo inside!"},
+    {"name": "Photo Music QR Code Keychain", "price": 899, "original_price": 1699, "category": "personalized-gifts", "discount": 47, "allow_custom_image": True, "description": "Scan to play 'your song'! Custom photo keychain with QR code linked to your special song."},
+    
+    # Valentine Special Couple Sets
+    {"name": "Valentine Couple Bracelet Set - King & Queen", "price": 1699, "original_price": 3199, "category": "couples", "discount": 47, "allow_custom_image": False, "description": "Matching King & Queen bracelets for the royal couple. His & Hers set with magnetic heart clasp."},
+    {"name": "Couple Heart Puzzle Pendant Set", "price": 1899, "original_price": 3499, "category": "couples", "discount": 46, "allow_custom_image": False, "description": "Two half hearts that complete each other - just like you two! Comes as a beautiful pair."},
+    {"name": "Infinity Love Couple Ring Set", "price": 2199, "original_price": 3999, "category": "couples", "discount": 45, "allow_custom_image": False, "description": "Infinity symbol rings representing endless love. Matching set with 'Forever' engraving."},
+    {"name": "Magnetic Heart Couple Necklace", "price": 1599, "original_price": 2999, "category": "couples", "discount": 47, "allow_custom_image": False, "description": "Two hearts that magnetically attract - just like your love! Beautiful symbolic jewelry."},
+    {"name": "Valentine Lock & Key Pendant Set", "price": 1399, "original_price": 2599, "category": "couples", "discount": 46, "allow_custom_image": False, "description": "She has your heart (lock), you have the key. Romantic symbolism for true lovers."},
+    
+    # Romantic Gifts for Her
+    {"name": "Rose Box Heart Necklace - Valentine Special", "price": 1999, "original_price": 3699, "category": "for-her", "discount": 46, "allow_custom_image": False, "description": "Real preserved rose in elegant box with stunning heart necklace. The ultimate Valentine's gift!"},
+    {"name": "I Love You in 100 Languages Necklace", "price": 1299, "original_price": 2499, "category": "for-her", "discount": 48, "allow_custom_image": False, "description": "Projection pendant shows 'I Love You' in 100 languages! A message of love in every language."},
+    {"name": "Birthstone Heart Pendant - Personalized", "price": 1199, "original_price": 2199, "category": "for-her", "discount": 45, "allow_custom_image": False, "description": "Heart pendant with her birthstone. Add her name for extra personalization!"},
+    {"name": "Custom Date Roman Numeral Bracelet", "price": 999, "original_price": 1899, "category": "for-her", "discount": 47, "allow_custom_image": False, "description": "Your special date (anniversary, first date) engraved in elegant Roman numerals."},
+    {"name": "Love Letter Envelope Locket", "price": 1099, "original_price": 1999, "category": "for-her", "discount": 45, "allow_custom_image": True, "description": "Tiny envelope locket with your photo and love message inside. Romantic and secretive!"},
+    
+    # Gifts for Him
+    {"name": "Personalized Leather Bracelet - Men's", "price": 899, "original_price": 1699, "category": "for-him", "discount": 47, "allow_custom_image": False, "description": "Premium leather bracelet with custom name engraving. Masculine and meaningful."},
+    {"name": "Custom Coordinates Bracelet - Black", "price": 999, "original_price": 1899, "category": "for-him", "discount": 47, "allow_custom_image": False, "description": "GPS coordinates of where you met/married engraved on sleek black bracelet."},
+    {"name": "Photo Dog Tag Necklace - Men's", "price": 1199, "original_price": 2199, "category": "for-him", "discount": 45, "allow_custom_image": True, "description": "Military style dog tag with your photo and message. Rugged yet romantic."},
+    {"name": "Personalized Wallet Card - Photo", "price": 499, "original_price": 999, "category": "for-him", "discount": 50, "allow_custom_image": True, "description": "Metal wallet card with your photo and love message. He'll carry you everywhere!"},
+    
+    # Valentine Special Edition
+    {"name": "Valentine Red Rose Bracelet Set", "price": 1499, "original_price": 2799, "category": "couples", "discount": 46, "allow_custom_image": False, "description": "Limited Valentine Edition! Red rose charm bracelets for both of you. Symbol of eternal love."},
+    {"name": "Heartbeat Sound Wave Necklace", "price": 1699, "original_price": 3199, "category": "personalized-gifts", "discount": 47, "allow_custom_image": True, "description": "Your actual heartbeat or voice saying 'I love you' engraved as sound wave. Truly unique!"},
+    {"name": "Photo Moon Lamp - 3D Printed", "price": 1999, "original_price": 3699, "category": "personalized-gifts", "discount": 46, "allow_custom_image": True, "description": "Your photo printed on a 3D moon lamp! Touch to change colors. Magical bedroom decor."},
+    {"name": "Custom Star Map - The Night We Met", "price": 1299, "original_price": 2499, "category": "personalized-gifts", "discount": 48, "allow_custom_image": False, "description": "Star constellation map of the exact night sky when you met. Printed on pendant."},
+    {"name": "Fingerprint Heart Couple Rings", "price": 2499, "original_price": 4499, "category": "rings", "discount": 44, "allow_custom_image": True, "description": "Your actual fingerprints forming a heart on matching rings. The most personal gift ever!"},
+    {"name": "Valentine Gift Hamper - Premium", "price": 2999, "original_price": 5499, "category": "personalized-gifts", "discount": 45, "allow_custom_image": True, "description": "Complete Valentine package: Photo frame, custom mug, chocolates, rose, and personalized card!"},
 ]
 
 async def seed_admin():
