@@ -419,6 +419,191 @@ PRODUCTS = [
         "image": "https://images.unsplash.com/photo-1601121141499-17ae80afc03a?w=600",
         "hover_image": "https://images.unsplash.com/photo-1758995115518-26f90aa61b97?w=600"
     },
+
+    # === NEW TRENDING PRODUCTS ===
+    
+    # Custom Name Necklaces - BESTSELLER
+    {
+        "name": "Custom Name Necklace Gold",
+        "price": 1499,
+        "original_price": 2799,
+        "category": "personalized-gifts",
+        "discount": 46,
+        "allow_custom_image": False,
+        "description": "Personalized gold name necklace with your name beautifully crafted. Our bestselling product!",
+        "image": "https://images.unsplash.com/photo-1742745063996-8d74bacb8a9e?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1766690847140-874d0c97314f?w=600"
+    },
+    {
+        "name": "Diamond Name Pendant Silver",
+        "price": 1799,
+        "original_price": 3299,
+        "category": "personalized-gifts",
+        "discount": 45,
+        "allow_custom_image": False,
+        "description": "Stunning silver name pendant with sparkling diamond accents. Premium personalized jewelry.",
+        "image": "https://images.unsplash.com/photo-1766690847140-874d0c97314f?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1742745063996-8d74bacb8a9e?w=600"
+    },
+    
+    # Initial Letter Necklaces - TRENDING
+    {
+        "name": "Initial Letter Pendant Gold",
+        "price": 999,
+        "original_price": 1899,
+        "category": "for-her",
+        "discount": 47,
+        "allow_custom_image": False,
+        "description": "Elegant gold initial pendant necklace. Choose your letter for a personal touch!",
+        "image": "https://images.unsplash.com/photo-1758995115543-983c55f98a33?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1733761013921-89d19f4a2194?w=600"
+    },
+    {
+        "name": "Heart Initial Necklace Rose Gold",
+        "price": 1199,
+        "original_price": 2199,
+        "category": "for-her",
+        "discount": 45,
+        "allow_custom_image": False,
+        "description": "Beautiful heart-shaped initial pendant in rose gold. Perfect gift for her!",
+        "image": "https://images.pexels.com/photos/29193429/pexels-photo-29193429.jpeg?w=600",
+        "hover_image": "https://images.pexels.com/photos/12428346/pexels-photo-12428346.jpeg?w=600"
+    },
+    
+    # Evil Eye Collection - HOT SELLER
+    {
+        "name": "Evil Eye Protection Bracelet",
+        "price": 799,
+        "original_price": 1499,
+        "category": "for-her",
+        "discount": 47,
+        "allow_custom_image": False,
+        "description": "Traditional evil eye bracelet for protection and good luck. Colorful and meaningful.",
+        "image": "https://images.unsplash.com/photo-1649701954681-677a067a472b?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1649701954669-aa35811b62d3?w=600"
+    },
+    {
+        "name": "Evil Eye Pendant Necklace Blue",
+        "price": 899,
+        "original_price": 1699,
+        "category": "for-her",
+        "discount": 47,
+        "allow_custom_image": False,
+        "description": "Beautiful blue evil eye pendant necklace. Ward off negativity in style!",
+        "image": "https://images.unsplash.com/photo-1652536160742-9f46c4a1a838?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1647638162212-51180c35deae?w=600"
+    },
+    
+    # Birthstone & Gemstone Collection
+    {
+        "name": "Birthstone Crystal Necklace",
+        "price": 1299,
+        "original_price": 2499,
+        "category": "for-her",
+        "discount": 48,
+        "allow_custom_image": False,
+        "description": "Beautiful birthstone necklace with colorful gemstones. Choose your birth month!",
+        "image": "https://images.unsplash.com/photo-1663170794635-33af4a2d5af8?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1682364853135-0840844c3cc5?w=600"
+    },
+    {
+        "name": "Rainbow Gemstone Pendant",
+        "price": 1599,
+        "original_price": 2999,
+        "category": "for-her",
+        "discount": 47,
+        "allow_custom_image": False,
+        "description": "Stunning rainbow pendant with multicolored gemstones. A true statement piece!",
+        "image": "https://images.unsplash.com/photo-1751277403754-283784113a64?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1663170794635-33af4a2d5af8?w=600"
+    },
+    
+    # Pearl Collection - ELEGANT
+    {
+        "name": "Classic Pearl Necklace",
+        "price": 1899,
+        "original_price": 3499,
+        "category": "for-her",
+        "discount": 46,
+        "allow_custom_image": False,
+        "description": "Timeless white pearl necklace. Elegant sophistication for any occasion.",
+        "image": "https://images.unsplash.com/photo-1654699991520-aaaf4dd2608b?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1742029560234-bd22dc2bfe8b?w=600"
+    },
+    {
+        "name": "Pink Pearl Set with Earrings",
+        "price": 2199,
+        "original_price": 3999,
+        "category": "for-her",
+        "discount": 45,
+        "allow_custom_image": False,
+        "description": "Beautiful pink pearl necklace and earrings set. Perfect for weddings and parties!",
+        "image": "https://images.unsplash.com/photo-1654699991494-892326ee8171?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1654699991520-aaaf4dd2608b?w=600"
+    },
+    
+    # Diamond & Crystal Collection
+    {
+        "name": "Diamond Tennis Bracelet",
+        "price": 2499,
+        "original_price": 4499,
+        "category": "for-her",
+        "discount": 44,
+        "allow_custom_image": False,
+        "description": "Stunning diamond tennis bracelet. Sparkle and shine with every movement!",
+        "image": "https://images.unsplash.com/photo-1639065643006-e217c4fee12e?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1570943991418-ffa08d952b16?w=600"
+    },
+    
+    # Butterfly Collection - TRENDY
+    {
+        "name": "Crystal Butterfly Brooch",
+        "price": 1099,
+        "original_price": 1999,
+        "category": "for-her",
+        "discount": 45,
+        "allow_custom_image": False,
+        "description": "Exquisite crystal butterfly brooch. Add elegance to any outfit!",
+        "image": "https://images.unsplash.com/photo-1693834084392-fa61a52a81c0?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1720128437790-d2b069b67684?w=600"
+    },
+    {
+        "name": "Bow Pearl Necklace",
+        "price": 1399,
+        "original_price": 2599,
+        "category": "for-her",
+        "discount": 46,
+        "allow_custom_image": False,
+        "description": "Delicate pearl necklace with gold bow charm. Feminine and romantic!",
+        "image": "https://images.unsplash.com/photo-1720128437790-d2b069b67684?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1693834084392-fa61a52a81c0?w=600"
+    },
+    
+    # Celestial Collection
+    {
+        "name": "Moon Star Celestial Necklace",
+        "price": 1199,
+        "original_price": 2199,
+        "category": "for-her",
+        "discount": 45,
+        "allow_custom_image": False,
+        "description": "Beautiful celestial necklace with moon and star charms. Dreamy and romantic!",
+        "image": "https://images.pexels.com/photos/5386593/pexels-photo-5386593.jpeg?w=600",
+        "hover_image": "https://images.pexels.com/photos/9482095/pexels-photo-9482095.jpeg?w=600"
+    },
+    
+    # Projection Bracelet - UNIQUE
+    {
+        "name": "Photo Projection Bracelet",
+        "price": 1699,
+        "original_price": 3199,
+        "category": "personalized-gifts",
+        "discount": 47,
+        "allow_custom_image": True,
+        "description": "Magic bracelet that projects your photo when held to light! A secret love message.",
+        "image": "https://images.unsplash.com/photo-1679499774680-a6e5c947e805?w=600",
+        "hover_image": "https://images.unsplash.com/photo-1708221382764-299d9e3ad257?w=600"
+    },
 ]
 
 async def seed_admin():
