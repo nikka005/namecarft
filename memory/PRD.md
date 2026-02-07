@@ -12,22 +12,52 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 
 ## Tech Stack
 - **Frontend:** React + Tailwind CSS + Shadcn UI + react-razorpay
-- **Backend:** FastAPI (Python) + razorpay SDK
+- **Backend:** FastAPI (Python) + razorpay SDK + httpx (WhatsApp API)
 - **Database:** MongoDB
 
 ---
 
 ## What's Been Implemented
 
-### Completed Features (January 26, 2025 - Latest)
+### Latest Updates (February 7, 2025)
 
-#### Product Catalog (35 Products)
-- [x] 35 original products added with unique descriptions
+#### Fixed Broken Product Images
+- [x] Fixed 36 products with broken images from CSV upload
+- [x] Replaced hotlink-blocked URLs with Unsplash/Pexels stock photos
+- [x] All collection pages now display images correctly
+
+#### WhatsApp Notifications (NEW)
+- [x] WhatsApp Business API integration
+- [x] Order confirmation messages via WhatsApp
+- [x] Shipping notification messages via WhatsApp
+- [x] Admin toggle to enable/disable WhatsApp notifications
+- [x] Test WhatsApp message functionality in admin
+
+#### Refunds Management (NEW)
+- [x] Admin Refunds tab with full CRUD operations
+- [x] Create refund request for any order
+- [x] Filter refunds by status (pending/approved/rejected/processed)
+- [x] Approve/reject refund requests
+- [x] Process refunds and update order status
+
+#### Dynamic Navigation (NEW)
+- [x] Navigation items now fetched from API (/api/navigation)
+- [x] Admin Navigation tab to manage menu items
+- [x] Add/edit/delete navigation items
+- [x] Seed default navigation items
+- [x] Toggle active/inactive status per item
+- [x] Highlight flag for special menu items
+
+### Completed Features (January 26, 2025)
+
+#### Product Catalog (71 Products)
+- [x] 71 products total with unique descriptions
 - [x] AI-generated product images (5 hero images)
 - [x] Stock photos from Unsplash/Pexels for catalog
-- [x] Categories: For Her (8), For Him (7), Kids (5), Couples (5), Rings (5), Express (5)
+- [x] Bulk CSV upload feature for products
+- [x] Customer photo upload for eligible products
+- [x] Categories: For Her, For Him, Couples, Earrings, Personalized, etc.
 - [x] Homepage & Collections now fetch from API (not mock data)
-- [x] Hero banner features Rose Box Heart Necklace
 
 ### Completed Features (January 2025)
 
