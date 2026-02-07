@@ -296,6 +296,12 @@ class SiteSettings(BaseModel):
     privacy_policy: Optional[str] = None
     terms_of_service: Optional[str] = None
     shipping_policy: Optional[str] = None
+    # WhatsApp Settings
+    whatsapp_enabled: bool = False
+    whatsapp_api_token: Optional[str] = None
+    whatsapp_business_phone_id: Optional[str] = None
+    send_whatsapp_order_confirmation: bool = True
+    send_whatsapp_shipping_notification: bool = True
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 class MediaItem(BaseModel):
