@@ -1689,6 +1689,171 @@ async def admin_delete_category(category_id: str, admin = Depends(get_admin_user
         raise HTTPException(status_code=404, detail="Category not found")
     return {"success": True}
 
+# ==================== REFUND ROUTES ====================
+
+@api_router.get("/admin/refunds")
+async def admin_get_refunds(
+    status: Optional[str] = None,
+    limit: int = 50,
+    skip: int = 0,
+    admin = Depends(get_admin_user)
+):
+    """Get all refund requests"""
+    query = {}
+    if status:
+        query["status"] = status
+    
+    refunds = await db.refunds.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    total = await db.refunds.count_documents(query)
+    return {"refunds": refunds, "total": total}
+
+@api_router.post("/admin/refunds")
+async def admin_create_refund(refund_data: RefundCreate, admin = Depends(get_admin_user)):
+    """Create a refund request from admin"""
+    # Get order details
+    order = await db.orders.find_one({"id": refund_data.order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    refund = Refund(
+        order_id=refund_data.order_id,
+        order_number=order.get("order_number", ""),
+        user_email=order.get("shipping_address", {}).get("email", order.get("user_email", "")),
+        amount=refund_data.amount,
+        reason=refund_data.reason
+    )
+    
+    await db.refunds.insert_one(refund.dict())
+    return refund.dict()
+
+@api_router.put("/admin/refunds/{refund_id}")
+async def admin_update_refund(
+    refund_id: str,
+    update_data: Dict[str, Any],
+    admin = Depends(get_admin_user)
+):
+    """Update refund status (approve/reject/process)"""
+    refund = await db.refunds.find_one({"id": refund_id}, {"_id": 0})
+    if not refund:
+        raise HTTPException(status_code=404, detail="Refund not found")
+    
+    allowed_fields = ["status", "admin_notes"]
+    update = {}
+    for field in allowed_fields:
+        if field in update_data:
+            update[field] = update_data[field]
+    
+    if update_data.get("status") in ["approved", "processed"]:
+        update["processed_by"] = admin["id"]
+        update["processed_at"] = datetime.utcnow()
+        
+        # Update order status if refund is processed
+        if update_data.get("status") == "processed":
+            await db.orders.update_one(
+                {"id": refund["order_id"]},
+                {"$set": {"payment_status": "refunded", "order_status": "refunded"}}
+            )
+    
+    await db.refunds.update_one({"id": refund_id}, {"$set": update})
+    return {"success": True}
+
+@api_router.delete("/admin/refunds/{refund_id}")
+async def admin_delete_refund(refund_id: str, admin = Depends(get_admin_user)):
+    """Delete a refund request"""
+    result = await db.refunds.delete_one({"id": refund_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Refund not found")
+    return {"success": True}
+
+# ==================== NAVIGATION ROUTES ====================
+
+@api_router.get("/navigation")
+async def get_navigation():
+    """Get public navigation items"""
+    nav_items = await db.navigation.find({"is_active": True}, {"_id": 0}).sort("order", 1).to_list(100)
+    
+    # If no navigation items exist, return default
+    if not nav_items:
+        nav_items = [
+            {"id": "1", "name": "Women", "href": "/collections/for-her", "order": 1, "is_active": True},
+            {"id": "2", "name": "Men", "href": "/collections/for-him", "order": 2, "is_active": True},
+            {"id": "3", "name": "Couples", "href": "/collections/couples", "order": 3, "is_active": True},
+            {"id": "4", "name": "Earrings", "href": "/collections/earrings", "order": 4, "is_active": True},
+            {"id": "5", "name": "Personalized", "href": "/collections/personalized-gifts", "order": 5, "is_active": True, "highlight": True},
+            {"id": "6", "name": "All Products", "href": "/collections/all", "order": 6, "is_active": True}
+        ]
+    
+    return nav_items
+
+@api_router.get("/admin/navigation")
+async def admin_get_navigation(admin = Depends(get_admin_user)):
+    """Get all navigation items for admin"""
+    nav_items = await db.navigation.find({}, {"_id": 0}).sort("order", 1).to_list(100)
+    return nav_items
+
+@api_router.post("/admin/navigation")
+async def admin_create_navigation(nav_data: Dict[str, Any], admin = Depends(get_admin_user)):
+    """Create a navigation item"""
+    nav_item = NavigationItem(**nav_data)
+    await db.navigation.insert_one(nav_item.dict())
+    return nav_item.dict()
+
+@api_router.put("/admin/navigation/{nav_id}")
+async def admin_update_navigation(nav_id: str, nav_data: Dict[str, Any], admin = Depends(get_admin_user)):
+    """Update a navigation item"""
+    result = await db.navigation.update_one({"id": nav_id}, {"$set": nav_data})
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Navigation item not found")
+    return {"success": True}
+
+@api_router.delete("/admin/navigation/{nav_id}")
+async def admin_delete_navigation(nav_id: str, admin = Depends(get_admin_user)):
+    """Delete a navigation item"""
+    result = await db.navigation.delete_one({"id": nav_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Navigation item not found")
+    return {"success": True}
+
+@api_router.post("/admin/navigation/seed")
+async def admin_seed_navigation(admin = Depends(get_admin_user)):
+    """Seed default navigation items"""
+    default_nav = [
+        {"name": "Women", "href": "/collections/for-her", "order": 1},
+        {"name": "Men", "href": "/collections/for-him", "order": 2},
+        {"name": "Couples", "href": "/collections/couples", "order": 3},
+        {"name": "Earrings", "href": "/collections/earrings", "order": 4},
+        {"name": "Personalized", "href": "/collections/personalized-gifts", "order": 5, "highlight": True},
+        {"name": "All Products", "href": "/collections/all", "order": 6}
+    ]
+    
+    added = 0
+    for nav in default_nav:
+        existing = await db.navigation.find_one({"href": nav["href"]})
+        if not existing:
+            nav_item = NavigationItem(**nav)
+            await db.navigation.insert_one(nav_item.dict())
+            added += 1
+    
+    return {"success": True, "added": added}
+
+# ==================== WHATSAPP TEST ====================
+
+@api_router.post("/admin/test-whatsapp")
+async def test_whatsapp(to_phone: str, admin = Depends(get_admin_user)):
+    """Send a test WhatsApp message"""
+    settings = await db.settings.find_one({"id": "site_settings"}, {"_id": 0})
+    if not settings:
+        settings = SiteSettings().dict()
+    
+    test_message = f"🎉 Test message from {settings.get('site_name', 'Name Craft')}!\n\nIf you're seeing this, WhatsApp notifications are working correctly.\n\nSent at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC"
+    
+    success = await send_whatsapp_message(to_phone, test_message)
+    
+    if success:
+        return {"success": True, "message": "Test WhatsApp message sent successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to send WhatsApp message. Check WhatsApp configuration.")
+
 # ==================== EMAIL TEST ====================
 
 @api_router.post("/admin/test-email")
