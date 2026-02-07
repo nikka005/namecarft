@@ -2079,8 +2079,7 @@ async def root():
 # Include the router
 app.include_router(api_router)
 
-# Serve uploaded files
-from fastapi.staticfiles import StaticFiles
+# Serve uploaded files (StaticFiles already imported at line 825)
 app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 app.add_middleware(
