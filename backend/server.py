@@ -610,7 +610,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
             return None
         user = await db.users.find_one({"id": user_id}, {"_id": 0})
         return user
-    except:
+    except Exception:
         return None
 
 async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
