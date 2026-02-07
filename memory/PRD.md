@@ -21,43 +21,27 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 
 ### Latest Updates (February 7, 2025)
 
-#### Fixed Broken Product Images
+#### FIXED: Product Catalog Image Mismatch Issue (P0)
+- [x] Completely redesigned product catalog with 34 products
+- [x] Each product now has an image that accurately represents its name
+- [x] All image URLs sourced from Unsplash with proper matching
+- [x] Categories covered: For Her, For Him, Couples, Earrings, Rings, Personalized Gifts
+- [x] Hover images also properly matched
+
+#### Product Categories & Images Now Matching:
+- **For Her**: Gold/Silver necklaces, bracelets, anklets - all showing actual jewelry
+- **For Him**: Men's chains, leather bracelets, wallets - masculine styling
+- **Couples**: Matching bracelet sets, couple rings - romantic imagery
+- **Earrings**: Gold floral studs, traditional sets
+- **Rings**: Designer rings, wedding ring sets, engraved rings
+- **Personalized Gifts**: Photo lockets, Valentine rose boxes, keychains
+
+#### Previously Fixed (February 7, 2025)
 - [x] Fixed 36 products with broken images from CSV upload
 - [x] Replaced hotlink-blocked URLs with Unsplash/Pexels stock photos
-- [x] All collection pages now display images correctly
-
-#### WhatsApp Notifications (NEW)
 - [x] WhatsApp Business API integration
-- [x] Order confirmation messages via WhatsApp
-- [x] Shipping notification messages via WhatsApp
-- [x] Admin toggle to enable/disable WhatsApp notifications
-- [x] Test WhatsApp message functionality in admin
-
-#### Refunds Management (NEW)
-- [x] Admin Refunds tab with full CRUD operations
-- [x] Create refund request for any order
-- [x] Filter refunds by status (pending/approved/rejected/processed)
-- [x] Approve/reject refund requests
-- [x] Process refunds and update order status
-
-#### Dynamic Navigation (NEW)
-- [x] Navigation items now fetched from API (/api/navigation)
-- [x] Admin Navigation tab to manage menu items
-- [x] Add/edit/delete navigation items
-- [x] Seed default navigation items
-- [x] Toggle active/inactive status per item
-- [x] Highlight flag for special menu items
-
-### Completed Features (January 26, 2025)
-
-#### Product Catalog (71 Products)
-- [x] 71 products total with unique descriptions
-- [x] AI-generated product images (5 hero images)
-- [x] Stock photos from Unsplash/Pexels for catalog
-- [x] Bulk CSV upload feature for products
-- [x] Customer photo upload for eligible products
-- [x] Categories: For Her, For Him, Couples, Earrings, Personalized, etc.
-- [x] Homepage & Collections now fetch from API (not mock data)
+- [x] Refunds Management in admin panel
+- [x] Dynamic Navigation from database
 
 ### Completed Features (January 2025)
 
@@ -80,7 +64,7 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 
 #### Payment Integrations
 - [x] **Manual UPI Payment** - QR code generation, UTR submission, admin approval workflow
-- [x] **Razorpay Payment Gateway** - Full integration with test keys (Jan 26, 2025)
+- [x] **Razorpay Payment Gateway** - Full integration with test keys
   - Backend: Order creation, signature verification
   - Frontend: Modal integration with Cards, Netbanking, Wallet, Pay Later options
 
@@ -92,11 +76,14 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 - [x] Order status management with shipping notifications
 - [x] Site settings management (branding, payment IDs, email, shipping)
 - [x] Fixed sidebar layout with proper scrolling
+- [x] Refunds management tab
+- [x] Navigation management tab
+- [x] WhatsApp settings configuration
 
-#### Email Notifications
+#### Email & Notifications
 - [x] Order confirmation emails (automatic on order creation)
 - [x] Shipping notification emails (automatic when order status changed to "shipped")
-- [x] SMTP configuration in admin panel (Gmail, custom SMTP)
+- [x] WhatsApp notifications integration
 
 #### Legal & Content
 - [x] Privacy Policy page
@@ -105,61 +92,50 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 - [x] Shipping Policy page
 - [x] Contact page
 
-#### Bug Fixes
-- [x] Fixed category navigation buttons
-- [x] Fixed admin login issues on custom domain
-- [x] Fixed "Add to Cart" functionality
-- [x] Fixed order creation server error (ObjectId serialization)
-- [x] Fixed UPI ID not updating from admin settings
-- [x] Fixed auto-logout (static JWT_SECRET)
-- [x] Fixed react-razorpay hook import issue (v3.0.1 API change)
-- [x] Added /health endpoint for deployment
-- [x] Replaced all "namestrings" branding with "Name Craft"
-
 ---
 
 ## Current Status
 
-### What's Working ✅
-- Complete customer shopping flow (browse → cart → checkout)
+### What's Working
+- Complete customer shopping flow (browse -> cart -> checkout)
 - Customer authentication and account management
 - Manual UPI payment with admin approval
-- **Razorpay payment integration (fully tested)**
+- Razorpay payment integration (fully tested)
 - Admin panel with full CRUD (products, orders, settings)
-- **Email notifications** (order confirmation, shipping updates)
-- Product browsing and cart functionality
-- 35 original products with AI-generated images
+- Email notifications (order confirmation, shipping updates)
+- WhatsApp notifications backend
+- **34 products with properly matched images**
 
 ### What Needs Configuration
 - Razorpay live keys (for production)
-- Stripe integration (next task)
+- Stripe integration (optional future task)
+- WhatsApp API credentials for production
 
 ---
 
 ## Prioritized Backlog
 
-### P0 - Completed ✅
-- ~~Razorpay Payment Integration~~
-- ~~35 Original Products with AI Images~~
+### P0 - Completed
+- [x] Razorpay Payment Integration
+- [x] Product catalog with matching images (FIXED Feb 7, 2025)
 
-### P1 - Completed ✅
-- ~~Admin Panel Product CRUD~~
-- ~~Email Notifications (Order & Shipping)~~
-- ~~Branding Update (Name Craft)~~
+### P1 - Completed
+- [x] Admin Panel Product CRUD
+- [x] Email Notifications (Order & Shipping)
+- [x] Branding Update (Name Craft)
+- [x] WhatsApp Notifications
+- [x] Refunds Management
+- [x] Dynamic Navigation
 
-### P2 - High Priority (Next)
+### P2 - Future Enhancements
 1. **Stripe Payment Integration** - Add as alternative payment gateway
+2. **More product variety** - Expand catalog based on trending products
+3. **Product reviews & ratings** - Customer feedback system
 
 ### P3 - Lower Priority
-5. **Support Ticket System** - Customer support workflow
-6. **Inventory Management** - Stock tracking per product
-
-### ✅ Completed P2/P3 Tasks
-- ✅ **WhatsApp Notifications** - Order updates via WhatsApp Business API (Feb 7, 2025)
-- ✅ **User Management** - Block/activate users from admin (Customers tab)
-- ✅ **Coupon Management** - Full coupon system in admin (Coupons tab)
-- ✅ **Refund Processing** - Refunds management in admin (Feb 7, 2025)
-- ✅ **Dynamic Navigation** - Navigation managed from admin (Feb 7, 2025)
+1. **Support Ticket System** - Customer support workflow
+2. **Inventory Management** - Stock tracking per product
+3. **Analytics Dashboard** - Sales and visitor analytics
 
 ### Refactoring Needed
 - **backend/server.py** - Split into modules (2000+ lines currently)
@@ -173,6 +149,7 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 /app/
 ├── backend/
 │   ├── server.py         # Monolithic FastAPI app (needs refactoring)
+│   ├── seed_data.py      # Database seeding script with 34 matched products
 │   ├── requirements.txt
 │   ├── tests/            # Pytest tests
 │   └── .env
@@ -198,6 +175,7 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 | /api/auth/register | POST | Customer registration |
 | /api/auth/login | POST | Customer/Admin login |
 | /api/auth/me | GET | Get current user |
+| /api/products | GET | Get products with filters |
 | /api/navigation | GET | Get dynamic navigation items |
 | /api/admin/navigation | GET/POST/PUT/DELETE | Manage navigation |
 | /api/admin/refunds | GET/POST/PUT/DELETE | Manage refunds |
@@ -215,9 +193,15 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 
 ---
 
+## 3rd Party Integrations
+- **Razorpay**: For processing payments (requires live keys for production)
+- **WhatsApp Business API**: For order notifications (requires API credentials)
+- **Unsplash**: Product image source
+
 ## Known Issues
 - bcrypt warning in backend logs (version compatibility with passlib) - cosmetic only
 
 ## Notes
 - Preview and Production environments use separate databases
 - Razorpay keys need to be entered in each environment's admin panel
+- Product images sourced from Unsplash for reliability
