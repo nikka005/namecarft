@@ -1,17 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, ShoppingBag, ChevronDown, Menu, X, LogIn } from 'lucide-react';
-import { siteConfig, navItems } from '../../data/mock';
+import { siteConfig } from '../../data/mock';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import axios from 'axios';
+
+const API = process.env.REACT_APP_BACKEND_URL || '';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [navItems, setNavItems] = useState([]);
   const { cartCount, setIsCartOpen } = useCart();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Fetch navigation items from API
+  useEffect(() => {
+    const fetchNavigation = async () => {
+      try {
+        const res = await axios.get(`${API}/api/navigation`);
+        setNavItems(res.data || []);
+      } catch (err) {
+        // Fallback to default navigation
+        setNavItems([
+          { id: '1', name: 'Women', href: '/collections/for-her' },
+          { id: '2', name: 'Men', href: '/collections/for-him' },
+          { id: '3', name: 'Couples', href: '/collections/couples' },
+          { id: '4', name: 'Earrings', href: '/collections/earrings' },
+          { id: '5', name: 'Personalized', href: '/collections/personalized-gifts', highlight: true },
+          { id: '6', name: 'All Products', href: '/collections/all' }
+        ]);
+      }
+    };
+    fetchNavigation();
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
