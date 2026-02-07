@@ -1325,6 +1325,39 @@ const SettingsTab = ({ token }) => {
             <label className="flex items-center gap-3"><input type="checkbox" checked={settings.send_delivery_notification !== false} onChange={(e) => updateSetting('send_delivery_notification', e.target.checked)} />Send delivery notification when order is delivered</label>
           </div>
         </TabsContent>
+        <TabsContent value="whatsapp" className="bg-white rounded-xl p-6 shadow-sm border mt-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-lg">WhatsApp Business API</h3>
+            <Button variant="outline" onClick={async () => {
+              const phone = prompt('Enter phone number to test (with country code):');
+              if (!phone) return;
+              try {
+                await axios.post(`${API}/admin/test-whatsapp?to_phone=${phone}`, null, { headers: { Authorization: `Bearer ${token}` } });
+                toast({ title: 'Test WhatsApp message sent!' });
+              } catch (e) { toast({ title: 'Failed to send', description: 'Check WhatsApp settings', variant: 'destructive' }); }
+            }}><Send className="w-4 h-4 mr-2" />Send Test Message</Button>
+          </div>
+          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-800">To use WhatsApp notifications, you need a Meta Business account and WhatsApp Business API access. <a href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started" target="_blank" rel="noopener noreferrer" className="underline">Learn more</a></p>
+          </div>
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div><p className="font-medium">Enable WhatsApp Notifications</p><p className="text-sm text-gray-500">Send order updates via WhatsApp</p></div>
+            <Switch checked={settings.whatsapp_enabled || false} onCheckedChange={(v) => updateSetting('whatsapp_enabled', v)} />
+          </div>
+          {settings.whatsapp_enabled && (
+            <>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div><Label>WhatsApp Business Phone Number ID</Label><Input value={settings.whatsapp_business_phone_id || ''} onChange={(e) => updateSetting('whatsapp_business_phone_id', e.target.value)} placeholder="1234567890" /></div>
+                <div><Label>API Access Token</Label><Input type="password" value={settings.whatsapp_api_token || ''} onChange={(e) => updateSetting('whatsapp_api_token', e.target.value)} placeholder="EAAG..." /></div>
+              </div>
+              <h3 className="font-semibold text-lg pt-4">WhatsApp Notifications</h3>
+              <div className="space-y-3">
+                <label className="flex items-center gap-3"><input type="checkbox" checked={settings.send_whatsapp_order_confirmation !== false} onChange={(e) => updateSetting('send_whatsapp_order_confirmation', e.target.checked)} />Send order confirmation via WhatsApp</label>
+                <label className="flex items-center gap-3"><input type="checkbox" checked={settings.send_whatsapp_shipping_notification !== false} onChange={(e) => updateSetting('send_whatsapp_shipping_notification', e.target.checked)} />Send shipping notification via WhatsApp</label>
+              </div>
+            </>
+          )}
+        </TabsContent>
         <TabsContent value="shipping" className="bg-white rounded-xl p-6 shadow-sm border mt-4 space-y-4">
           <h3 className="font-semibold text-lg">Shipping Settings</h3>
           <div className="grid md:grid-cols-2 gap-4">
