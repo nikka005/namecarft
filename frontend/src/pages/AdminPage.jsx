@@ -870,6 +870,262 @@ const CouponsTab = ({ token }) => {
   );
 };
 
+// Refunds Tab
+const RefundsTab = ({ token }) => {
+  const [refunds, setRefunds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ order_id: '', amount: '', reason: '' });
+  const [statusFilter, setStatusFilter] = useState('');
+
+  const fetchRefunds = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = statusFilter ? `?status=${statusFilter}` : '';
+      const res = await api.get(`/admin/refunds${params}`, token);
+      setRefunds(res.data.refunds || []);
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  }, [token, statusFilter]);
+
+  useEffect(() => { fetchRefunds(); }, [fetchRefunds]);
+
+  const createRefund = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/admin/refunds', { ...form, amount: parseFloat(form.amount) }, token);
+      toast({ title: 'Refund request created' });
+      setShowForm(false);
+      setForm({ order_id: '', amount: '', reason: '' });
+      fetchRefunds();
+    } catch (e) { toast({ title: 'Error', description: e.response?.data?.detail, variant: 'destructive' }); }
+  };
+
+  const updateRefundStatus = async (refundId, status) => {
+    try {
+      await api.put(`/admin/refunds/${refundId}`, { status }, token);
+      toast({ title: `Refund ${status}` });
+      fetchRefunds();
+    } catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
+  };
+
+  const deleteRefund = async (id) => {
+    if (!window.confirm('Delete this refund request?')) return;
+    try { await api.delete(`/admin/refunds/${id}`, token); toast({ title: 'Deleted' }); fetchRefunds(); }
+    catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
+  };
+
+  const getStatusBadge = (status) => {
+    const styles = {
+      pending: 'bg-yellow-100 text-yellow-700',
+      approved: 'bg-blue-100 text-blue-700',
+      rejected: 'bg-red-100 text-red-700',
+      processed: 'bg-green-100 text-green-700'
+    };
+    return <span className={`px-2 py-1 rounded-full text-xs ${styles[status] || 'bg-gray-100'}`}>{status}</span>;
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h2 className="text-2xl font-bold">Refunds</h2>
+        <div className="flex gap-2">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-40"><SelectValue placeholder="All Status" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">All Status</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="processed">Processed</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={() => setShowForm(!showForm)} className="bg-sky-500 hover:bg-sky-600"><Plus className="w-4 h-4 mr-2" />New Refund</Button>
+        </div>
+      </div>
+      {showForm && (
+        <div className="bg-white rounded-xl p-6 shadow-sm border">
+          <form onSubmit={createRefund} className="grid md:grid-cols-3 gap-4">
+            <div><Label>Order ID</Label><Input value={form.order_id} onChange={(e) => setForm({...form, order_id: e.target.value})} placeholder="Order ID" required /></div>
+            <div><Label>Refund Amount (₹)</Label><Input type="number" value={form.amount} onChange={(e) => setForm({...form, amount: e.target.value})} placeholder="Amount" required /></div>
+            <div><Label>Reason</Label><Input value={form.reason} onChange={(e) => setForm({...form, reason: e.target.value})} placeholder="Reason for refund" required /></div>
+            <div className="md:col-span-3"><Button type="submit" className="bg-sky-500 hover:bg-sky-600">Create Refund Request</Button></div>
+          </form>
+        </div>
+      )}
+      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+        {loading ? <div className="p-8 text-center">Loading...</div> : refunds.length > 0 ? (
+          <table className="w-full">
+            <thead className="bg-gray-50 text-left text-sm text-gray-500">
+              <tr>
+                <th className="px-6 py-4">Order #</th>
+                <th className="px-6 py-4">Email</th>
+                <th className="px-6 py-4">Amount</th>
+                <th className="px-6 py-4">Reason</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {refunds.map((r) => (
+                <tr key={r.id} className="border-t hover:bg-gray-50">
+                  <td className="px-6 py-4 font-medium">{r.order_number}</td>
+                  <td className="px-6 py-4 text-sm">{r.user_email}</td>
+                  <td className="px-6 py-4">₹{r.amount?.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-sm max-w-xs truncate">{r.reason}</td>
+                  <td className="px-6 py-4">{getStatusBadge(r.status)}</td>
+                  <td className="px-6 py-4 text-sm">{new Date(r.created_at).toLocaleDateString()}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-1">
+                      {r.status === 'pending' && (
+                        <>
+                          <Button variant="outline" size="sm" onClick={() => updateRefundStatus(r.id, 'approved')}><Check className="w-3 h-3" /></Button>
+                          <Button variant="outline" size="sm" onClick={() => updateRefundStatus(r.id, 'rejected')}><XCircle className="w-3 h-3" /></Button>
+                        </>
+                      )}
+                      {r.status === 'approved' && (
+                        <Button variant="outline" size="sm" onClick={() => updateRefundStatus(r.id, 'processed')}>Process</Button>
+                      )}
+                      <Button variant="ghost" size="sm" onClick={() => deleteRefund(r.id)}><Trash2 className="w-3 h-3 text-red-500" /></Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : <div className="p-8 text-center text-gray-500">No refund requests</div>}
+      </div>
+    </div>
+  );
+};
+
+// Navigation Tab
+const NavigationTab = ({ token }) => {
+  const [navItems, setNavItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ name: '', href: '', order: 0, highlight: false });
+  const [editingId, setEditingId] = useState(null);
+
+  const fetchNavigation = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/admin/navigation', token);
+      setNavItems(res.data || []);
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  }, [token]);
+
+  useEffect(() => { fetchNavigation(); }, [fetchNavigation]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingId) {
+        await api.put(`/admin/navigation/${editingId}`, form, token);
+        toast({ title: 'Navigation updated' });
+      } else {
+        await api.post('/admin/navigation', form, token);
+        toast({ title: 'Navigation item added' });
+      }
+      setShowForm(false);
+      setForm({ name: '', href: '', order: 0, highlight: false });
+      setEditingId(null);
+      fetchNavigation();
+    } catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
+  };
+
+  const editItem = (item) => {
+    setForm({ name: item.name, href: item.href, order: item.order || 0, highlight: item.highlight || false });
+    setEditingId(item.id);
+    setShowForm(true);
+  };
+
+  const deleteItem = async (id) => {
+    if (!window.confirm('Delete this navigation item?')) return;
+    try { await api.delete(`/admin/navigation/${id}`, token); toast({ title: 'Deleted' }); fetchNavigation(); }
+    catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
+  };
+
+  const seedDefaults = async () => {
+    try {
+      const res = await api.post('/admin/navigation/seed', {}, token);
+      toast({ title: `Added ${res.data.added} navigation items` });
+      fetchNavigation();
+    } catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
+  };
+
+  const toggleActive = async (item) => {
+    try {
+      await api.put(`/admin/navigation/${item.id}`, { is_active: !item.is_active }, token);
+      fetchNavigation();
+    } catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h2 className="text-2xl font-bold">Navigation</h2>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={seedDefaults}>Seed Defaults</Button>
+          <Button onClick={() => { setShowForm(!showForm); setEditingId(null); setForm({ name: '', href: '', order: 0, highlight: false }); }} className="bg-sky-500 hover:bg-sky-600">
+            <Plus className="w-4 h-4 mr-2" />{editingId ? 'Cancel' : 'Add Item'}
+          </Button>
+        </div>
+      </div>
+      {showForm && (
+        <div className="bg-white rounded-xl p-6 shadow-sm border">
+          <form onSubmit={handleSubmit} className="grid md:grid-cols-4 gap-4">
+            <div><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="Women" required /></div>
+            <div><Label>Link</Label><Input value={form.href} onChange={(e) => setForm({...form, href: e.target.value})} placeholder="/collections/for-her" required /></div>
+            <div><Label>Order</Label><Input type="number" value={form.order} onChange={(e) => setForm({...form, order: parseInt(e.target.value) || 0})} /></div>
+            <div className="flex items-end gap-4">
+              <div className="flex items-center gap-2"><Switch checked={form.highlight} onCheckedChange={(v) => setForm({...form, highlight: v})} /><Label>Highlight</Label></div>
+              <Button type="submit" className="bg-sky-500 hover:bg-sky-600">{editingId ? 'Update' : 'Add'}</Button>
+            </div>
+          </form>
+        </div>
+      )}
+      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+        {loading ? <div className="p-8 text-center">Loading...</div> : navItems.length > 0 ? (
+          <table className="w-full">
+            <thead className="bg-gray-50 text-left text-sm text-gray-500">
+              <tr>
+                <th className="px-6 py-4">Order</th>
+                <th className="px-6 py-4">Name</th>
+                <th className="px-6 py-4">Link</th>
+                <th className="px-6 py-4">Highlight</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {navItems.sort((a, b) => (a.order || 0) - (b.order || 0)).map((item) => (
+                <tr key={item.id} className="border-t hover:bg-gray-50">
+                  <td className="px-6 py-4">{item.order || 0}</td>
+                  <td className="px-6 py-4 font-medium">{item.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.href}</td>
+                  <td className="px-6 py-4">{item.highlight ? <span className="text-sky-500">Yes</span> : 'No'}</td>
+                  <td className="px-6 py-4">
+                    <Switch checked={item.is_active !== false} onCheckedChange={() => toggleActive(item)} />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="sm" onClick={() => editItem(item)}><Edit className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="sm" onClick={() => deleteItem(item.id)}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : <div className="p-8 text-center text-gray-500">No navigation items. Click "Seed Defaults" to add default menu items.</div>}
+      </div>
+    </div>
+  );
+};
+
 // Media Tab
 const MediaTab = ({ token }) => {
   const [media, setMedia] = useState([]);
