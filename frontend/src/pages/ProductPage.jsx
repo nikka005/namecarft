@@ -296,7 +296,7 @@ const ProductPage = () => {
             {/* Personalization */}
             <div>
               <Label htmlFor="custom-name-input" className="text-sm font-medium text-gray-900 mb-2 block">
-                Personalize Your Jewelry *
+                Enter Name for Personalization *
               </Label>
               <Input
                 id="custom-name-input"
@@ -307,7 +307,7 @@ const ProductPage = () => {
                 maxLength={10}
               />
               <p className="text-xs text-gray-500 mt-1">
-                This name will be crafted on your jewelry
+                This name will be engraved on your product
               </p>
             </div>
 
