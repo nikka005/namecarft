@@ -675,9 +675,8 @@ const ProductForm = ({ token, product, onClose, onSave }) => {
             <SelectContent>
               <SelectItem value="for-her">For Her</SelectItem>
               <SelectItem value="for-him">For Him</SelectItem>
-              <SelectItem value="kids">Kids</SelectItem>
-              <SelectItem value="couple">Couple</SelectItem>
-              <SelectItem value="cultural">Cultural</SelectItem>
+              <SelectItem value="couples">Couples</SelectItem>
+              <SelectItem value="personalized-gifts">Personalized</SelectItem>
             </SelectContent>
           </Select>
         </div>
