@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { Toaster } from './components/ui/toaster';
+import { Toaster as SonnerToaster } from './components/ui/sonner';
 
 // Pages
 import HomePage from './pages/HomePage';
