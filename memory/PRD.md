@@ -115,6 +115,12 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 - Email notifications (order confirmation, shipping updates)
 - WhatsApp notifications backend
 - **34 products with properly matched images**
+- **Conditional metal options for jewelry only**
+- **Generic personalization labels (works for all products)**
+
+### Deployment Status
+- **Preview environment**: All fixes verified and working
+- **Live site (namecraft.shop)**: Previous deployment had caching issues - needs fresh deployment
 
 ### What Needs Configuration
 - Razorpay live keys (for production)
