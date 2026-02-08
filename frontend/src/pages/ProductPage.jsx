@@ -260,7 +260,8 @@ const ProductPage = () => {
               <p className="text-gray-600">{product.description}</p>
             )}
 
-            {/* Metal Selection */}
+            {/* Metal Selection - Only show if product has metal options */}
+            {product.show_metal_options && (
             <div>
               <Label className="text-sm font-medium text-gray-900 mb-3 block">
                 Select Metal Type
@@ -285,6 +286,7 @@ const ProductPage = () => {
                 ))}
               </div>
             </div>
+            )}
 
             {/* Personalization */}
             <div>
