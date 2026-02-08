@@ -27,12 +27,8 @@ export const heroData = {
 export const categories = [
   { id: 1, name: "Her", slug: "for-her" },
   { id: 2, name: "Him", slug: "for-him" },
-  { id: 3, name: "Kids", slug: "kids" },
-  { id: 4, name: "Couples", slug: "couples" },
-  { id: 5, name: "Rings", slug: "rings" },
-  { id: 6, name: "Earrings", slug: "earrings" },
-  { id: 7, name: "Personalized", slug: "personalized-gifts" },
-  { id: 8, name: "Express Ship", slug: "express" }
+  { id: 3, name: "Couples", slug: "couples" },
+  { id: 4, name: "Personalized", slug: "personalized-gifts" }
 ];
 
 export const navItems = [
