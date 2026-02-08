@@ -318,7 +318,7 @@ const ProductPage = () => {
                 Upload Your Photo <span className="text-red-500">*</span>
               </Label>
               <p className="text-xs text-gray-500 mb-3">
-                Upload a photo to be engraved/printed on your jewelry (Required)
+                Upload a photo to be engraved/printed on your product (Required)
               </p>
               
               {uploadedImagePreview ? (
