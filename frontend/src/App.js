@@ -68,6 +68,7 @@ function App() {
             </Routes>
           </BrowserRouter>
           <Toaster />
+          <SonnerToaster position="top-center" richColors />
         </div>
       </CartProvider>
     </AuthProvider>
