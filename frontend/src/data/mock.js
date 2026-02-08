@@ -35,7 +35,6 @@ export const navItems = [
   { name: "Women", href: "/collections/for-her", hasDropdown: false },
   { name: "Men", href: "/collections/for-him", hasDropdown: false },
   { name: "Couples", href: "/collections/couples", hasDropdown: false },
-  { name: "Earrings", href: "/collections/earrings", hasDropdown: false },
   { name: "Personalized", href: "/collections/personalized-gifts", hasDropdown: false, highlight: true },
   { name: "All Products", href: "/collections/all", hasDropdown: false }
 ];
