@@ -662,6 +662,7 @@ async def seed_products():
             "is_featured": True,
             "is_active": True,
             "allow_custom_image": p.get('allow_custom_image', False),
+            "show_metal_options": p.get('show_metal_options', False),
             "stock_quantity": 100,
             "created_at": datetime.utcnow()
         }
