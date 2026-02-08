@@ -140,7 +140,9 @@ const ProductPage = () => {
         nameInput.focus();
         nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-      alert('Please enter a name for personalization');
+      toast.error('Please enter a name for personalization', {
+        description: 'This field is required to customize your product'
+      });
       return;
     }
     
@@ -150,7 +152,9 @@ const ProductPage = () => {
       if (uploadSection) {
         uploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-      alert('Please upload your photo for this product');
+      toast.error('Please upload your photo', {
+        description: 'A photo is required for this personalized product'
+      });
       return;
     }
     
