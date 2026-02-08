@@ -29,9 +29,8 @@ const Header = () => {
           { id: '1', name: 'Women', href: '/collections/for-her' },
           { id: '2', name: 'Men', href: '/collections/for-him' },
           { id: '3', name: 'Couples', href: '/collections/couples' },
-          { id: '4', name: 'Earrings', href: '/collections/earrings' },
-          { id: '5', name: 'Personalized', href: '/collections/personalized-gifts', highlight: true },
-          { id: '6', name: 'All Products', href: '/collections/all' }
+          { id: '4', name: 'Personalized', href: '/collections/personalized-gifts', highlight: true },
+          { id: '5', name: 'All Products', href: '/collections/all' }
         ]);
       }
     };
