@@ -19,7 +19,17 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 
 ## What's Been Implemented
 
-### Latest Updates (February 7, 2025)
+### Latest Updates (February 8, 2025)
+
+#### FIXED: Product Page Bugs (P0/P1)
+- [x] Metal options now only show for jewelry products (using `show_metal_options` flag)
+- [x] Personalization label changed from "Personalize Your Jewelry" to generic "Enter Name for Personalization"
+- [x] Helper text changed from "crafted on your jewelry" to "engraved on your product"
+- [x] Photo upload text changed from "on your jewelry" to "on your product"
+- [x] ProductCard shows "View & Customize" button instead of "Add to Cart" for customizable products
+- [x] Toast notifications for validation (using sonner library)
+
+### February 7, 2025
 
 #### FIXED: Product Catalog Image Mismatch Issue (P0)
 - [x] Completely redesigned product catalog with 34 products
