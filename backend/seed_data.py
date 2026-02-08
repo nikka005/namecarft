@@ -23,6 +23,8 @@ def slugify(text):
     return text
 
 # Products with PROPERLY MATCHED images - each image accurately represents the product
+# show_metal_options: True for jewelry that comes in different metals (Gold, Silver, Rose Gold)
+# allow_custom_image: True for products that need photo upload
 PRODUCTS = [
     # === FOR HER - Necklaces ===
     {
@@ -32,6 +34,7 @@ PRODUCTS = [
         "category": "for-her",
         "discount": 48,
         "allow_custom_image": False,
+        "show_metal_options": True,
         "description": "Elegant gold heart pendant necklace with charm beads. A timeless symbol of love.",
         "image": "https://images.unsplash.com/photo-1761210875101-1273b9ae5600?w=600",
         "hover_image": "https://images.unsplash.com/photo-1709324275524-bc6a283e53a3?w=600"
@@ -43,6 +46,7 @@ PRODUCTS = [
         "category": "for-her",
         "discount": 47,
         "allow_custom_image": False,
+        "show_metal_options": True,
         "description": "Beautiful silver heart pendant on delicate chain. Perfect everyday elegance.",
         "image": "https://images.unsplash.com/photo-1553301444-7669742d4e2d?w=600",
         "hover_image": "https://images.unsplash.com/photo-1676329947145-99145926d3eb?w=600"
@@ -54,6 +58,7 @@ PRODUCTS = [
         "category": "for-her",
         "discount": 45,
         "allow_custom_image": False,
+        "show_metal_options": True,
         "description": "Stunning gold necklace with diamond-studded heart pendant. Luxury meets romance.",
         "image": "https://images.unsplash.com/photo-1709324275524-bc6a283e53a3?w=600",
         "hover_image": "https://images.unsplash.com/photo-1553301444-7669742d4e2d?w=600"
