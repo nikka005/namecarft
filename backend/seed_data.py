@@ -647,7 +647,17 @@ async def seed_products():
     # Clear existing products
     await db.products.delete_many({})
     
+    # Categories that should show metal options (jewelry)
+    jewelry_categories = ['for-her', 'for-him', 'couples', 'earrings', 'rings']
+    # Products that should NOT show metal options (gifts, accessories)
+    non_jewelry_keywords = ['wallet', 'keychain', 'rose', 'bouquet', 'gift box', 'brooch']
+    
     for p in PRODUCTS:
+        # Auto-determine if metal options should show
+        is_jewelry = p['category'] in jewelry_categories
+        is_non_jewelry = any(keyword in p['name'].lower() for keyword in non_jewelry_keywords)
+        show_metal = p.get('show_metal_options', is_jewelry and not is_non_jewelry)
+        
         product = {
             "id": str(uuid.uuid4()),
             "name": p['name'],
@@ -662,7 +672,7 @@ async def seed_products():
             "is_featured": True,
             "is_active": True,
             "allow_custom_image": p.get('allow_custom_image', False),
-            "show_metal_options": p.get('show_metal_options', False),
+            "show_metal_options": show_metal,
             "stock_quantity": 100,
             "created_at": datetime.utcnow()
         }
