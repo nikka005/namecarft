@@ -8,6 +8,10 @@ const ProductCard = ({ product, onAddToCart }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const savings = (product.originalPrice || product.original_price) - product.price;
+  
+  // Check if product requires customization (name is always required, photo for some products)
+  // Products that need customization should NOT have direct "Add to Cart" on homepage
+  const requiresCustomization = true; // All personalized jewelry needs name input
 
   return (
     <div
@@ -52,15 +56,26 @@ const ProductCard = ({ product, onAddToCart }) => {
           </Link>
         </div>
 
-        {/* Add to Cart - Appears on Hover */}
+        {/* View Details Button - For products that need customization */}
+        {/* Add to Cart only for non-customizable products */}
         <div className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-300 ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
-          <button
-            onClick={() => onAddToCart && onAddToCart(product)}
-            className="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors"
-          >
-            <ShoppingBag className="w-4 h-4" />
-            Add to Cart
-          </button>
+          {requiresCustomization ? (
+            <Link
+              to={`/products/${product.slug}`}
+              className="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors"
+            >
+              <Eye className="w-4 h-4" />
+              View & Customize
+            </Link>
+          ) : (
+            <button
+              onClick={() => onAddToCart && onAddToCart(product)}
+              className="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              Add to Cart
+            </button>
+          )}
         </div>
       </div>
 
