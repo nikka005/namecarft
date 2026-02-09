@@ -182,25 +182,28 @@ const CheckoutPage = () => {
     }
   }, [Razorpay, razorpayConfig, total, formData, clearCart]);
 
-  const applyCoupon = () => {
+  const applyCoupon = async () => {
     if (!couponCode.trim()) return;
     
-    const validCoupons = {
-      'SAVE10': { type: 'percentage', value: 10 },
-      'FLAT100': { type: 'fixed', value: 100 },
-      'VALENTINE': { type: 'percentage', value: 15 }
-    };
-    
-    const coupon = validCoupons[couponCode.toUpperCase()];
-    if (coupon) {
-      const discountAmount = coupon.type === 'percentage' 
-        ? cartTotal * (coupon.value / 100)
-        : coupon.value;
+    try {
+      const res = await axios.post(`${API}/coupons/validate?code=${encodeURIComponent(couponCode)}&subtotal=${cartTotal}`);
+      const coupon = res.data;
+      
+      let discountAmount;
+      if (coupon.discount_type === 'percentage') {
+        discountAmount = cartTotal * (coupon.discount_value / 100);
+        if (coupon.max_discount) {
+          discountAmount = Math.min(discountAmount, coupon.max_discount);
+        }
+      } else {
+        discountAmount = coupon.discount_value;
+      }
+      
       setDiscount(discountAmount);
       setCouponApplied(true);
       toast({ title: "Coupon Applied!", description: `You saved ${siteConfig.currencySymbol}${discountAmount.toFixed(0)}` });
-    } else {
-      toast({ title: "Invalid Coupon", description: "This coupon code is not valid.", variant: "destructive" });
+    } catch (err) {
+      toast({ title: "Invalid Coupon", description: err.response?.data?.detail || "This coupon code is not valid.", variant: "destructive" });
     }
   };
 
