@@ -189,19 +189,13 @@ const CheckoutPage = () => {
       const res = await axios.post(`${API}/coupons/validate?code=${encodeURIComponent(couponCode)}&subtotal=${cartTotal}`);
       const coupon = res.data;
       
-      let discountAmount;
-      if (coupon.discount_type === 'percentage') {
-        discountAmount = cartTotal * (coupon.discount_value / 100);
-        if (coupon.max_discount) {
-          discountAmount = Math.min(discountAmount, coupon.max_discount);
-        }
+      if (coupon.valid) {
+        setDiscount(coupon.discount);
+        setCouponApplied(true);
+        toast({ title: "Coupon Applied!", description: `You saved ${siteConfig.currencySymbol}${coupon.discount.toFixed(0)}` });
       } else {
-        discountAmount = coupon.discount_value;
+        toast({ title: "Invalid Coupon", description: "This coupon code is not valid.", variant: "destructive" });
       }
-      
-      setDiscount(discountAmount);
-      setCouponApplied(true);
-      toast({ title: "Coupon Applied!", description: `You saved ${siteConfig.currencySymbol}${discountAmount.toFixed(0)}` });
     } catch (err) {
       toast({ title: "Invalid Coupon", description: err.response?.data?.detail || "This coupon code is not valid.", variant: "destructive" });
     }
