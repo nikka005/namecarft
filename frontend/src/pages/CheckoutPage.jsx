@@ -576,7 +576,7 @@ const CheckoutPage = () => {
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Payment Method</h2>
                 <div className="space-y-3">
-                  {/* Razorpay Option */}
+                  {/* Razorpay Option - Only payment method */}
                   {razorpayConfig?.enabled && (
                     <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.paymentMethod === 'razorpay' ? 'border-sky-500 bg-sky-50' : 'border-gray-200 hover:border-gray-300'}`}>
                       <input type="radio" name="paymentMethod" value="razorpay" checked={formData.paymentMethod === 'razorpay'} onChange={handleInputChange} className="w-4 h-4 text-sky-500" />
@@ -592,30 +592,6 @@ const CheckoutPage = () => {
                       </div>
                     </label>
                   )}
-
-                  {/* UPI Manual Option */}
-                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.paymentMethod === 'upi' ? 'border-sky-500 bg-sky-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                    <input type="radio" name="paymentMethod" value="upi" checked={formData.paymentMethod === 'upi'} onChange={handleInputChange} className="w-4 h-4 text-sky-500" />
-                    <QrCode className="w-5 h-5 text-gray-600" />
-                    <div className="flex-1">
-                      <span className="font-medium text-gray-900 block">UPI (QR Code)</span>
-                      <span className="text-sm text-gray-500">Scan QR with PhonePe, Google Pay, Paytm</span>
-                    </div>
-                    <div className="flex gap-1">
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" alt="PhonePe" className="h-6 w-auto" />
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/1200px-Google_Pay_Logo.svg.png" alt="GPay" className="h-6 w-auto" />
-                    </div>
-                  </label>
-
-                  {/* COD Option */}
-                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${formData.paymentMethod === 'cod' ? 'border-sky-500 bg-sky-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                    <input type="radio" name="paymentMethod" value="cod" checked={formData.paymentMethod === 'cod'} onChange={handleInputChange} className="w-4 h-4 text-sky-500" />
-                    <Truck className="w-5 h-5 text-gray-600" />
-                    <div className="flex-1">
-                      <span className="font-medium text-gray-900 block">Cash on Delivery</span>
-                      <span className="text-sm text-gray-500">Pay when you receive your order</span>
-                    </div>
-                  </label>
                 </div>
               </div>
 
