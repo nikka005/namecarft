@@ -1786,6 +1786,87 @@ async def admin_delete_refund(refund_id: str, admin = Depends(get_admin_user)):
         raise HTTPException(status_code=404, detail="Refund not found")
     return {"success": True}
 
+# ==================== PRODUCT REVIEWS ROUTES ====================
+
+@api_router.get("/products/{product_id}/reviews")
+async def get_product_reviews(product_id: str):
+    """Get approved reviews for a product"""
+    reviews = await db.reviews.find(
+        {"product_id": product_id, "approved": True}, 
+        {"_id": 0, "reviewer_email": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    # Calculate average rating
+    total_reviews = len(reviews)
+    avg_rating = sum(r.get("rating", 0) for r in reviews) / total_reviews if total_reviews > 0 else 0
+    
+    return {
+        "reviews": reviews,
+        "total": total_reviews,
+        "average_rating": round(avg_rating, 1)
+    }
+
+@api_router.post("/products/{product_id}/reviews")
+async def submit_review(product_id: str, review_data: ReviewCreate):
+    """Submit a new product review"""
+    # Check if product exists
+    product = await db.products.find_one({"id": product_id})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Check if user has purchased this product (verified purchase)
+    verified_purchase = False
+    orders = await db.orders.find({
+        "user_email": review_data.reviewer_email,
+        "order_status": "delivered"
+    }).to_list(100)
+    
+    for order in orders:
+        for item in order.get("items", []):
+            if item.get("product_id") == product_id or item.get("id") == product_id:
+                verified_purchase = True
+                break
+    
+    review = Review(
+        product_id=product_id,
+        rating=review_data.rating,
+        title=review_data.title,
+        comment=review_data.comment,
+        reviewer_name=review_data.reviewer_name,
+        reviewer_email=review_data.reviewer_email,
+        verified_purchase=verified_purchase,
+        approved=False  # Reviews need admin approval
+    )
+    
+    await db.reviews.insert_one(review.dict())
+    
+    return {"success": True, "message": "Review submitted for approval"}
+
+@api_router.get("/admin/reviews")
+async def get_all_reviews(admin: dict = Depends(get_current_admin)):
+    """Get all reviews (admin only)"""
+    reviews = await db.reviews.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return reviews
+
+@api_router.put("/admin/reviews/{review_id}")
+async def update_review(review_id: str, approved: bool, admin: dict = Depends(get_current_admin)):
+    """Approve or reject a review"""
+    result = await db.reviews.update_one(
+        {"id": review_id},
+        {"$set": {"approved": approved}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Review not found")
+    return {"success": True}
+
+@api_router.delete("/admin/reviews/{review_id}")
+async def delete_review(review_id: str, admin: dict = Depends(get_current_admin)):
+    """Delete a review"""
+    result = await db.reviews.delete_one({"id": review_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Review not found")
+    return {"success": True}
+
 # ==================== NAVIGATION ROUTES ====================
 
 @api_router.get("/navigation")
