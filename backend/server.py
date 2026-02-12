@@ -54,6 +54,18 @@ security = HTTPBearer(auto_error=False)
 # Create the main app
 app = FastAPI(title="Name Craft API")
 
+# Startup event to verify MongoDB connection
+@app.on_event("startup")
+async def startup_event():
+    """Verify MongoDB connection on startup"""
+    try:
+        # Ping MongoDB to verify connection
+        await client.admin.command('ping')
+        logger.info(f"Successfully connected to MongoDB: {db_name}")
+    except Exception as e:
+        logger.warning(f"MongoDB connection warning: {e}")
+        logger.info("Application will continue - MongoDB may connect later")
+
 # Health check endpoint for Kubernetes - MUST be at root level
 @app.get("/health")
 async def health_check():
