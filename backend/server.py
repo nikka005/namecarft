@@ -251,9 +251,9 @@ class SiteSettings(BaseModel):
     sale_subtitle: str = "Storewide"
     sale_end_date: Optional[datetime] = None
     # Shipping
-    free_shipping_threshold: float = 1000
-    shipping_cost: float = 99
-    express_shipping_cost: float = 199
+    free_shipping_threshold: float = 499
+    shipping_cost: float = 29
+    express_shipping_cost: float = 49
     # Payment Methods
     upi_enabled: bool = True
     upi_id: str = "namecraft@upi"
