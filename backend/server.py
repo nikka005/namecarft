@@ -899,7 +899,7 @@ async def create_order(order_data: OrderCreate, background_tasks: BackgroundTask
     if not settings:
         settings = SiteSettings().dict()
     
-    shipping_cost = 0 if subtotal >= settings.get("free_shipping_threshold", 1000) else settings.get("shipping_cost", 99)
+    shipping_cost = 0 if subtotal >= settings.get("free_shipping_threshold", 499) else settings.get("shipping_cost", 29)
     
     # Apply coupon if provided
     discount_amount = 0
