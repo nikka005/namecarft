@@ -870,6 +870,120 @@ const CouponsTab = ({ token }) => {
   );
 };
 
+// Reviews Tab
+const ReviewsTab = ({ token }) => {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all'); // all, pending, approved
+
+  const fetchReviews = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/admin/reviews', token);
+      setReviews(res.data || []);
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  }, [token]);
+
+  useEffect(() => { fetchReviews(); }, [fetchReviews]);
+
+  const updateReviewStatus = async (reviewId, approved) => {
+    try {
+      await api.put(`/admin/reviews/${reviewId}?approved=${approved}`, {}, token);
+      toast({ title: approved ? 'Review Approved' : 'Review Rejected' });
+      fetchReviews();
+    } catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
+  };
+
+  const deleteReview = async (id) => {
+    if (!window.confirm('Delete this review?')) return;
+    try { 
+      await api.delete(`/admin/reviews/${id}`, token); 
+      toast({ title: 'Review Deleted' }); 
+      fetchReviews(); 
+    } catch (e) { toast({ title: 'Error', variant: 'destructive' }); }
+  };
+
+  const filteredReviews = reviews.filter(r => {
+    if (filter === 'pending') return !r.approved;
+    if (filter === 'approved') return r.approved;
+    return true;
+  });
+
+  const renderStars = (rating) => {
+    return (
+      <div className="flex gap-0.5">
+        {[1, 2, 3, 4, 5].map(star => (
+          <Star key={star} className={`w-4 h-4 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h2 className="text-xl font-semibold">Product Reviews</h2>
+        <div className="flex gap-2">
+          {['all', 'pending', 'approved'].map(f => (
+            <Button key={f} variant={filter === f ? 'default' : 'outline'} size="sm" onClick={() => setFilter(f)} className="capitalize">
+              {f} {f === 'pending' && `(${reviews.filter(r => !r.approved).length})`}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="text-center py-8 text-gray-500">Loading reviews...</div>
+      ) : filteredReviews.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">No reviews found</div>
+      ) : (
+        <div className="space-y-4">
+          {filteredReviews.map(review => (
+            <div key={review.id} className="bg-white border rounded-xl p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    {renderStars(review.rating)}
+                    <span className={`px-2 py-0.5 rounded-full text-xs ${review.approved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      {review.approved ? 'Approved' : 'Pending'}
+                    </span>
+                    {review.verified_purchase && (
+                      <span className="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">Verified Purchase</span>
+                    )}
+                  </div>
+                  <p className="font-medium text-gray-900">{review.reviewer_name}</p>
+                  <p className="text-sm text-gray-500 mb-2">{review.reviewer_email}</p>
+                  {review.title && <p className="font-medium text-gray-800">{review.title}</p>}
+                  <p className="text-gray-600 text-sm">{review.comment}</p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    Product ID: {review.product_id} • {new Date(review.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {!review.approved && (
+                    <Button size="sm" onClick={() => updateReviewStatus(review.id, true)} className="bg-green-500 hover:bg-green-600">
+                      <Check className="w-4 h-4 mr-1" /> Approve
+                    </Button>
+                  )}
+                  {review.approved && (
+                    <Button size="sm" variant="outline" onClick={() => updateReviewStatus(review.id, false)}>
+                      <XCircle className="w-4 h-4 mr-1" /> Reject
+                    </Button>
+                  )}
+                  <Button size="sm" variant="destructive" onClick={() => deleteReview(review.id)}>
+                    <Trash2 className="w-4 h-4 mr-1" /> Delete
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Refunds Tab
 const RefundsTab = ({ token }) => {
   const [refunds, setRefunds] = useState([]);
