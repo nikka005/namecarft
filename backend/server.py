@@ -228,6 +228,27 @@ class CouponCreate(BaseModel):
     usage_limit: Optional[int] = None
     valid_until: Optional[datetime] = None
 
+# Product Review Models
+class ReviewCreate(BaseModel):
+    product_id: str
+    rating: int = Field(ge=1, le=5)
+    title: Optional[str] = None
+    comment: str
+    reviewer_name: str
+    reviewer_email: EmailStr
+
+class Review(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    product_id: str
+    rating: int
+    title: Optional[str] = None
+    comment: str
+    reviewer_name: str
+    reviewer_email: str
+    verified_purchase: bool = False
+    approved: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 class SiteSettings(BaseModel):
     id: str = "site_settings"
     # Branding
