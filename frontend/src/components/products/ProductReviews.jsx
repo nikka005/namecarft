@@ -72,7 +72,6 @@ const ReviewCard = ({ review }) => {
 };
 
 const ReviewForm = ({ productId, onSubmitSuccess }) => {
-  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -87,7 +86,7 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
     e.preventDefault();
     
     if (!formData.comment.trim() || !formData.reviewer_name.trim() || !formData.reviewer_email.trim()) {
-      toast({ title: "Error", description: "Please fill all required fields", variant: "destructive" });
+      toast.error("Please fill all required fields");
       return;
     }
 
@@ -97,12 +96,12 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
         ...formData,
         product_id: productId
       });
-      toast({ title: "Review Submitted!", description: "Your review will be published after approval." });
+      toast.success("Review submitted! It will be published after approval.");
       setFormData({ rating: 5, title: '', comment: '', reviewer_name: '', reviewer_email: '' });
       setIsOpen(false);
       if (onSubmitSuccess) onSubmitSuccess();
     } catch (err) {
-      toast({ title: "Error", description: err.response?.data?.detail || "Failed to submit review", variant: "destructive" });
+      toast.error(err.response?.data?.detail || "Failed to submit review");
     } finally {
       setSubmitting(false);
     }
