@@ -1360,9 +1360,9 @@ const SettingsTab = ({ token }) => {
         <TabsContent value="shipping" className="bg-white rounded-xl p-6 shadow-sm border mt-4 space-y-4">
           <h3 className="font-semibold text-lg">Shipping Settings</h3>
           <div className="grid md:grid-cols-2 gap-4">
-            <div><Label>Free Shipping Threshold (₹)</Label><Input type="number" value={settings.free_shipping_threshold || 1000} onChange={(e) => updateSetting('free_shipping_threshold', parseFloat(e.target.value))} /></div>
-            <div><Label>Standard Shipping Cost (₹)</Label><Input type="number" value={settings.shipping_cost || 99} onChange={(e) => updateSetting('shipping_cost', parseFloat(e.target.value))} /></div>
-            <div><Label>Express Shipping Cost (₹)</Label><Input type="number" value={settings.express_shipping_cost || 199} onChange={(e) => updateSetting('express_shipping_cost', parseFloat(e.target.value))} /></div>
+            <div><Label>Free Shipping Threshold (₹)</Label><Input type="number" value={settings.free_shipping_threshold || 499} onChange={(e) => updateSetting('free_shipping_threshold', parseFloat(e.target.value))} /></div>
+            <div><Label>Standard Shipping Cost (₹)</Label><Input type="number" value={settings.shipping_cost || 29} onChange={(e) => updateSetting('shipping_cost', parseFloat(e.target.value))} /></div>
+            <div><Label>Express Shipping Cost (₹)</Label><Input type="number" value={settings.express_shipping_cost || 49} onChange={(e) => updateSetting('express_shipping_cost', parseFloat(e.target.value))} /></div>
           </div>
         </TabsContent>
         <TabsContent value="advanced" className="bg-white rounded-xl p-6 shadow-sm border mt-4 space-y-4">
