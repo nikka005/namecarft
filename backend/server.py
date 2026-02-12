@@ -24,10 +24,20 @@ import hashlib
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'namestrings')]
+# MongoDB connection - supports both local and Atlas
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+db_name = os.environ.get('DB_NAME', 'test_database')
+
+# Configure MongoDB client with proper settings for Atlas
+client = AsyncIOMotorClient(
+    mongo_url,
+    serverSelectionTimeoutMS=5000,
+    connectTimeoutMS=10000,
+    socketTimeoutMS=10000,
+    maxPoolSize=10,
+    minPoolSize=1
+)
+db = client[db_name]
 
 # JWT Config - Use fixed secret from env or a stable default for consistent token validation
 JWT_SECRET = os.environ.get('JWT_SECRET', 'namecraft-secure-jwt-secret-key-2024')
