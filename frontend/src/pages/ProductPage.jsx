@@ -5,6 +5,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import SaleBanner from '../components/home/SaleBanner';
 import CartDrawer from '../components/cart/CartDrawer';
+import ProductReviews from '../components/products/ProductReviews';
 import { useCart } from '../context/CartContext';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
