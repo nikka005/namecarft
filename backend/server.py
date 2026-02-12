@@ -1843,13 +1843,13 @@ async def submit_review(product_id: str, review_data: ReviewCreate):
     return {"success": True, "message": "Review submitted for approval"}
 
 @api_router.get("/admin/reviews")
-async def get_all_reviews(admin: dict = Depends(get_current_admin)):
+async def get_all_reviews(admin: dict = Depends(get_admin_user)):
     """Get all reviews (admin only)"""
     reviews = await db.reviews.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
     return reviews
 
 @api_router.put("/admin/reviews/{review_id}")
-async def update_review(review_id: str, approved: bool, admin: dict = Depends(get_current_admin)):
+async def update_review(review_id: str, approved: bool, admin: dict = Depends(get_admin_user)):
     """Approve or reject a review"""
     result = await db.reviews.update_one(
         {"id": review_id},
@@ -1860,7 +1860,7 @@ async def update_review(review_id: str, approved: bool, admin: dict = Depends(ge
     return {"success": True}
 
 @api_router.delete("/admin/reviews/{review_id}")
-async def delete_review(review_id: str, admin: dict = Depends(get_current_admin)):
+async def delete_review(review_id: str, admin: dict = Depends(get_admin_user)):
     """Delete a review"""
     result = await db.reviews.delete_one({"id": review_id})
     if result.deleted_count == 0:
