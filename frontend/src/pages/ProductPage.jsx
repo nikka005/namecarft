@@ -427,6 +427,9 @@ const ProductPage = () => {
             </div>
           </div>
         </div>
+        
+        {/* Product Reviews Section */}
+        {product && <ProductReviews productId={product.id} />}
       </main>
 
       <Footer />
