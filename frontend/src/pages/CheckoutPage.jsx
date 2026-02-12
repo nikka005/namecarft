@@ -110,7 +110,10 @@ const CheckoutPage = () => {
     fetchSettings();
   }, []);
 
-  const shippingCost = cartTotal >= 1000 ? 0 : 99;
+  // Calculate shipping based on settings from database
+  const freeShippingThreshold = siteSettings?.free_shipping_threshold || 499;
+  const baseShippingCost = siteSettings?.shipping_cost || 29;
+  const shippingCost = cartTotal >= freeShippingThreshold ? 0 : baseShippingCost;
   const total = cartTotal + shippingCost - discount;
 
   const handleInputChange = (e) => {
