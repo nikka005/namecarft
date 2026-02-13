@@ -1,55 +1,66 @@
 #!/bin/bash
 
-# Database Import Script
-# Run this after deploying the application
+# Database Import Script - Uses files from db_export folder in repo
 # Usage: ./import_db.sh
 
 set -e
 
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
-
 DB_NAME="namecraft_production"
-IMPORT_DIR="/tmp/db_import"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+EXPORT_DIR="$SCRIPT_DIR/../db_export"
 
 echo "=========================================="
 echo "  Importing Name Craft Database"
 echo "=========================================="
 
-if [ ! -d "$IMPORT_DIR" ]; then
-    echo "Error: Import directory not found at $IMPORT_DIR"
-    echo "Please upload your database JSON files first:"
-    echo "  scp -i your-key.pem *.json ubuntu@YOUR_IP:/tmp/db_import/"
+# Check if mongodb-database-tools is installed
+if ! command -v mongoimport &> /dev/null; then
+    echo "Installing MongoDB Database Tools..."
+    sudo apt install -y mongodb-database-tools
+fi
+
+# Check if export directory exists
+if [ ! -d "$EXPORT_DIR" ]; then
+    echo "Error: db_export directory not found at $EXPORT_DIR"
     exit 1
 fi
 
-cd $IMPORT_DIR
+cd "$EXPORT_DIR"
 
-echo -e "${YELLOW}Importing collections...${NC}"
+echo "Importing from: $EXPORT_DIR"
+echo ""
 
 # Import each collection
 for file in *.json; do
     if [ -f "$file" ] && [ -s "$file" ]; then
         collection="${file%.json}"
         echo "  Importing $collection..."
-        mongoimport --db=$DB_NAME --collection=$collection --file=$file --drop 2>/dev/null || true
+        mongoimport --db=$DB_NAME --collection=$collection --file=$file --drop 2>/dev/null || echo "    Warning: $collection import had issues"
+    else
+        echo "  Skipping $file (empty or not found)"
     fi
 done
 
 echo ""
-echo -e "${GREEN}Import complete!${NC}"
+echo "Database import complete!"
 echo ""
-echo "Database statistics:"
+
+# Show counts
+echo "Collection counts:"
 mongosh $DB_NAME --quiet --eval "
-    print('  Products: ' + db.products.countDocuments());
-    print('  Users: ' + db.users.countDocuments());
-    print('  Orders: ' + db.orders.countDocuments());
-    print('  Settings: ' + db.settings.countDocuments());
-    print('  Categories: ' + db.categories.countDocuments());
+    print('  products: ' + db.products.countDocuments());
+    print('  users: ' + db.users.countDocuments());
+    print('  orders: ' + db.orders.countDocuments());
+    print('  settings: ' + db.settings.countDocuments());
+    print('  categories: ' + db.categories.countDocuments());
+    print('  coupons: ' + db.coupons.countDocuments());
+    print('  navigation: ' + db.navigation.countDocuments());
 "
 
 echo ""
-echo "Restarting backend service..."
+echo "Restarting backend..."
 sudo systemctl restart namecraft-backend
-echo -e "${GREEN}Done!${NC}"
+
+echo ""
+echo "Done! Your website should now have all data."
+echo "Visit: http://$(curl -s ifconfig.me)"
