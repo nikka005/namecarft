@@ -30,6 +30,12 @@ import {
 import { toast } from '../hooks/use-toast';
 import { Toaster } from '../components/ui/toaster';
 
+// Import new advanced tabs
+import AnalyticsTab from './Admin/AnalyticsTab';
+import StaffTab from './Admin/StaffTab';
+import ReportsTab from './Admin/ReportsTab';
+import BulkOperationsTab from './Admin/BulkOperationsTab';
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const API = `${BACKEND_URL}/api`;
 
