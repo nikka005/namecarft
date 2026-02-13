@@ -37,6 +37,34 @@ const API = `${BACKEND_URL}/api`;
 const useAdmin = () => {
   const [admin, setAdmin] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('admin_token'));
+  const [loading, setLoading] = useState(true);
+
+  // Fetch admin user on page load if token exists
+  useEffect(() => {
+    const fetchAdmin = async () => {
+      const savedToken = localStorage.getItem('admin_token');
+      if (savedToken) {
+        try {
+          const response = await axios.get(`${API}/auth/me`, {
+            headers: { Authorization: `Bearer ${savedToken}` }
+          });
+          if (response.data.role === 'admin' || response.data.role === 'staff') {
+            setAdmin(response.data);
+            setToken(savedToken);
+          } else {
+            localStorage.removeItem('admin_token');
+            setToken(null);
+          }
+        } catch (error) {
+          console.error('Token validation failed:', error);
+          localStorage.removeItem('admin_token');
+          setToken(null);
+        }
+      }
+      setLoading(false);
+    };
+    fetchAdmin();
+  }, []);
 
   const login = async (email, password) => {
     const response = await axios.post(`${API}/auth/login`, { email, password });
@@ -56,7 +84,7 @@ const useAdmin = () => {
     setAdmin(null);
   };
 
-  return { admin, token, login, logout, setAdmin };
+  return { admin, token, login, logout, setAdmin, loading };
 };
 
 // API helper with auth
