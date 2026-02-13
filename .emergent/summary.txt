@@ -1,0 +1,174 @@
+<analysis>**original_problem_statement**: The user initially reported issues with product images, the Add to Cart button on the homepage, and incorrect display of material options. After these were fixed, the user reported several new issues and feature requests:
+1.  **Razorpay Payment Issue**: Payments on the live site auto-succeed in test mode. (This was explained as expected behavior for test keys).
+2.  **Category Cleanup**: Remove extra categories like Rings, Earrings, etc., from the homepage and navigation.
+3.  **Checkout Flow**: Remove other payment methods (UPI, COD), keeping only Razorpay.
+4.  **Coupon Code Fix**: The coupon code system was not working.
+5.  **Analytics**: Requested live site traffic details and then asked to add a Meta Pixel tracking code.
+6.  **Shipping Charges**: Shipping costs were not working correctly, showing hardcoded values instead of fetching from the admin settings. The most recent issue is that Razorpay invoices are charging the wrong shipping fee (₹99 instead of ₹29).
+7.  **Product Reviews**: Requested a product review system.
+8.  **Emails Not Working**: Transactional emails are not being sent.
+9.  **Performance & Migration**: Complained about the live site being slow and requested a full guide and commands to migrate the entire application to AWS.
+10. **Database Access**: Encountered errors when trying to use the Access Database feature on the Emergent platform.
+
+**User's preferred language**: English
+
+**what currently exists?**
+The application is a full-stack e-commerce store. The agent has successfully addressed several UI/UX bugs, including fixing the homepage Add to cart button, conditionally displaying product options, and cleaning up product categories. A full-stack product review system has been implemented with frontend components and a backend admin panel for moderation. The checkout process has been updated to use only Razorpay and a backend-validated coupon system. Shipping charge calculations were fixed to pull data from the database, and a Meta Pixel was added for tracking. The agent also investigated deployment issues and provided a comprehensive guide for migrating the application to AWS, including exporting the database.
+
+**Last working item**:
+-   **Last item agent was working**: Investigating a critical bug where the Razorpay invoice charges an incorrect shipping fee (₹99) despite the admin setting and checkout UI showing the correct fee (₹29). The agent had just acknowledged the issue and was about to begin debugging the backend.
+-   **Status**: IN PROGRESS
+-   **Agent Testing Done**: N
+-   **Which testing method agent to use?**: Backend testing. Use  to inspect the payload sent to the  endpoint. The issue is in the amount calculation before creating the Razorpay order.
+-   **User Testing Done**: N
+
+**All Pending/In progress Issue list**:
+-   Issue 1: Razorpay invoice shows incorrect shipping charge. (P0)
+-   Issue 2: Emails are not being sent from the live application. (P1)
+
+**Issues Detail**:
+-   **Issue 1**:
+    -   **Attempted fixes**: The agent fixed the frontend UI to correctly display the shipping cost from the database settings. However, the backend logic that creates the Razorpay order still seems to be using a hardcoded value.
+    -   **Next debug checklist**:
+        1.  Examine the file .
+        2.  Locate the  endpoint.
+        3.  Inspect the logic that calculates the final  being sent to . It is likely using a hardcoded  for shipping instead of fetching the value from the database settings.
+        4.  Correct the calculation to use the  from the loaded settings, similar to how it was fixed on the checkout page frontend.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical payment bug. Fixing it will ensure customers are charged the correct amount, preventing financial discrepancies and customer complaints.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?** Y (The hardcoded shipping value has been an issue in multiple places).
+    -   **Should Test frontend/backend/both after fix?** Backend
+    -   **Blocked on other issue**: None
+
+-   **Issue 2**:
+    -   **Attempted fixes**: The agent investigated and found that the SMTP settings in the Admin Panel (Email, Password, From Name) are empty.
+    -   **Next debug checklist**:
+        1.  Instruct the user to navigate to the Admin Panel -> Settings -> Email section.
+        2.  Guide them to fill in their SMTP provider's details (e.g., for Gmail: their email address and a generated App Password).
+        3.  Once the user confirms they have saved the settings, trigger a test email (e.g., by creating a test order) to verify the fix.
+    -   **Why fix this issue and what will be achieved with the fix?**: To enable crucial transactional emails like order confirmations and shipping notifications for customers.
+    -   **Status**: BLOCKED (Waiting for user to provide SMTP credentials).
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Backend
+    -   **Blocked on other issue**: None
+
+**In progress Task List**:
+There are no partially completed tasks; all ongoing work is captured in the issue list above.
+
+**Upcoming and Future Tasks**
+-   **Upcoming Tasks**:
+    -   **AWS Migration Support (P1)**: The user has expressed a desire to migrate to AWS due to performance issues. While a guide and data export have been provided, the user may require further assistance with the actual migration process.
+-   **Future Tasks**:
+    -   **Site Performance Optimization (P2)**: Investigate the user's report of slow site performance. This could involve code optimization, database query analysis, or asset compression.
+
+**Completed work in this session**
+-   **UI & UX Bug Fixes**:
+    -   Resolved deployment caching issue, making frontend changes visible on the live site.
+    -   Fixed incorrect personalization text and conditional display of metal options on product pages.
+-   **Feature Implementation**:
+    -   Implemented a full-stack product review system with frontend display/submission and an admin approval dashboard.
+-   **Checkout & Payment Flow**:
+    -   Removed UPI and COD payment options, leaving only Razorpay.
+    -   Fixed coupon functionality by integrating it with a backend validation API.
+    -   Corrected shipping charge calculation on the frontend to use database values.
+-   **Content & Admin**:
+    -   Cleaned up product categories on the homepage and in the main navigation.
+-   **Integrations & Deployment**:
+    -   Added the Facebook/Meta Pixel tracking code to the site header.
+    -   Analyzed deployment logs and made the backend connection logic more robust for production.
+-   **User Support**:
+    -   Provided a comprehensive guide for migrating to AWS.
+    -   Exported the entire MongoDB database into JSON files located in .
+    -   Explained why the platform's Access Database feature was failing (it requires an Atlas URL, not a local one).
+
+**Earlier issues found/mentioned but not fixed**
+All known issues have been captured in the All Pending/In progress Issue list.
+
+**Known issue recurrence from previous fork**
+-   The frontend deployment/caching issue from the previous fork was resolved by instructing the user to use the Emergent platform's Deploy button instead of manual server commands.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   **Frontend**: React, Tailwind CSS,  (toasts).
+-   **Backend**: FastAPI (Python), Motor (async MongoDB driver).
+-   **Database**: MongoDB (running locally in the sandbox, user wants to migrate to Atlas/AWS).
+-   **Payments**: Razorpay.
+-   **Deployment**: Via Emergent platform's containerized deployment to Kubernetes.
+
+**key DB schema**
+-   **products**: 
+-   **orders**: 
+-   **users**: 
+-   **reviews**:  (New)
+-   **settings**: 
+
+**changes in tech stack**
+-   No changes to the core tech stack. A new feature (Product Reviews) was built using the existing stack.
+
+**All files of reference**
+-   : Major changes for reviews, coupons, settings, and the buggy Razorpay order endpoint.
+-   : Fixed hardcoded shipping and implemented backend coupon validation.
+-   : Added the new  component.
+-   : New file for the reviews feature.
+-   : Added the admin interface for managing reviews.
+-   : Updated to manage shipping settings.
+-   : Added the Meta Pixel code.
+-   : Updated to remove unwanted categories.
+
+**Areas that need refactoring**:
+-   The Razorpay order creation logic in  has a hardcoded shipping cost that needs to be removed and replaced with the dynamic value from the database settings.
+
+**key api endpoints**
+-   : **(BUGGY)** Creates the Razorpay order; likely contains the hardcoded shipping cost.
+-   : Validates a coupon code.
+-   : Fetches reviews for a product.
+-   : Submits a new review.
+-   : Fetches all reviews for the admin panel.
+-   : Approves a pending review.
+
+**Critical Info for New Agent**
+-   **P0 BUG**: The most critical task is to fix the Razorpay shipping charge bug. Customers are being overcharged. The problem is in the backend  at the Razorpay order creation endpoint, not the frontend.
+-   **User Blocked Task**: The email functionality is broken because the user needs to provide their SMTP credentials in the admin panel. You will need to guide them on how to do this.
+-   **Deployment**: All deployments to the live site are done using the Deploy button in the Emergent platform UI. Do not use manual server commands.
+-   **Database Context**: The application uses a local MongoDB instance. The user wants to migrate to AWS and has had trouble accessing the DB via the platform UI. You have the exported data in .
+
+**documents and test reports created in this job**
+-   : A directory containing JSON exports of all database collections.
+-   : Has been updated with completed tasks.
+
+**Last 10 User Messages and any pending HUMAN messages**
+10. : User asked for the live database URL. (Completed)
+9.  : User reported an error trying to access the database via the platform UI. (Completed, explained issue)
+8.  User provided deployment logs and asked for analysis. (Completed, agent analyzed and hardened the code)
+7.  : User reported the current P0 bug about incorrect shipping charges in Razorpay. (Pending Fix)
+6.  : User asked for traffic analytics. (Completed, explained analytics options)
+5.  User provided Meta Pixel code to be added to the site. (Completed)
+4.  : User reported issues with shipping charges being hardcoded. (Partially completed, frontend fixed but backend for Razorpay is still buggy)
+3.  : User reported multiple issues. (Completed, except for emails)
+2.  : User requested an AWS migration guide. (Completed, guide and data export provided)
+1.  : User asked the agent to verify a deployment. (Completed)
+
+**Project Health Check:**
+-   **Broken**:
+    -   The payment flow is critically broken due to incorrect shipping charges being sent to Razorpay.
+    -   Transactional emails are not functional.
+-   **Mocked**: Some fallback data is still present in .
+
+**3rd Party Integrations**
+-   **Razorpay**: For processing payments.
+-   **PostHog**: For product analytics (already integrated).
+-   **Meta (Facebook) Pixel**: For ad tracking and audience creation.
+
+**Testing status**
+-   **Testing agent used after significant changes**: NO
+-   **Troubleshoot agent used after agent stuck in loop**: NO
+-   **Test files created**: []
+-   **Known regressions**: The shipping cost calculation was fixed on the frontend but the regression persists in the backend logic for Razorpay, causing incorrect charges.
+
+**Credentials to test flow:**
+-   **Admin Login**:  / 
+
+**What agent forgot to execute**
+-   When fixing the hardcoded shipping costs, the agent updated the frontend display and admin panel but forgot to update the corresponding backend logic that calculates the final order amount for the Razorpay API. This oversight is the direct cause of the current P0 bug.</analysis>
