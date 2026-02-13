@@ -1568,6 +1568,10 @@ const AdminPage = () => {
       case 'coupons': return <CouponsTab token={token} />;
       case 'reviews': return <ReviewsTab token={token} />;
       case 'refunds': return <RefundsTab token={token} />;
+      case 'analytics': return <AnalyticsTab token={token} api={api} />;
+      case 'staff': return <StaffTab token={token} api={api} />;
+      case 'reports': return <ReportsTab token={token} api={api} />;
+      case 'bulk': return <BulkOperationsTab token={token} api={api} />;
       case 'navigation': return <NavigationTab token={token} />;
       case 'media': return <MediaTab token={token} />;
       case 'settings': return <SettingsTab token={token} />;
@@ -1582,7 +1586,7 @@ const AdminPage = () => {
         <header className="bg-white border-b px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden"><Menu className="w-6 h-6" /></button>
-            <h2 className="text-lg font-medium capitalize">{activeTab}</h2>
+            <h2 className="text-lg font-medium capitalize">{activeTab.replace('-', ' ')}</h2>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-500">Welcome, {admin.name}</span>
