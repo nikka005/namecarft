@@ -159,12 +159,16 @@ const AdminLogin = ({ onLogin }) => {
 const Sidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'analytics', label: 'Analytics', icon: TrendingUp, badge: 'NEW' },
     { id: 'orders', label: 'Orders', icon: ShoppingCart },
     { id: 'products', label: 'Products', icon: Package },
     { id: 'customers', label: 'Customers', icon: Users },
     { id: 'coupons', label: 'Coupons', icon: Tags },
     { id: 'reviews', label: 'Reviews', icon: Star },
     { id: 'refunds', label: 'Refunds', icon: RefreshCw },
+    { id: 'bulk', label: 'Bulk Operations', icon: CheckCircle },
+    { id: 'staff', label: 'Staff Management', icon: UserCheck },
+    { id: 'reports', label: 'Reports', icon: Download },
     { id: 'navigation', label: 'Navigation', icon: Menu },
     { id: 'media', label: 'Media Library', icon: Image },
     { id: 'settings', label: 'Site Settings', icon: Settings },
@@ -190,6 +194,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
             >
               <item.icon className="w-5 h-5" />
               {item.label}
+              {item.badge && <span className="ml-auto text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">{item.badge}</span>}
             </button>
           ))}
         </nav>
