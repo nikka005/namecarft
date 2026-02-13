@@ -1401,6 +1401,259 @@ async def admin_dashboard(admin = Depends(get_admin_user)):
             "monthly_stats": []
         }
 
+# ========== ADVANCED ANALYTICS APIs ==========
+
+@api_router.get("/admin/analytics")
+async def admin_analytics(
+    period: str = "30d",
+    admin = Depends(get_admin_user)
+):
+    """Advanced analytics with charts data"""
+    try:
+        # Parse period
+        days = int(period.replace('d', '')) if 'd' in period else 30
+        start_date = datetime.utcnow() - timedelta(days=days)
+        start_str = start_date.strftime("%Y-%m-%d")
+        
+        # Get all orders
+        all_orders = await db.orders.find({}, {"_id": 0}).to_list(1000)
+        
+        # Filter orders by date and calculate daily revenue
+        daily_revenue = {}
+        category_sales = {}
+        payment_methods = {}
+        hourly_orders = {str(i): 0 for i in range(24)}
+        
+        for order in all_orders:
+            created = order.get("created_at", "")
+            if isinstance(created, str):
+                order_date = created[:10]
+            elif isinstance(created, datetime):
+                order_date = created.strftime("%Y-%m-%d")
+            else:
+                continue
+            
+            if order_date >= start_str:
+                # Daily revenue
+                if order_date not in daily_revenue:
+                    daily_revenue[order_date] = {"date": order_date, "revenue": 0, "orders": 0}
+                if order.get("payment_status") in ["paid", "completed"]:
+                    daily_revenue[order_date]["revenue"] += order.get("total", 0)
+                daily_revenue[order_date]["orders"] += 1
+                
+                # Payment methods
+                pm = order.get("payment_method", "unknown")
+                payment_methods[pm] = payment_methods.get(pm, 0) + 1
+                
+                # Hourly distribution
+                try:
+                    if isinstance(created, str) and len(created) > 13:
+                        hour = created[11:13]
+                        hourly_orders[hour] = hourly_orders.get(hour, 0) + 1
+                except:
+                    pass
+                
+                # Category sales
+                for item in order.get("items", []):
+                    cat = item.get("category", "uncategorized")
+                    category_sales[cat] = category_sales.get(cat, 0) + item.get("price", 0) * item.get("quantity", 1)
+        
+        # Top products
+        product_sales = {}
+        for order in all_orders:
+            for item in order.get("items", []):
+                pid = item.get("product_id", item.get("name", "unknown"))
+                if pid not in product_sales:
+                    product_sales[pid] = {"name": item.get("name", "Unknown"), "sales": 0, "revenue": 0}
+                product_sales[pid]["sales"] += item.get("quantity", 1)
+                product_sales[pid]["revenue"] += item.get("price", 0) * item.get("quantity", 1)
+        
+        top_products = sorted(product_sales.values(), key=lambda x: x["revenue"], reverse=True)[:10]
+        
+        # Low stock products
+        low_stock = await db.products.find({"stock": {"$lt": 10}}, {"_id": 0, "name": 1, "stock": 1, "id": 1}).to_list(20)
+        
+        return {
+            "daily_revenue": sorted(daily_revenue.values(), key=lambda x: x["date"]),
+            "category_sales": [{"category": k, "revenue": v} for k, v in category_sales.items()],
+            "payment_methods": [{"method": k, "count": v} for k, v in payment_methods.items()],
+            "hourly_orders": [{"hour": k, "orders": v} for k, v in sorted(hourly_orders.items())],
+            "top_products": top_products,
+            "low_stock_alerts": low_stock
+        }
+    except Exception as e:
+        print(f"Analytics error: {e}")
+        return {"daily_revenue": [], "category_sales": [], "payment_methods": [], "hourly_orders": [], "top_products": [], "low_stock_alerts": []}
+
+@api_router.get("/admin/reports/export")
+async def export_report(
+    report_type: str = "orders",
+    format: str = "json",
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    admin = Depends(get_admin_user)
+):
+    """Export reports as JSON (can be converted to CSV/Excel on frontend)"""
+    try:
+        if report_type == "orders":
+            orders = await db.orders.find({}, {"_id": 0}).to_list(10000)
+            return {"data": orders, "type": "orders", "count": len(orders)}
+        elif report_type == "customers":
+            customers = await db.users.find({"role": "user"}, {"_id": 0, "password_hash": 0}).to_list(10000)
+            return {"data": customers, "type": "customers", "count": len(customers)}
+        elif report_type == "products":
+            products = await db.products.find({}, {"_id": 0}).to_list(10000)
+            return {"data": products, "type": "products", "count": len(products)}
+        elif report_type == "revenue":
+            orders = await db.orders.find({"payment_status": {"$in": ["paid", "completed"]}}, {"_id": 0}).to_list(10000)
+            total_revenue = sum(o.get("total", 0) for o in orders)
+            return {"data": orders, "type": "revenue", "total_revenue": total_revenue, "count": len(orders)}
+        else:
+            raise HTTPException(status_code=400, detail="Invalid report type")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ========== STAFF MANAGEMENT APIs ==========
+
+class StaffCreate(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+    role: str = "staff"
+    permissions: List[str] = []
+
+@api_router.get("/admin/staff")
+async def get_staff(admin = Depends(get_admin_user)):
+    """Get all staff members"""
+    staff = await db.users.find({"role": {"$in": ["admin", "staff"]}}, {"_id": 0, "password_hash": 0}).to_list(100)
+    return {"staff": staff}
+
+@api_router.post("/admin/staff")
+async def create_staff(staff_data: StaffCreate, admin = Depends(get_admin_user)):
+    """Create new staff member"""
+    # Check if email exists
+    existing = await db.users.find_one({"email": staff_data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already exists")
+    
+    staff = {
+        "id": str(uuid.uuid4()),
+        "name": staff_data.name,
+        "email": staff_data.email,
+        "password_hash": pwd_context.hash(staff_data.password),
+        "role": staff_data.role,
+        "permissions": staff_data.permissions,
+        "is_active": True,
+        "created_at": datetime.utcnow().isoformat()
+    }
+    await db.users.insert_one(staff)
+    del staff["password_hash"]
+    return staff
+
+@api_router.put("/admin/staff/{staff_id}")
+async def update_staff(staff_id: str, updates: dict, admin = Depends(get_admin_user)):
+    """Update staff member"""
+    if "password" in updates:
+        updates["password_hash"] = pwd_context.hash(updates.pop("password"))
+    updates.pop("password_hash", None)
+    await db.users.update_one({"id": staff_id}, {"$set": updates})
+    return {"message": "Staff updated"}
+
+@api_router.delete("/admin/staff/{staff_id}")
+async def delete_staff(staff_id: str, admin = Depends(get_admin_user)):
+    """Delete staff member"""
+    await db.users.delete_one({"id": staff_id})
+    return {"message": "Staff deleted"}
+
+# ========== BULK OPERATIONS APIs ==========
+
+@api_router.post("/admin/bulk/orders/update-status")
+async def bulk_update_order_status(
+    order_ids: List[str],
+    status: str,
+    admin = Depends(get_admin_user)
+):
+    """Bulk update order status"""
+    result = await db.orders.update_many(
+        {"id": {"$in": order_ids}},
+        {"$set": {"order_status": status, "updated_at": datetime.utcnow().isoformat()}}
+    )
+    return {"modified": result.modified_count}
+
+@api_router.post("/admin/bulk/products/update")
+async def bulk_update_products(
+    product_ids: List[str],
+    updates: dict,
+    admin = Depends(get_admin_user)
+):
+    """Bulk update products"""
+    updates["updated_at"] = datetime.utcnow().isoformat()
+    result = await db.products.update_many(
+        {"id": {"$in": product_ids}},
+        {"$set": updates}
+    )
+    return {"modified": result.modified_count}
+
+@api_router.post("/admin/bulk/products/delete")
+async def bulk_delete_products(
+    product_ids: List[str],
+    admin = Depends(get_admin_user)
+):
+    """Bulk delete products"""
+    result = await db.products.delete_many({"id": {"$in": product_ids}})
+    return {"deleted": result.deleted_count}
+
+# ========== INVENTORY ALERTS API ==========
+
+@api_router.get("/admin/inventory/alerts")
+async def get_inventory_alerts(
+    threshold: int = 10,
+    admin = Depends(get_admin_user)
+):
+    """Get low stock alerts"""
+    low_stock = await db.products.find(
+        {"stock": {"$lt": threshold}},
+        {"_id": 0}
+    ).sort("stock", 1).to_list(100)
+    
+    out_of_stock = await db.products.find(
+        {"stock": {"$lte": 0}},
+        {"_id": 0}
+    ).to_list(100)
+    
+    return {
+        "low_stock": low_stock,
+        "out_of_stock": out_of_stock,
+        "low_stock_count": len(low_stock),
+        "out_of_stock_count": len(out_of_stock)
+    }
+
+# ========== EMAIL TEMPLATES API ==========
+
+@api_router.get("/admin/email-templates")
+async def get_email_templates(admin = Depends(get_admin_user)):
+    """Get email templates"""
+    templates = await db.email_templates.find({}, {"_id": 0}).to_list(50)
+    if not templates:
+        # Return default templates
+        default_templates = [
+            {"id": "order_confirmation", "name": "Order Confirmation", "subject": "Your order {{order_number}} has been confirmed!", "body": "Dear {{customer_name}},\n\nThank you for your order!\n\nOrder Number: {{order_number}}\nTotal: ₹{{total}}\n\nWe'll notify you when your order ships.\n\nBest regards,\nName Craft Team"},
+            {"id": "order_shipped", "name": "Order Shipped", "subject": "Your order {{order_number}} has been shipped!", "body": "Dear {{customer_name}},\n\nGreat news! Your order has been shipped.\n\nOrder Number: {{order_number}}\nTracking ID: {{tracking_id}}\n\nBest regards,\nName Craft Team"},
+            {"id": "order_delivered", "name": "Order Delivered", "subject": "Your order {{order_number}} has been delivered!", "body": "Dear {{customer_name}},\n\nYour order has been delivered!\n\nWe hope you love your purchase. Please leave a review!\n\nBest regards,\nName Craft Team"}
+        ]
+        return {"templates": default_templates}
+    return {"templates": templates}
+
+@api_router.put("/admin/email-templates/{template_id}")
+async def update_email_template(template_id: str, data: dict, admin = Depends(get_admin_user)):
+    """Update email template"""
+    await db.email_templates.update_one(
+        {"id": template_id},
+        {"$set": data},
+        upsert=True
+    )
+    return {"message": "Template updated"}
+
 @api_router.get("/admin/orders")
 async def admin_get_orders(
     status: Optional[str] = None,
