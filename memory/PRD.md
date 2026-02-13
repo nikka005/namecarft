@@ -117,6 +117,12 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 - **34 products with properly matched images**
 - **Conditional metal options for jewelry only**
 - **Generic personalization labels (works for all products)**
+- **Shipping cost calculation fixed** - Now correctly uses database settings (₹29)
+
+### Latest Fix (February 13, 2025)
+- ✅ **Razorpay Shipping Bug FIXED** - Orders now correctly calculate shipping from database settings
+- Verified: New orders use `shipping_cost: 29` from settings
+- Old orders with ₹99 shipping were created before the fix was deployed
 
 ### Deployment Status
 - **Preview environment**: All fixes verified and working
