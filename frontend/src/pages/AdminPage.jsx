@@ -1529,18 +1529,22 @@ const SettingsTab = ({ token }) => {
 
 // Main Admin Page
 const AdminPage = () => {
-  const { admin, token, login, logout, setAdmin } = useAdmin();
+  const { admin, token, login, logout, setAdmin, loading } = useAdmin();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (token) {
-      axios.get(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(res => { if (res.data.role === 'admin' || res.data.role === 'staff') setAdmin(res.data); else logout(); })
-        .catch(() => logout());
-    }
-  }, [token, setAdmin, logout]);
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!token || !admin) return <AdminLogin onLogin={login} />;
 
