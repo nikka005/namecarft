@@ -1,0 +1,141 @@
+{
+  "identity": {
+    "name": "E1: The Anti-AI Designer",
+    "mission": "Create a luxury jewelry admin panel that feels like a high-end cockpit, not a spreadsheet.",
+    "tone": "Premium, Precision, Cinematic, Trustworthy",
+    "anti_patterns": [
+      "No generic 'Inter' everywhere - use Cormorant Garamond for headers",
+      "No flat gray backgrounds - use deep rich textures",
+      "No default Shadcn cards - use Glassmorphism",
+      "No boring equal-width grids - use Bento layouts"
+    ]
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Cormorant Garamond, serif",
+      "weights": ["400", "600"],
+      "tracking": "tracking-tight",
+      "sizes": {
+        "h1": "text-4xl md:text-5xl lg:text-6xl",
+        "h2": "text-3xl md:text-4xl",
+        "h3": "text-2xl",
+        "label": "text-xs font-sans tracking-[0.2em] uppercase text-muted-foreground"
+      }
+    },
+    "body": {
+      "font_family": "Inter, sans-serif",
+      "weights": ["300", "400", "500"],
+      "tracking": "tracking-wide"
+    }
+  },
+  "colors": {
+    "palette_name": "Midnight Jewel",
+    "mode": "dark",
+    "base": {
+      "background": "#020408",
+      "foreground": "#F8FAFC",
+      "card": "rgba(255, 255, 255, 0.03)",
+      "card_foreground": "#F1F5F9",
+      "popover": "#0B1121",
+      "popover_foreground": "#F8FAFC",
+      "primary": "#D4AF37",
+      "primary_foreground": "#000000",
+      "secondary": "#1E293B",
+      "secondary_foreground": "#F8FAFC",
+      "muted": "#1E293B",
+      "muted_foreground": "#94A3B8",
+      "accent": "#1E293B",
+      "accent_foreground": "#D4AF37",
+      "destructive": "#7F1D1D",
+      "destructive_foreground": "#F8FAFC",
+      "border": "rgba(255, 255, 255, 0.08)",
+      "input": "rgba(255, 255, 255, 0.05)",
+      "ring": "#D4AF37"
+    },
+    "gradients": {
+      "gold_dust": "linear-gradient(135deg, #D4AF37 0%, #B49120 100%)",
+      "obsidian_glass": "linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)",
+      "neon_glow": "conic-gradient(from 180deg at 50% 50%, #D4AF37 0deg, #1E293B 180deg, #D4AF37 360deg)"
+    },
+    "charts": {
+      "chart_1": "#D4AF37",
+      "chart_2": "#10B981",
+      "chart_3": "#3B82F6",
+      "chart_4": "#F43F5E",
+      "chart_5": "#8B5CF6"
+    }
+  },
+  "layout": {
+    "grid_system": "Bento Grid Mode B (High Density)",
+    "spacing": "Relaxed - use p-6 or p-8 for cards",
+    "radius": "rounded-xl",
+    "sidebar": {
+      "width": "w-64",
+      "style": "Glassmorphism with blurred backdrop",
+      "collapsed_width": "w-20"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": {
+      "base": "backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl",
+      "hover": "hover:bg-white/10 transition-all duration-300"
+    },
+    "shadows": {
+      "glow": "0 0 20px rgba(212, 175, 55, 0.15)",
+      "depth": "0 10px 30px -10px rgba(0, 0, 0, 0.5)"
+    },
+    "animations": {
+      "fade_in": "animate-in fade-in duration-500",
+      "slide_up": "animate-in slide-in-from-bottom-4 duration-500",
+      "hover_lift": "hover:-translate-y-1 transition-transform duration-300"
+    }
+  },
+  "images": {
+    "products": [
+      {
+        "url": "https://images.unsplash.com/photo-1605102062083-ae61a51393f3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHwxfHxkaWFtb25kJTIwcmluZyUyMGpld2Vscnl8ZW58MHx8fHwxNzcxMDA5MDQ0fDA&ixlib=rb-4.1.0&q=85",
+        "alt": "Diamond Ring",
+        "category": "hero"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1629201688905-697730d24490?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHwyfHxkaWFtb25kJTIwcmluZyUyMGpld2Vscnl8ZW58MHx8fHwxNzcxMDA5MDQ0fDA&ixlib=rb-4.1.0&q=85",
+        "alt": "Silver Pendant",
+        "category": "product"
+      }
+    ],
+    "users": [
+      {
+        "url": "https://images.pexels.com/photos/3727513/pexels-photo-3727513.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "alt": "Admin User 1",
+        "category": "avatar"
+      },
+      {
+        "url": "https://images.pexels.com/photos/33871730/pexels-photo-33871730.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "alt": "Admin User 2",
+        "category": "avatar"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. THEME SETUP: Modify 'tailwind.config.js' to use the 'Midnight Jewel' palette. Use CSS variables in 'index.css' for the 'dark' class. Ensure 'darkMode' is set to 'class'.",
+    "2. FONT SETUP: Keep 'Cormorant Garamond' and 'Inter' in App.css. Apply 'font-serif' to all headings (h1-h3) and 'font-sans' to body/tables.",
+    "3. GLOBAL STYLES: Add a global background to 'body' in index.css: 'bg-[#020408] text-slate-100'. Add a subtle noise texture if possible.",
+    "4. COMPONENT OVERRIDES: Go into 'src/components/ui/card.js' (or equivalent) and change the default style to use the Glassmorphism utility defined above (bg-white/5 backdrop-blur-md). Do not use solid white backgrounds.",
+    "5. LAYOUT: Create a 'Layout.js' component with a fixed glass sidebar and a scrollable main area. content area must have padding 'p-8'.",
+    "6. DASHBOARD: Implement a Bento Grid layout. Top row: 4 KPI cards (Glass). Middle row: Large Sales Chart (Col-span-2) + Recent Orders (Col-span-1). Bottom row: Top Products.",
+    "7. CHARTS: Use 'Recharts'. Customize the 'ResponsiveContainer' to fit the glass cards. Use the gold/emerald/blue palette for lines/bars.",
+    "8. MICRO-INTERACTIONS: Add 'hover:scale-[1.02]' to all cards. Add 'active:scale-95' to buttons. Use 'sonner' for toast notifications.",
+    "9. TABLES: heavily customize shadcn table. Remove internal borders, use 'hover:bg-white/5' for rows. Header should be uppercase tracking-widest text-xs text-muted-foreground.",
+    "10. TESTING: Add 'data-testid' to all interactive elements (buttons, inputs, links).",
+    "11. LOGIN: Create a split-screen login page. Left side: High-res Jewelry Image with overlay. Right side: Glass form centered."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Do not use generic 'Inter' everywhere.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "Every interaction needs micro-animations.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "All interactive elements MUST include data-testid attribute.",
+    "Use 'sonner' for toasts.",
+    "NEVER use transparent backgrounds without a blur or scrim."
+  ]
+}
