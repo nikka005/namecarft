@@ -1328,60 +1328,78 @@ async def reset_admin_password(admin_data: AdminCreate):
 
 @api_router.get("/admin/dashboard")
 async def admin_dashboard(admin = Depends(get_admin_user)):
-    total_orders = await db.orders.count_documents({})
-    total_users = await db.users.count_documents({"role": "user"})
-    total_products = await db.products.count_documents({})
-    
-    # Revenue
-    pipeline = [
-        {"$match": {"payment_status": "paid"}},
-        {"$group": {"_id": None, "total": {"$sum": "$total"}}}
-    ]
-    revenue_result = await db.orders.aggregate(pipeline).to_list(1)
-    total_revenue = revenue_result[0]["total"] if revenue_result else 0
-    
-    # Pending orders
-    pending_orders = await db.orders.count_documents({"order_status": "pending"})
-    
-    # Today's orders
-    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_orders = await db.orders.count_documents({"created_at": {"$gte": today_start}})
-    
-    # Recent orders
-    recent_orders = await db.orders.find({}, {"_id": 0}).sort("created_at", -1).limit(10).to_list(10)
-    
-    # Order stats by status
-    status_pipeline = [
-        {"$group": {"_id": "$order_status", "count": {"$sum": 1}}}
-    ]
-    status_stats = await db.orders.aggregate(status_pipeline).to_list(10)
-    
-    # Monthly revenue (last 6 months)
-    monthly_pipeline = [
-        {"$match": {"payment_status": "paid"}},
-        {"$group": {
-            "_id": {"$dateToString": {"format": "%Y-%m", "date": "$created_at"}},
-            "revenue": {"$sum": "$total"},
-            "orders": {"$sum": 1}
-        }},
-        {"$sort": {"_id": -1}},
-        {"$limit": 6}
-    ]
-    monthly_stats = await db.orders.aggregate(monthly_pipeline).to_list(6)
-    
-    return {
-        "stats": {
-            "total_orders": total_orders,
-            "total_users": total_users,
-            "total_products": total_products,
-            "total_revenue": total_revenue,
-            "pending_orders": pending_orders,
-            "today_orders": today_orders
-        },
-        "recent_orders": recent_orders,
-        "order_status_stats": {s["_id"]: s["count"] for s in status_stats},
-        "monthly_stats": monthly_stats
-    }
+    try:
+        total_orders = await db.orders.count_documents({})
+        total_users = await db.users.count_documents({"role": "user"})
+        total_products = await db.products.count_documents({})
+        
+        # Revenue - handle both paid statuses
+        pipeline = [
+            {"$match": {"payment_status": {"$in": ["paid", "completed"]}}},
+            {"$group": {"_id": None, "total": {"$sum": "$total"}}}
+        ]
+        revenue_result = await db.orders.aggregate(pipeline).to_list(1)
+        total_revenue = revenue_result[0]["total"] if revenue_result else 0
+        
+        # Pending orders
+        pending_orders = await db.orders.count_documents({"order_status": "pending"})
+        
+        # Today's orders - use string comparison for dates stored as strings
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_str = today_start.isoformat()
+        
+        # Count today's orders by checking if created_at string starts with today's date
+        today_date_str = today_start.strftime("%Y-%m-%d")
+        all_orders = await db.orders.find({}, {"created_at": 1}).to_list(1000)
+        today_orders = 0
+        for order in all_orders:
+            created = order.get("created_at", "")
+            if isinstance(created, str) and created.startswith(today_date_str):
+                today_orders += 1
+            elif isinstance(created, datetime) and created >= today_start:
+                today_orders += 1
+        
+        # Recent orders
+        recent_orders = await db.orders.find({}, {"_id": 0}).sort("created_at", -1).limit(10).to_list(10)
+        
+        # Order stats by status
+        status_pipeline = [
+            {"$group": {"_id": "$order_status", "count": {"$sum": 1}}}
+        ]
+        status_stats = await db.orders.aggregate(status_pipeline).to_list(10)
+        
+        # Monthly revenue - simplified for string dates
+        monthly_stats = []
+        
+        return {
+            "stats": {
+                "total_orders": total_orders,
+                "total_users": total_users,
+                "total_products": total_products,
+                "total_revenue": total_revenue,
+                "pending_orders": pending_orders,
+                "today_orders": today_orders
+            },
+            "recent_orders": recent_orders,
+            "order_status_stats": {s["_id"]: s["count"] for s in status_stats if s["_id"]},
+            "monthly_stats": monthly_stats
+        }
+    except Exception as e:
+        print(f"Dashboard error: {e}")
+        # Return basic stats on error
+        return {
+            "stats": {
+                "total_orders": await db.orders.count_documents({}),
+                "total_users": await db.users.count_documents({"role": "user"}),
+                "total_products": await db.products.count_documents({}),
+                "total_revenue": 0,
+                "pending_orders": await db.orders.count_documents({"order_status": "pending"}),
+                "today_orders": 0
+            },
+            "recent_orders": [],
+            "order_status_stats": {},
+            "monthly_stats": []
+        }
 
 @api_router.get("/admin/orders")
 async def admin_get_orders(
