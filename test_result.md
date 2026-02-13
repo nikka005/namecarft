@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the Name Strings e-commerce backend API at https://checkout-amount-calc.preview.emergentagent.com/api"
+user_problem_statement: "Test the Name Strings e-commerce backend API at https://admin-ui-revamp-11.preview.emergentagent.com/api"
 
 backend:
   - task: "Root API Endpoint"
