@@ -245,11 +245,21 @@ Build a feature-complete replica of the website `thenamestrings.in` - an e-comme
 - **Razorpay**: For processing payments (requires live keys for production)
 - **WhatsApp Business API**: For order notifications (requires API credentials)
 - **Unsplash**: Product image source
+- **Recharts**: For analytics dashboard charts
+- **PostHog**: For product analytics (optional)
+- **Meta (Facebook) Pixel**: For ad tracking (optional)
 
 ## Known Issues
 - bcrypt warning in backend logs (version compatibility with passlib) - cosmetic only
+- **P1 - Email functionality**: Transactional emails not working - requires user to configure SMTP credentials in Admin Panel → Settings → Email
+
+## Upcoming Tasks
+- **P1**: Domain & SSL setup assistance for AWS deployment
+- **P2**: Site performance optimization
+- **P2**: Split AdminPage.jsx into smaller modules (currently 1871 lines, recommended <700)
 
 ## Notes
 - Preview and Production environments use separate databases
 - Razorpay keys need to be entered in each environment's admin panel
 - Product images sourced from Unsplash for reliability
+- Admin panel redesign completed Feb 13, 2025 with modern UI/UX
