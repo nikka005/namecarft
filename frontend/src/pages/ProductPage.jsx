@@ -180,7 +180,7 @@ const ProductPage = () => {
     // Track AddToCart event with Meta Pixel
     if (window.fbq) {
       window.fbq('track', 'AddToCart', {
-        value: product.price * quantity,
+        value: parseFloat((product.price * quantity).toFixed(2)),
         currency: 'INR',
         content_ids: [product.id || product.slug],
         content_type: 'product',
