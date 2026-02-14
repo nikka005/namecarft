@@ -165,6 +165,17 @@ const ProductPage = () => {
       customImage: uploadedImage || null
     });
     setIsCartOpen(true);
+    
+    // Track AddToCart event with Meta Pixel
+    if (window.fbq) {
+      window.fbq('track', 'AddToCart', {
+        value: product.price * quantity,
+        currency: 'INR',
+        content_ids: [product.id || product.slug],
+        content_type: 'product',
+        content_name: product.name
+      });
+    }
   };
 
   const metals = [
