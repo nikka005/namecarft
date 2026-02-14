@@ -44,7 +44,7 @@ const ProductPage = () => {
         // Track ViewContent event with Meta Pixel
         if (window.fbq && res.data) {
           window.fbq('track', 'ViewContent', {
-            value: res.data.price,
+            value: parseFloat(res.data.price) || 0,
             currency: 'INR',
             content_ids: [res.data.id || res.data.slug],
             content_type: 'product',
