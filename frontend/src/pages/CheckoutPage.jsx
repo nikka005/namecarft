@@ -112,7 +112,7 @@ const CheckoutPage = () => {
     // Track InitiateCheckout event with Meta Pixel
     if (window.fbq && cart.length > 0) {
       window.fbq('track', 'InitiateCheckout', {
-        value: cartTotal,
+        value: parseFloat(cartTotal.toFixed(2)),
         currency: 'INR',
         content_ids: cart.map(item => item.id || item.slug),
         content_type: 'product',
