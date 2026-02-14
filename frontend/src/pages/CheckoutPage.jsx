@@ -299,6 +299,21 @@ const CheckoutPage = () => {
         clearCart();
         setCheckoutStep('confirmation');
         toast({ title: "Order Placed!", description: "Your order has been placed successfully." });
+        
+        // Track Purchase event for COD
+        const eventId = 'purchase_' + savedOrderId + '_' + Date.now();
+        const purchaseKey = 'purchase_fired_' + savedOrderId;
+        
+        if (window.fbq && !localStorage.getItem(purchaseKey)) {
+          window.fbq('track', 'Purchase', {
+            value: parseFloat(total.toFixed(2)),
+            currency: 'INR',
+            content_ids: cart.map(item => item.id || item.slug),
+            content_type: 'product',
+            num_items: cartCount
+          }, { eventID: eventId });
+          localStorage.setItem(purchaseKey, 'true');
+        }
       } else if (formData.paymentMethod === 'razorpay') {
         // Razorpay payment
         await handleRazorpayPayment(orderData, savedOrderId);
