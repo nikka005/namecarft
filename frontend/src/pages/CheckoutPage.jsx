@@ -346,11 +346,37 @@ const CheckoutPage = () => {
       clearCart();
       setCheckoutStep('confirmation');
       toast({ title: "Payment Submitted!", description: "Your payment is pending verification by admin." });
+      
+      // Track Purchase event for UPI
+      const eventId = 'purchase_' + orderId + '_' + Date.now();
+      const purchaseKey = 'purchase_fired_' + orderId;
+      
+      if (window.fbq && !localStorage.getItem(purchaseKey)) {
+        window.fbq('track', 'Purchase', {
+          value: parseFloat(total.toFixed(2)),
+          currency: 'INR',
+          content_type: 'product'
+        }, { eventID: eventId });
+        localStorage.setItem(purchaseKey, 'true');
+      }
     } catch (err) {
       console.error('UTR submission failed:', err);
       toast({ title: "Submitted!", description: "Your payment details have been submitted for verification." });
       clearCart();
       setCheckoutStep('confirmation');
+      
+      // Track Purchase event even on error (order was created)
+      const eventId = 'purchase_' + orderId + '_' + Date.now();
+      const purchaseKey = 'purchase_fired_' + orderId;
+      
+      if (window.fbq && !localStorage.getItem(purchaseKey)) {
+        window.fbq('track', 'Purchase', {
+          value: parseFloat(total.toFixed(2)),
+          currency: 'INR',
+          content_type: 'product'
+        }, { eventID: eventId });
+        localStorage.setItem(purchaseKey, 'true');
+      }
     } finally {
       setLoading(false);
     }
