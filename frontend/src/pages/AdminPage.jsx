@@ -880,11 +880,20 @@ const ProductsTab = ({ token }) => {
 // ==================== PRODUCT FORM ====================
 const ProductForm = ({ token, product, onClose, onSave }) => {
   const [form, setForm] = useState({
-    name: product?.name || '', slug: product?.slug || '', description: product?.description || '',
-    price: product?.price || '', original_price: product?.original_price || '', discount: product?.discount || 0,
-    image: product?.image || '', hover_image: product?.hover_image || '', category: product?.category || 'for-her',
-    is_featured: product?.is_featured || false, is_active: product?.is_active !== false, stock_quantity: product?.stock_quantity || 100, 
-    tags: product?.tags?.join(', ') || '', allow_custom_image: product?.allow_custom_image || false
+    name: product?.name || '', 
+    slug: product?.slug || '', 
+    description: product?.description || '',
+    price: product?.price || '', 
+    original_price: product?.original_price || '', 
+    discount: product?.discount || 0,
+    image: product?.image || '', 
+    hover_image: product?.hover_image || '', 
+    category: product?.category || 'for-her',
+    is_featured: product?.is_featured || false, 
+    is_active: product?.is_active !== false, 
+    stock_quantity: product?.stock_quantity || 100, 
+    tags: Array.isArray(product?.tags) ? product.tags.join(', ') : (product?.tags || ''), 
+    allow_custom_image: product?.allow_custom_image || false
   });
   const [loading, setLoading] = useState(false);
 
@@ -892,12 +901,30 @@ const ProductForm = ({ token, product, onClose, onSave }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = { ...form, price: parseFloat(form.price), original_price: parseFloat(form.original_price), discount: parseInt(form.discount), stock_quantity: parseInt(form.stock_quantity), tags: form.tags.split(',').map(t => t.trim()).filter(Boolean) };
-      if (product) await api.put(`/admin/products/${product.id}`, data, token);
-      else await api.post('/admin/products', data, token);
+      const tagsArray = typeof form.tags === 'string' 
+        ? form.tags.split(',').map(t => t.trim()).filter(Boolean) 
+        : (form.tags || []);
+      
+      const data = { 
+        ...form, 
+        price: parseFloat(form.price) || 0, 
+        original_price: parseFloat(form.original_price) || 0, 
+        discount: parseInt(form.discount) || 0, 
+        stock_quantity: parseInt(form.stock_quantity) || 100, 
+        tags: tagsArray 
+      };
+      
+      if (product) {
+        await api.put(`/admin/products/${product.id}`, data, token);
+      } else {
+        await api.post('/admin/products', data, token);
+      }
       toast({ title: `Product ${product ? 'updated' : 'created'} successfully` });
       onSave();
-    } catch (e) { toast({ title: 'Error saving product', variant: 'destructive' }); }
+    } catch (e) { 
+      console.error('Product save error:', e);
+      toast({ title: 'Error saving product', description: e.response?.data?.detail || e.message, variant: 'destructive' }); 
+    }
     setLoading(false);
   };
 
