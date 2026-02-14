@@ -164,15 +164,22 @@ const CheckoutPage = () => {
             setCheckoutStep('confirmation');
             toast({ title: "Payment Successful!", description: "Your order has been confirmed." });
             
-            // Track Purchase event with Meta Pixel
-            if (window.fbq) {
+            // Track Purchase event with Meta Pixel (with deduplication)
+            const eventId = 'purchase_' + savedOrderId + '_' + Date.now();
+            const purchaseKey = 'purchase_fired_' + savedOrderId;
+            
+            if (window.fbq && !localStorage.getItem(purchaseKey)) {
               window.fbq('track', 'Purchase', {
-                value: total,
+                value: parseFloat(total.toFixed(2)),
                 currency: 'INR',
                 content_ids: cart.map(item => item.id || item.slug),
                 content_type: 'product',
-                num_items: cartCount
-              });
+                num_items: cartCount,
+                content_name: cart.map(item => item.name).join(', ')
+              }, { eventID: eventId });
+              
+              // Mark as fired to prevent duplicate
+              localStorage.setItem(purchaseKey, 'true');
             }
           } catch (err) {
             toast({ title: "Verification Failed", description: "Please contact support.", variant: "destructive" });
