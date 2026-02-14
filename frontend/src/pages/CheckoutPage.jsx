@@ -108,6 +108,17 @@ const CheckoutPage = () => {
       }
     };
     fetchSettings();
+    
+    // Track InitiateCheckout event with Meta Pixel
+    if (window.fbq && cart.length > 0) {
+      window.fbq('track', 'InitiateCheckout', {
+        value: cartTotal,
+        currency: 'INR',
+        content_ids: cart.map(item => item.id || item.slug),
+        content_type: 'product',
+        num_items: cartCount
+      });
+    }
   }, []);
 
   // Calculate shipping based on settings from database
