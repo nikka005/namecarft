@@ -834,19 +834,9 @@ const ProductsTab = ({ token }) => {
       ) : products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {products.map((product) => (
-            <div key={product.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow group">
+            <div key={product.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
               <div className="relative aspect-square bg-slate-100">
                 <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                  <div className="flex gap-2">
-                    <Button size="icon" variant="secondary" className="h-9 w-9" onClick={() => { setEditingProduct(product); setShowForm(true); }}>
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button size="icon" variant="destructive" className="h-9 w-9" onClick={() => deleteProduct(product.id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
                 {product.is_featured && (
                   <div className="absolute top-3 left-3 px-2 py-1 bg-amber-500 text-white text-xs font-semibold rounded-lg">Featured</div>
                 )}
@@ -854,7 +844,7 @@ const ProductsTab = ({ token }) => {
               <div className="p-4">
                 <h3 className="font-semibold text-slate-900 truncate">{product.name}</h3>
                 <p className="text-sm text-slate-500 mb-2">{product.category}</p>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="font-bold text-slate-900">₹{product.price?.toLocaleString()}</p>
                     {product.original_price > product.price && (
@@ -862,6 +852,14 @@ const ProductsTab = ({ token }) => {
                     )}
                   </div>
                   <StatusBadge status={product.is_active ? 'active' : 'inactive'} />
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="flex-1" onClick={() => { setEditingProduct(product); setShowForm(true); }}>
+                    <Edit className="w-3 h-3 mr-1" /> Edit
+                  </Button>
+                  <Button size="sm" variant="outline" className="text-red-600 hover:bg-red-50 hover:text-red-700" onClick={() => deleteProduct(product.id)}>
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
                 </div>
               </div>
             </div>
