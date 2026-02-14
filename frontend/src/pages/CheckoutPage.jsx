@@ -152,6 +152,17 @@ const CheckoutPage = () => {
             setOrderId(savedOrderId);
             setCheckoutStep('confirmation');
             toast({ title: "Payment Successful!", description: "Your order has been confirmed." });
+            
+            // Track Purchase event with Meta Pixel
+            if (window.fbq) {
+              window.fbq('track', 'Purchase', {
+                value: total,
+                currency: 'INR',
+                content_ids: cart.map(item => item.id || item.slug),
+                content_type: 'product',
+                num_items: cartCount
+              });
+            }
           } catch (err) {
             toast({ title: "Verification Failed", description: "Please contact support.", variant: "destructive" });
           }
