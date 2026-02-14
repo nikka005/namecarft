@@ -40,6 +40,17 @@ const ProductPage = () => {
       try {
         const res = await axios.get(`${API}/api/products/${slug}`);
         setProduct(res.data);
+        
+        // Track ViewContent event with Meta Pixel
+        if (window.fbq && res.data) {
+          window.fbq('track', 'ViewContent', {
+            value: res.data.price,
+            currency: 'INR',
+            content_ids: [res.data.id || res.data.slug],
+            content_type: 'product',
+            content_name: res.data.name
+          });
+        }
       } catch (err) {
         console.error('Error fetching product:', err);
         setError('Product not found');
