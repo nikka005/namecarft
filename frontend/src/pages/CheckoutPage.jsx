@@ -109,16 +109,22 @@ const CheckoutPage = () => {
     };
     fetchSettings();
     
-    // Track InitiateCheckout event with Meta Pixel
-    if (window.fbq && cart.length > 0) {
-      window.fbq('track', 'InitiateCheckout', {
-        value: parseFloat(cartTotal.toFixed(2)),
-        currency: 'INR',
-        content_ids: cart.map(item => item.id || item.slug),
-        content_type: 'product',
-        num_items: cartCount
-      });
-    }
+    // Track InitiateCheckout event with Meta Pixel (with retry for pixel loading)
+    const trackInitiateCheckout = () => {
+      if (window.fbq && cart.length > 0) {
+        window.fbq('track', 'InitiateCheckout', {
+          value: parseFloat(cartTotal.toFixed(2)),
+          currency: 'INR',
+          content_ids: cart.map(item => item.id || item.slug),
+          content_type: 'product',
+          num_items: cartCount
+        });
+      } else if (cart.length > 0) {
+        // Retry after 500ms if fbq not ready
+        setTimeout(trackInitiateCheckout, 500);
+      }
+    };
+    trackInitiateCheckout();
   }, []);
 
   // Calculate shipping based on settings from database
