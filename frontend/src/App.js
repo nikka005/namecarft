@@ -33,6 +33,7 @@ function App() {
       <CartProvider>
         <div className="App">
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/products/:slug" element={<ProductPage />} />
