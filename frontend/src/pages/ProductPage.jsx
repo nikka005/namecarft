@@ -41,16 +41,22 @@ const ProductPage = () => {
         const res = await axios.get(`${API}/api/products/${slug}`);
         setProduct(res.data);
         
-        // Track ViewContent event with Meta Pixel
-        if (window.fbq && res.data) {
-          window.fbq('track', 'ViewContent', {
-            value: parseFloat(res.data.price) || 0,
-            currency: 'INR',
-            content_ids: [res.data.id || res.data.slug],
-            content_type: 'product',
-            content_name: res.data.name
-          });
-        }
+        // Track ViewContent event with Meta Pixel (with retry for pixel loading)
+        const trackViewContent = () => {
+          if (window.fbq && res.data) {
+            window.fbq('track', 'ViewContent', {
+              value: parseFloat(res.data.price) || 0,
+              currency: 'INR',
+              content_ids: [res.data.id || res.data.slug],
+              content_type: 'product',
+              content_name: res.data.name
+            });
+          } else {
+            // Retry after 500ms if fbq not ready
+            setTimeout(trackViewContent, 500);
+          }
+        };
+        trackViewContent();
       } catch (err) {
         console.error('Error fetching product:', err);
         setError('Product not found');
