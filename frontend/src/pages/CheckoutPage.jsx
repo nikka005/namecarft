@@ -110,21 +110,24 @@ const CheckoutPage = () => {
     fetchSettings();
     
     // Track InitiateCheckout event with Meta Pixel (with retry for pixel loading)
-    const trackInitiateCheckout = () => {
-      if (window.fbq && cart.length > 0) {
+    const trackInitiateCheckout = (retryCount = 0) => {
+      if (typeof window.fbq === 'function' && cart.length > 0 && cartTotal > 0) {
+        const checkoutValue = Number(cartTotal) || 0;
         window.fbq('track', 'InitiateCheckout', {
-          value: parseFloat(cartTotal.toFixed(2)),
+          value: checkoutValue,
           currency: 'INR',
-          content_ids: cart.map(item => item.id || item.slug),
+          content_ids: cart.map(item => String(item.id || item.slug)),
           content_type: 'product',
-          num_items: cartCount
+          num_items: Number(cartCount) || cart.length
         });
-      } else if (cart.length > 0) {
-        // Retry after 500ms if fbq not ready
-        setTimeout(trackInitiateCheckout, 500);
+        console.log('InitiateCheckout fired:', checkoutValue, 'INR');
+      } else if (cart.length > 0 && retryCount < 5) {
+        // Retry up to 5 times with 500ms delay
+        setTimeout(() => trackInitiateCheckout(retryCount + 1), 500);
       }
     };
-    trackInitiateCheckout();
+    // Start tracking after a small delay to ensure fbq is loaded
+    setTimeout(() => trackInitiateCheckout(0), 100);
   }, []);
 
   // Calculate shipping based on settings from database
