@@ -42,21 +42,24 @@ const ProductPage = () => {
         setProduct(res.data);
         
         // Track ViewContent event with Meta Pixel (with retry for pixel loading)
-        const trackViewContent = () => {
-          if (window.fbq && res.data) {
+        const trackViewContent = (retryCount = 0) => {
+          if (typeof window.fbq === 'function' && res.data && res.data.price) {
+            const productPrice = Number(res.data.price) || 0;
             window.fbq('track', 'ViewContent', {
-              value: parseFloat(res.data.price) || 0,
+              value: productPrice,
               currency: 'INR',
-              content_ids: [res.data.id || res.data.slug],
+              content_ids: [String(res.data.id || res.data.slug)],
               content_type: 'product',
-              content_name: res.data.name
+              content_name: String(res.data.name || '')
             });
-          } else {
-            // Retry after 500ms if fbq not ready
-            setTimeout(trackViewContent, 500);
+            console.log('ViewContent fired:', productPrice, 'INR');
+          } else if (retryCount < 5) {
+            // Retry up to 5 times with 500ms delay
+            setTimeout(() => trackViewContent(retryCount + 1), 500);
           }
         };
-        trackViewContent();
+        // Start tracking after a small delay to ensure fbq is loaded
+        setTimeout(() => trackViewContent(0), 100);
       } catch (err) {
         console.error('Error fetching product:', err);
         setError('Product not found');
