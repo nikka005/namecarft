@@ -187,14 +187,16 @@ const ProductPage = () => {
     setIsCartOpen(true);
     
     // Track AddToCart event with Meta Pixel
-    if (window.fbq) {
+    if (typeof window.fbq === 'function' && product && product.price) {
+      const cartValue = Number(product.price) * Number(quantity);
       window.fbq('track', 'AddToCart', {
-        value: parseFloat((product.price * quantity).toFixed(2)),
+        value: cartValue,
         currency: 'INR',
-        content_ids: [product.id || product.slug],
+        content_ids: [String(product.id || product.slug)],
         content_type: 'product',
-        content_name: product.name
+        content_name: String(product.name || '')
       });
+      console.log('AddToCart fired:', cartValue, 'INR');
     }
   };
 
